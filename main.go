@@ -1,6 +1,6 @@
 package main
 
-import "nand2tetris-golang/ch06/hack"
+import "nand2tetris-golang/assembler/hack"
 
 func main() {
 	err := hack.Hack()
