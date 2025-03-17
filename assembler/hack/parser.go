@@ -73,8 +73,8 @@ func (p *Parser) advance() bool {
 	}
 	line := p.text()
 	if isEmptyLine(line) || isCommentLine(line) {
-		p.advance()
-		return true // skip empty or comment line
+		// skip empty or comment line
+		return p.advance()
 	}
 	inst := Instruction(line)
 	p.currentInstruction = inst
