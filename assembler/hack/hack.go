@@ -64,7 +64,10 @@ func firstPass(fileName string) (SymbolTable, error) {
 	// first pass: build symbol table and add labels to it
 	for count := 0; p.advance(); {
 		if p.currentType == L_Instruction {
-			labelSymbol, _ := p.symbol()
+			labelSymbol, err := p.symbol()
+			if err != nil {
+				return SymbolTable{}, err
+			}
 			// add label to the symbol table
 			symbolTable.addLabel(labelSymbol, count)
 		} else if p.currentType == A_Instruction || p.currentType == C_Instruction {
@@ -91,22 +94,46 @@ func secondPass(fileName string, hackFile *os.File, symbolTable SymbolTable) err
 		instType := p.currentType
 		switch instType {
 		case A_Instruction:
-			symOrConst, _ := p.symbol()
-			symbolCode, _ := symbol(symOrConst, &symbolTable)
+			symOrConst, err := p.symbol()
+			if err != nil {
+				return err
+			}
+			symbolCode, err := symbol(symOrConst, &symbolTable)
+			if err != nil {
+				return err
+			}
 			code := "0" + string(symbolCode)
-			_, err := hackFile.WriteString(code + "\n")
+			_, err = hackFile.WriteString(code + "\n")
 			if err != nil {
 				return err
 			}
 		case C_Instruction:
-			destMnemonic, _ := p.dest()
-			compMnemonic, _ := p.comp()
-			jumpMnemonic, _ := p.jump()
-			destCode, _ := dest(destMnemonic)
-			compCode, _ := comp(compMnemonic)
-			jumpCode, _ := jump(jumpMnemonic)
+			destMnemonic, err := p.dest()
+			if err != nil {
+				return err
+			}
+			compMnemonic, err := p.comp()
+			if err != nil {
+				return err
+			}
+			jumpMnemonic, err := p.jump()
+			if err != nil {
+				return err
+			}
+			destCode, err := dest(destMnemonic)
+			if err != nil {
+				return err
+			}
+			compCode, err := comp(compMnemonic)
+			if err != nil {
+				return err
+			}
+			jumpCode, err := jump(jumpMnemonic)
+			if err != nil {
+				return err
+			}
 			code := "111" + string(compCode) + string(destCode) + string(jumpCode)
-			_, err := hackFile.WriteString(code + "\n")
+			_, err = hackFile.WriteString(code + "\n")
 			if err != nil {
 				return err
 			}
