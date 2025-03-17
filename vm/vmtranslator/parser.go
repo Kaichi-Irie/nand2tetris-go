@@ -129,6 +129,8 @@ func (p *Parser) arg1() string {
 	return words[1]
 }
 
+// arg2 returns the second argument of the current instruction
+// It panics if the command has no second argument
 func (p *Parser) arg2() int {
 	words := strings.Fields(string(p.currentCommand))
 	switch p.currentType {
