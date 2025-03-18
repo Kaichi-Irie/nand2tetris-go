@@ -121,38 +121,46 @@ func TestGetCommandType(t *testing.T) {
 
 func TestArg1(t *testing.T) {
 	tests := []struct {
-		parser Parser
-		want   string
+		command VMCommand
+		want    string
 	}{
-		{Parser{CodeScanner{}, "add", C_ARITHMETIC}, "add"},
-		{Parser{CodeScanner{}, "push constant 7", C_PUSH}, "constant"},
-		{Parser{CodeScanner{}, "pop local 0", C_POP}, "local"},
-		{Parser{CodeScanner{}, "label LOOP", C_LABEL}, "LOOP"},
-		{Parser{CodeScanner{}, "goto LOOP", C_GOTO}, "LOOP"},
-		{Parser{CodeScanner{}, "if-goto LOOP", C_IF}, "LOOP"},
-		{Parser{CodeScanner{}, "function SimpleFunction.test 2", C_FUNCTION}, "SimpleFunction.test"},
-		{Parser{CodeScanner{}, "call SimpleFunction.test 2", C_CALL}, "SimpleFunction.test"},
+		{"add", "add"},
+		{"sub", "sub"},
+		{"neg", "neg"},
+		{"eq", "eq"},
+		{"gt", "gt"},
+		{"lt", "lt"},
+		{"and", "and"},
+		{"or", "or"},
+		{"not", "not"},
+		{"push constant 7", "constant"},
+		{"pop local 0", "local"},
+		{"label LOOP", "LOOP"},
+		{"goto LOOP", "LOOP"},
+		{"if-goto LOOP", "LOOP"},
+		{"function SimpleFunction.test 0", "SimpleFunction.test"},
+		{"call SimpleFunction.test 2", "SimpleFunction.test"},
 	}
 	for _, test := range tests {
-		if got := test.parser.arg1(); got != test.want {
-			t.Errorf("arg1() = %s, want %s", got, test.want)
+		if got := arg1(test.command); got != test.want {
+			t.Errorf("arg1(%s) = %s, want %s", test.command, got, test.want)
 		}
 	}
 }
 
 func TestArg2(t *testing.T) {
 	tests := []struct {
-		parser Parser
-		want   int
+		command VMCommand
+		want    int
 	}{
-		{Parser{CodeScanner{}, "push constant 7", C_PUSH}, 7},
-		{Parser{CodeScanner{}, "pop local 0", C_POP}, 0},
-		{Parser{CodeScanner{}, "function SimpleFunction.test 2", C_FUNCTION}, 2},
-		{Parser{CodeScanner{}, "call SimpleFunction.test 2", C_CALL}, 2},
+		{"push constant 7", 7},
+		{"pop local 0", 0},
+		{"function SimpleFunction.test 0", 0},
+		{"call SimpleFunction.test 2", 2},
 	}
 	for _, test := range tests {
-		if got := test.parser.arg2(); got != test.want {
-			t.Errorf("arg2() = %d, want %d", got, test.want)
+		if got := arg2(test.command); got != test.want {
+			t.Errorf("arg2(%s) = %d, want %d", test.command, got, test.want)
 		}
 	}
 }

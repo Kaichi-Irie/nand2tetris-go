@@ -116,24 +116,30 @@ func (p *Parser) advance() bool {
 	return true
 }
 
-// arg1 returns the first argument of the current instruction
-// It returns the command itself if it is an arithmetic command
-// It panics if the command is a return command
-func (p *Parser) arg1() string {
-	words := strings.Fields(string(p.currentCommand))
-	if p.currentType == C_RETURN {
+// arg1 returns the first argument of the current instruction.
+// It returns the command itself if it is an arithmetic command.
+// It panics if the command is a return command.
+func arg1(command VMCommand) string {
+	words := strings.Fields(string(command))
+	switch ctype := getCommandType(command); ctype {
+
+	case C_RETURN:
 		panic("return command has no arguments")
-	} else if p.currentType == C_ARITHMETIC {
+	case C_ARITHMETIC:
 		return words[0]
+	case C_PUSH, C_POP, C_LABEL, C_GOTO, C_IF, C_FUNCTION, C_CALL:
+		return words[1]
+	default:
+		panic("command has no first argument")
 	}
-	return words[1]
+
 }
 
 // arg2 returns the second argument of the current instruction
 // It panics if the command has no second argument
-func (p *Parser) arg2() int {
-	words := strings.Fields(string(p.currentCommand))
-	switch p.currentType {
+func arg2(command VMCommand) int {
+	words := strings.Fields(string(command))
+	switch ctype := getCommandType(command); ctype {
 	case C_PUSH, C_POP, C_FUNCTION, C_CALL:
 		n, err := strconv.Atoi(words[2])
 		if err != nil {
