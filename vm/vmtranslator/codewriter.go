@@ -35,33 +35,32 @@ func TranslatePushPop(ctype VMCommandType, seg string, idx int, fileName string)
 	var asmcommand string
 	switch seg {
 	case "local":
-		asmcommand = "@LCL\n"
+		asmcommand = "@LCL\nD=M\n"
 	case "argument":
-		asmcommand = "@ARG\n"
+		asmcommand = "@ARG\nD=M\n"
 	case "this":
-		asmcommand = "@THIS\n"
+		asmcommand = "@THIS\nD=M\n"
 	case "that":
-		asmcommand = "@THAT\n"
+		asmcommand = "@THAT\nD=M\n"
 	case "temp":
-		asmcommand = "@R5\n"
+		asmcommand = "@R5\nD=M\n"
 	case "pointer":
 		switch idx {
 		case 0:
-			asmcommand = "@THIS\n"
+			asmcommand = "@THIS\nD=M\n"
 		case 1:
-			asmcommand = "@THAT\n"
+			asmcommand = "@THAT\nD=M\n"
 		default:
 			return "", fmt.Errorf("invalid pointer index %d", idx)
 		}
 	case "static":
-		asmcommand = fmt.Sprintf("@%s.%d\n", fileName, idx)
+		asmcommand = fmt.Sprintf("@%s.%d\nD=M\n", fileName, idx)
 	case "constant":
 		// do nothing
 		asmcommand = ""
 	default:
 		return "", fmt.Errorf("invalid segment %s", seg)
 	}
-	asmcommand += "D=M\n"
 	asmcommand += fmt.Sprintf("@%d\n", idx)
 
 	// push or pop the value
