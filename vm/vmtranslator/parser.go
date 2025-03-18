@@ -57,24 +57,24 @@ func (cs CodeScanner) isCommentLine(line string) bool {
 	return line[0:2] == cs.commentPrefix
 }
 
-func (cs CodeScanner) scan() bool {
-	ok := cs.scanner.Scan()
-	if !ok {
-		return false
-	}
-	line := cs.scanner.Text()
-	// skip empty or comment line
-	if cs.isEmptyLine(line) || cs.isCommentLine(line) {
-		return cs.scan()
-	}
-	return true
-}
-
 func (cd CodeScanner) text() string {
 	text := cd.scanner.Text()
 	// remove spaces at the beginning and end of the line
 	// replace multiple spaces with a single space
 	return strings.Join(strings.Fields(text), " ")
+}
+
+func (cs CodeScanner) scan() bool {
+	ok := cs.scanner.Scan()
+	if !ok {
+		return false
+	}
+	line := cs.text()
+	// skip empty or comment line
+	if cs.isEmptyLine(line) || cs.isCommentLine(line) {
+		return cs.scan()
+	}
+	return true
 }
 
 func getCommandType(command VMCommand) VMCommandType {
