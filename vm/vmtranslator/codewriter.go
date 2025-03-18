@@ -130,3 +130,8 @@ func (cw *CodeWriter) WriteCommand(command VMCommand) error {
 		return fmt.Errorf("invalid command type %d", ctype)
 	}
 }
+
+func (cw *CodeWriter) WriteInfinityLoop() error {
+	_, err := io.WriteString(cw, "// infinite loop\n(END)\n@END\n0;JMP\n")
+	return err
+}

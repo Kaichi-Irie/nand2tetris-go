@@ -22,13 +22,17 @@ func VMTranslator() error {
 	parser := NewParser(file, "//")
 	codeWriter := NewCodeWriter(fileName)
 	defer codeWriter.Close()
-	
+
 	for parser.advance() {
 		err := codeWriter.WriteCommand(parser.currentCommand)
 		if err != nil {
 			return err
 		}
 	}
+
+	// write infinite loop at the end of the file
+	codeWriter.WriteInfinityLoop()
+
 	fmt.Println("done")
 	return nil
 }
