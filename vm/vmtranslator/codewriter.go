@@ -33,54 +33,78 @@ func (cw *CodeWriter) Close() error {
 
 func TranslatePushPop(ctype VMCommandType, seg string, idx int, fileName string) (string, error) {
 	var asmcommand string
+	// process the segment
+	// This process is common to both push and pop commands except for the static segment
 	switch seg {
 	case "local":
 		asmcommand = "@LCL\nD=M\n"
+		asmcommand += fmt.Sprintf("@%d\n", idx)
 	case "argument":
 		asmcommand = "@ARG\nD=M\n"
+		asmcommand += fmt.Sprintf("@%d\n", idx)
 	case "this":
 		asmcommand = "@THIS\nD=M\n"
+		asmcommand += fmt.Sprintf("@%d\n", idx)
 	case "that":
 		asmcommand = "@THAT\nD=M\n"
+		asmcommand += fmt.Sprintf("@%d\n", idx)
 	case "temp":
 		asmcommand = "@R5\nD=M\n"
+		asmcommand += fmt.Sprintf("@%d\n", idx)
 	case "pointer":
 		switch idx {
 		case 0:
 			asmcommand = "@THIS\nD=M\n"
+			asmcommand += fmt.Sprintf("@%d\n", idx)
 		case 1:
 			asmcommand = "@THAT\nD=M\n"
+			asmcommand += fmt.Sprintf("@%d\n", idx)
 		default:
 			return "", fmt.Errorf("invalid pointer index %d", idx)
 		}
 	case "static":
-		asmcommand = fmt.Sprintf("@%s.%d\nD=M\n", fileName, idx)
-	case "constant":
 		// do nothing
 		asmcommand = ""
+	case "constant":
+		asmcommand = fmt.Sprintf("@%d\n", idx)
 	default:
 		return "", fmt.Errorf("invalid segment %s", seg)
 	}
-	asmcommand += fmt.Sprintf("@%d\n", idx)
 
 	// push or pop the value
-	switch ctype {
-	case C_PUSH:
+	switch {
+	case ctype == C_PUSH && seg == "constant":
 		// push the value to the stack
-		// D=idx if segment is constant else D=RAM[segbase+idx]
-		if seg == "constant" {
-			asmcommand += "D=A\n"
-		} else {
-			asmcommand += "A=D+A\nD=M\n"
-		}
-		// RAM[SP] = D, SP++
+		// D=idx
+		asmcommand += "D=A\n"
+		// RAM[SP]=D, SP++
 		asmcommand += "@SP\nA=M\nM=D\n@SP\nM=M+1\n"
-	case C_POP:
+	case ctype == C_PUSH && seg == "static":
+		// push the value to the stack
+		// D=RAM[fileName.idx]
+		asmcommand += fmt.Sprintf("@%s.%d\nD=M\n", fileName, idx)
+		// RAM[SP]=D, SP++
+		asmcommand += "@SP\nA=M\nM=D\n@SP\nM=M+1\n"
+	case ctype == C_PUSH:
+		// push the value to the stack
+		// D=RAM[segbase+idx]
+		asmcommand += "A=D+A\nD=M\n"
+		// RAM[SP]=D, SP++
+		asmcommand += "@SP\nA=M\nM=D\n@SP\nM=M+1\n"
+	case ctype == C_POP && seg == "constant":
+		return "", fmt.Errorf("cannot pop to constant segment")
+	case ctype == C_POP && seg == "static":
+		// pop the value from the stack
+		// SP--, D=RAM[SP]
+		asmcommand += "@SP\nM=M-1\nA=M\nD=M\n"
+		// RAM[fileName.idx]=D
+		asmcommand += fmt.Sprintf("@%s.%d\nM=D\n", fileName, idx)
+	case ctype == C_POP:
 		// pop the value from the stack
 		// D=segbase+idx, RAM[13]=D
 		asmcommand += "D=D+A\n"
 		asmcommand += "@R13\nM=D\n"
-		// SP--, RAM[segbase+idx] = RAM[SP]
+		// SP--, RAM[segbase+idx]=RAM[SP]
 		asmcommand += "@SP\nM=M-1\nA=M\nD=M\n@R13\nA=M\nM=D\n"
 	default:
 		return "", fmt.Errorf("invalid command type %d", ctype)
