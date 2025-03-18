@@ -3,11 +3,12 @@ package vmtranslator
 import (
 	"fmt"
 	"io"
+	"os"
 )
 
 type CodeWriter struct {
-	file     io.WriteCloser
-	fileName string
+	file         io.WriteCloser
+	fileNameStem string
 }
 
 func (cw *CodeWriter) Write(b []byte) (int, error) {
@@ -73,7 +74,7 @@ func TranslatePushPop(ctype VMCommandType, seg string, idx int, fileName string)
 	default:
 		return "", fmt.Errorf("invalid command type %d", ctype)
 	}
-	return "", nil
+	return asmcommand, nil
 }
 
 func TranslateArithmetic(command VMCommand) (string, error) {
@@ -86,12 +87,12 @@ func (cw *CodeWriter) WritePushPop(ctype VMCommandType, seg string, idx int) err
 	}
 
 	// translate the command
-	asmcommand, err := TranslatePushPop(ctype, seg, idx, cw.fileName)
+	asmcommand, err := TranslatePushPop(ctype, seg, idx, cw.fileNameStem)
 	if err != nil {
 		return err
 	}
-	io.WriteString(cw, asmcommand)
-	return nil
+	_, err = io.WriteString(cw, asmcommand)
+	return err
 }
 func (cw *CodeWriter) WriteArithmetic(command VMCommand) error {
 	if ctype := getCommandType(command); ctype != C_ARITHMETIC {
