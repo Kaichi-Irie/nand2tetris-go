@@ -67,8 +67,8 @@ func (cs CodeScanner) isCommentLine(line string) bool {
 	return line[0:2] == cs.commentPrefix
 }
 
-func (cd CodeScanner) text() string {
-	text := cd.scanner.Text()
+func (cs CodeScanner) text() string {
+	text := cs.scanner.Text()
 	// remove spaces at the beginning and end of the line
 	// replace multiple spaces with a single space
 	return strings.Join(strings.Fields(text), " ")
