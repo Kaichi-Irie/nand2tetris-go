@@ -2,6 +2,7 @@ package vmtranslator
 
 import (
 	"bufio"
+	"io"
 	"strconv"
 	"strings"
 )
@@ -39,10 +40,19 @@ type CodeScanner struct {
 	commentPrefix string
 }
 
+func NewCodeScanner(r io.Reader, commentPrefix string) CodeScanner {
+	return CodeScanner{scanner: bufio.NewScanner(r), commentPrefix: commentPrefix}
+}
+
 type Parser struct {
 	scanner        CodeScanner
 	currentCommand VMCommand
 	currentType    VMCommandType
+}
+
+func NewParser(r io.Reader, commentPrefix string) Parser {
+	cs := NewCodeScanner(r, commentPrefix)
+	return Parser{scanner: cs}
 }
 
 // advance reads the next instruction from the input and makes it the current instruction

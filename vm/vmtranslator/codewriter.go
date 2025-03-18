@@ -11,6 +11,18 @@ type CodeWriter struct {
 	fileNameStem string
 }
 
+func NewCodeWriter(fileName string) *CodeWriter {
+	if extension := fileName[len(fileName)-3:]; extension != ".vm" {
+		panic("invalid file extension")
+	}
+	fileNameStem := fileName[:len(fileName)-3]
+	file, err := os.Create(fileNameStem + ".asm")
+	if err != nil {
+		panic(err)
+	}
+	return &CodeWriter{file, fileNameStem}
+}
+
 func (cw *CodeWriter) Write(b []byte) (int, error) {
 	return cw.file.Write(b)
 }

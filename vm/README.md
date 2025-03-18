@@ -14,12 +14,14 @@ Description: `parser.go` は、VM言語のコマンドをパースするため�
 
 ### Functions and methods:
 
-| functions/methods     | arguments   | return values   | description                                                                                                                                                                                     |
-| --------------------- | ----------- | --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `(p *Parser) advance` |             | `bool`          | `Parser` が次の命令を読み込み、それを現在の命令にする。もしもう命令がない場合は false を返す。 コメント行や空行は無視して，命令が見つかる，またはファイルの終わりに達するまでスキャンを続ける。 |
-| `getcommandType`      | `VMCommand` | `VMCommandType` | 命令のタイプを返す。                                                                                                                                                                            |
-| `arg1`                | `VMCommand` | `string`        | VMコマンドを受け取り，そのコマンドの最初の引数を返す。`C_ARITHMETIC` の場合は命令自体を返す。                                                                                                   |
-| `arg2`                | `VMCommand` | `int`           | VMコマンドを受け取り，そのコマンドの2番目の引数を返す。コマンドタイプが`C_PUSH`, `C_POP`, `C_FUNCTION`, `C_CALL` の場合のみ有効。                                                               |
+| functions/methods                                               | arguments   | return values   | description                                                                                                                                                                                     |
+| --------------------------------------------------------------- | ----------- | --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `(p *Parser) advance`                                           |             | `bool`          | `Parser` が次の命令を読み込み、それを現在の命令にする。もしもう命令がない場合は false を返す。 コメント行や空行は無視して，命令が見つかる，またはファイルの終わりに達するまでスキャンを続ける。 |
+| `getcommandType`                                                | `VMCommand` | `VMCommandType` | 命令のタイプを返す。                                                                                                                                                                            |
+| `arg1`                                                          | `VMCommand` | `string`        | VMコマンドを受け取り，そのコマンドの最初の引数を返す。`C_ARITHMETIC` の場合は命令自体を返す。                                                                                                   |
+| `arg2`                                                          | `VMCommand` | `int`           | VMコマンドを受け取り，そのコマンドの2番目の引数を返す。コマンドタイプが`C_PUSH`, `C_POP`, `C_FUNCTION`, `C_CALL` の場合のみ有効。                                                               |
+| `NewParser(r io.Reader, commentPrefix string) Parser`           |             |                 | 新しい `Parser` 構造体を作成する。                                                                                                                                                              |
+| `NewCodeScanner(r io.Reader, commentPrefix string) CodeScanner` |             |                 | 新しい `CodeScanner` 構造体を作成する。                                                                                                                                                         |
 
 ## CodeWriter
 Description: `codewriter.go` は、VM言語のコマンドをHackアセンブリ言語に変換するための構造体と関数を提供する。
@@ -31,10 +33,11 @@ Description: `codewriter.go` は、VM言語のコマンドをHackアセンブリ
 
 
 ### Functions and methods:
-| functions/methods                  | arguments                     | return values    | description                                                                                                                |
-| ---------------------------------- | ----------------------------- | ---------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| `TranslatePushPop`                 | `string`, `int`,  `string`    | `string`,`error` | PushまたはPopコマンドをHackアセンブリ言語に変換する。`fileName` 現在のVMファイル名を受け取るのは，staticセグメントのため． |
-| `TranslateArithmetic`              | `VMCommand`                   | `string`         | 算術コマンドをHackアセンブリ言語に変換する。                                                                               |
-| `(cw *CodeWriter) WriteCommand`    | `VMCommand`                   | `error`          | VMコマンドをHackアセンブリ言語に変換し、ファイルに書き込む。 アセンブリ言語には，コメントとしてVMコマンドも追加される。    |
-| `(cw *CodeWriter) WritePushPop`    | `VMCommandType`, `seg`, `idx` | `error`          | PushまたはPopコマンドをHackアセンブリ言語に変換し、ファイルに書き込む。                                                    |
-| `(cw *CodeWriter) WriteArithmetic` | `VMCommand`                   | `error`          | 算術コマンドをHackアセンブリ言語に変換し、ファイルに書き込む。                                                             |
+| functions/methods                            | arguments                     | return values    | description                                                                                                                |
+| -------------------------------------------- | ----------------------------- | ---------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `TranslatePushPop`                           | `string`, `int`,  `string`    | `string`,`error` | PushまたはPopコマンドをHackアセンブリ言語に変換する。`fileName` 現在のVMファイル名を受け取るのは，staticセグメントのため． |
+| `TranslateArithmetic`                        | `VMCommand`                   | `string`         | 算術コマンドをHackアセンブリ言語に変換する。                                                                               |
+| `(cw *CodeWriter) WriteCommand`              | `VMCommand`                   | `error`          | VMコマンドをHackアセンブリ言語に変換し、ファイルに書き込む。 アセンブリ言語には，コメントとしてVMコマンドも追加される。    |
+| `(cw *CodeWriter) WritePushPop`              | `VMCommandType`, `seg`, `idx` | `error`          | PushまたはPopコマンドをHackアセンブリ言語に変換し、ファイルに書き込む。                                                    |
+| `(cw *CodeWriter) WriteArithmetic`           | `VMCommand`                   | `error`          | 算術コマンドをHackアセンブリ言語に変換し、ファイルに書き込む。                                                             |
+| `NewCodeWriter(fileName string) *CodeWriter` |                               |                  | 新しい `CodeWriter` 構造体を作成する。                                                                                     |
