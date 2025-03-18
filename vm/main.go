@@ -1,6 +1,12 @@
 package main
 
+import (
+	"nand2tetris-golang/vm/vmtranslator"
+)
+
 func main() {
-	// This is the entry point for the program
-	// It will be called when the program starts
+	err := vmtranslator.VMTranslator()
+	if err != nil {
+		panic(err)
+	}
 }
