@@ -124,7 +124,19 @@ func TranslatePushPop(ctype VMCommandType, seg string, idx int, fileName string)
 }
 
 func TranslateArithmetic(command VMCommand) (string, error) {
-	return "", fmt.Errorf("not implemented")
+	asmcommand := ""
+	switch command {
+	case "add":
+		asmcommand += pop_R13
+		asmcommand += pop_D
+		asmcommand += "@R13\nD=D+M\n"
+		asmcommand += push_D
+	case "sub", "neg", "eq", "gt", "lt", "and", "or", "not":
+		return "", fmt.Errorf("not implemented")
+	default:
+		return "", fmt.Errorf("invalid arithmetic command %s", command)
+	}
+	return asmcommand, nil
 }
 
 func (cw *CodeWriter) WritePushPop(ctype VMCommandType, seg string, idx int) error {

@@ -50,3 +50,21 @@ func TestTranslatePushPop(t *testing.T) {
 }
 
 // TODO: Add tests for TranslateArithmetic
+func TestTranslateArithmetic(t *testing.T) {
+	tests := []struct {
+		command VMCommand
+		want    string
+	}{
+		// add
+		{"add", "@SP\nM=M-1\nA=M\nD=M\n@R13\nM=D\n@SP\nM=M-1\nA=M\nD=M\n@R13\nD=D+M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n"},
+	}
+	for _, test := range tests {
+		asmcommand, err := TranslateArithmetic(test.command)
+		if err != nil {
+			t.Errorf("TranslateArithmetic failed: %v", err)
+		}
+		if asmcommand != test.want {
+			t.Errorf("TranslateArithmetic(%q) = %q, want %q", test.command, asmcommand, test.want)
+		}
+	}
+}
