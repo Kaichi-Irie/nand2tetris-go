@@ -125,14 +125,31 @@ func TranslatePushPop(ctype VMCommandType, seg string, idx int, fileName string)
 
 func TranslateArithmetic(command VMCommand) (string, error) {
 	asmcommand := ""
+	op := map[VMCommand]string{
+		"add": "+", "sub": "-", "and": "&", "or": "|", "neg": "-", "not": "!", "eq": "JEQ", "gt": "JGT", "lt": "JLT"}[command]
 	switch command {
-	case "add":
-		asmcommand += pop_R13
-		asmcommand += pop_D
-		asmcommand += "@R13\nD=D+M\n"
-		asmcommand += push_D
-	case "sub", "neg", "eq", "gt", "lt", "and", "or", "not":
-		return "", fmt.Errorf("not implemented")
+	case "add", "sub", "and", "or":
+		asmcommand += pop_R13                           // y
+		asmcommand += pop_D                             // x
+		asmcommand += fmt.Sprintf("@R13\nD=D%sM\n", op) // x op y
+		asmcommand += push_D                            // push (x op y)
+	case "neg", "not":
+		asmcommand += pop_D                      // x
+		asmcommand += fmt.Sprintf("D=%sD\n", op) // op x
+		asmcommand += push_D                     // push (op x)
+	case "eq", "gt", "lt":
+		prefix := op[1:]              // remove the first character 'J'
+		asmcommand += pop_R13         // y
+		asmcommand += pop_D           // x
+		asmcommand += "@R13\nD=D-M\n" // x-y
+		// if (x-y op 0) is true, then goto true else goto false
+		asmcommand += fmt.Sprintf("@%s_TRUE\nD;%s\n", prefix, op)
+		// false case D=0(false)
+		asmcommand += fmt.Sprintf("(%s_FALSE)\nD=0\n@%s_END\n0;JMP\n", prefix, prefix)
+		// true case D=-1(true)
+		asmcommand += fmt.Sprintf("(%s_TRUE)\nD=-1\n@%s_END\n0;JMP\n", prefix, prefix)
+		asmcommand += fmt.Sprintf("(%s_END)\n", prefix)
+		asmcommand += push_D // push true or false
 	default:
 		return "", fmt.Errorf("invalid arithmetic command %s", command)
 	}

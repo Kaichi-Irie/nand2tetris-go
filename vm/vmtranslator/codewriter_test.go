@@ -57,6 +57,22 @@ func TestTranslateArithmetic(t *testing.T) {
 	}{
 		// add
 		{"add", "@SP\nM=M-1\nA=M\nD=M\n@R13\nM=D\n@SP\nM=M-1\nA=M\nD=M\n@R13\nD=D+M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n"},
+		// sub
+		{"sub", "@SP\nM=M-1\nA=M\nD=M\n@R13\nM=D\n@SP\nM=M-1\nA=M\nD=M\n@R13\nD=D-M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n"},
+		// neg
+		{"neg", "@SP\nM=M-1\nA=M\nD=M\nD=-D\n@SP\nA=M\nM=D\n@SP\nM=M+1\n"},
+		// eq
+		{"eq", "@SP\nM=M-1\nA=M\nD=M\n@R13\nM=D\n@SP\nM=M-1\nA=M\nD=M\n@R13\nD=D-M\n@EQ_TRUE\nD;JEQ\n(EQ_FALSE)\nD=0\n@EQ_END\n0;JMP\n(EQ_TRUE)\nD=-1\n@EQ_END\n0;JMP\n(EQ_END)\n@SP\nA=M\nM=D\n@SP\nM=M+1\n"},
+		// gt
+		{"gt", "@SP\nM=M-1\nA=M\nD=M\n@R13\nM=D\n@SP\nM=M-1\nA=M\nD=M\n@R13\nD=D-M\n@GT_TRUE\nD;JGT\n(GT_FALSE)\nD=0\n@GT_END\n0;JMP\n(GT_TRUE)\nD=-1\n@GT_END\n0;JMP\n(GT_END)\n@SP\nA=M\nM=D\n@SP\nM=M+1\n"},
+		// lt
+		{"lt", "@SP\nM=M-1\nA=M\nD=M\n@R13\nM=D\n@SP\nM=M-1\nA=M\nD=M\n@R13\nD=D-M\n@LT_TRUE\nD;JLT\n(LT_FALSE)\nD=0\n@LT_END\n0;JMP\n(LT_TRUE)\nD=-1\n@LT_END\n0;JMP\n(LT_END)\n@SP\nA=M\nM=D\n@SP\nM=M+1\n"},
+		// and
+		{"and", "@SP\nM=M-1\nA=M\nD=M\n@R13\nM=D\n@SP\nM=M-1\nA=M\nD=M\n@R13\nD=D&M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n"},
+		// or
+		{"or", "@SP\nM=M-1\nA=M\nD=M\n@R13\nM=D\n@SP\nM=M-1\nA=M\nD=M\n@R13\nD=D|M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n"},
+		// not
+		{"not", "@SP\nM=M-1\nA=M\nD=M\nD=!D\n@SP\nA=M\nM=D\n@SP\nM=M+1\n"},
 	}
 	for _, test := range tests {
 		asmcommand, err := TranslateArithmetic(test.command)
