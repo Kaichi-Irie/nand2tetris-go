@@ -58,7 +58,7 @@ func TranslatePushPop(ctype VMCommandType, seg string, idx int, fileName string)
 		asmcommand = "@THAT\nD=M\n"
 		asmcommand += fmt.Sprintf("@%d\n", idx)
 	case "temp":
-		asmcommand = "@R5\nD=M\n"
+		asmcommand = "@5\nD=A\n"
 		asmcommand += fmt.Sprintf("@%d\n", idx)
 	case "pointer":
 		switch idx {
