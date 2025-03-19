@@ -31,6 +31,15 @@ func (cw *CodeWriter) Close() error {
 	return cw.file.Close()
 }
 
+// push the value in D register to the stack; RAM[SP]=D, SP++
+var push_D = "@SP\nA=M\nM=D\n@SP\nM=M+1\n"
+
+// pop the value from the stack to D register; SP--, D=RAM[SP]
+var pop_D = "@SP\nM=M-1\nA=M\nD=M\n"
+
+// pop the value from the stack to RAM[13]; SP--, RAM[13]=RAM[SP]
+var pop_R13 = pop_D + "@R13\nM=D\n"
+
 func TranslatePushPop(ctype VMCommandType, seg string, idx int, fileName string) (string, error) {
 	var asmcommand string
 	// process the segment
@@ -77,26 +86,26 @@ func TranslatePushPop(ctype VMCommandType, seg string, idx int, fileName string)
 		// push the value to the stack
 		// D=idx
 		asmcommand += "D=A\n"
-		// RAM[SP]=D, SP++
-		asmcommand += "@SP\nA=M\nM=D\n@SP\nM=M+1\n"
+		// RAM[SP]=D, SP++ (push D)
+		asmcommand += push_D
 	case ctype == C_PUSH && seg == "static":
 		// push the value to the stack
 		// D=RAM[fileName.idx]
 		asmcommand += fmt.Sprintf("@%s.%d\nD=M\n", fileName, idx)
-		// RAM[SP]=D, SP++
-		asmcommand += "@SP\nA=M\nM=D\n@SP\nM=M+1\n"
+		// RAM[SP]=D, SP++ (push D)
+		asmcommand += push_D
 	case ctype == C_PUSH:
 		// push the value to the stack
 		// D=RAM[segbase+idx]
 		asmcommand += "A=D+A\nD=M\n"
-		// RAM[SP]=D, SP++
-		asmcommand += "@SP\nA=M\nM=D\n@SP\nM=M+1\n"
+		// RAM[SP]=D, SP++ (push D)
+		asmcommand += push_D
 	case ctype == C_POP && seg == "constant":
 		return "", fmt.Errorf("cannot pop to constant segment")
 	case ctype == C_POP && seg == "static":
 		// pop the value from the stack
 		// SP--, D=RAM[SP]
-		asmcommand += "@SP\nM=M-1\nA=M\nD=M\n"
+		asmcommand += pop_D
 		// RAM[fileName.idx]=D
 		asmcommand += fmt.Sprintf("@%s.%d\nM=D\n", fileName, idx)
 	case ctype == C_POP:
@@ -104,8 +113,10 @@ func TranslatePushPop(ctype VMCommandType, seg string, idx int, fileName string)
 		// D=segbase+idx, RAM[13]=D
 		asmcommand += "D=D+A\n"
 		asmcommand += "@R13\nM=D\n"
-		// SP--, RAM[segbase+idx]=RAM[SP]
-		asmcommand += "@SP\nM=M-1\nA=M\nD=M\n@R13\nA=M\nM=D\n"
+		// SP--, D=RAM[SP]
+		asmcommand += pop_D
+		// RAM[segbase+idx]=D
+		asmcommand += "@R13\nA=M\nM=D\n"
 	default:
 		return "", fmt.Errorf("invalid command type %d", ctype)
 	}
