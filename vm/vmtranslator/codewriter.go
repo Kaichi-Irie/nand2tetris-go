@@ -192,9 +192,20 @@ func (cw *CodeWriter) WriteCommand(command VMCommand) error {
 	ctype := getCommandType(command)
 	switch ctype {
 	case C_ARITHMETIC:
-		return cw.WriteArithmetic(command)
+		asmcommand, err := TranslateArithmetic(command, cw.commandCount)
+		if err != nil {
+			return err
+		}
+		cw.commandCount++
+		_, err = io.WriteString(cw, asmcommand)
+		return err
 	case C_PUSH, C_POP:
-		return cw.WritePushPop(ctype, arg1(command), arg2(command))
+		asmcommand, err := TranslatePushPop(ctype, arg1(command), arg2(command), cw.fileNameStem)
+		if err != nil {
+			return err
+		}
+		_, err = io.WriteString(cw, asmcommand)
+		return err
 	default:
 		return fmt.Errorf("invalid command type %d", ctype)
 	}
