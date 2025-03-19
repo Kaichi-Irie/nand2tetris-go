@@ -10,6 +10,7 @@ import (
 type CodeWriter struct {
 	file         io.WriteCloser
 	fileNameStem string
+	commandCount int // for generating unique labels
 }
 
 func NewCodeWriter(vmFilePath string) *CodeWriter {
@@ -21,7 +22,7 @@ func NewCodeWriter(vmFilePath string) *CodeWriter {
 		panic(err)
 	}
 	fileNameStem := vmFilePath[:len(vmFilePath)-3]
-	return &CodeWriter{file, fileNameStem}
+	return &CodeWriter{file, fileNameStem, 0}
 }
 
 func (cw *CodeWriter) Write(b []byte) (int, error) {
@@ -124,7 +125,7 @@ func TranslatePushPop(ctype VMCommandType, seg string, idx int, fileName string)
 	return asmcommand, nil
 }
 
-func TranslateArithmetic(command VMCommand) (string, error) {
+func TranslateArithmetic(command VMCommand, cnt int) (string, error) {
 	asmcommand := ""
 	op := map[VMCommand]string{
 		"add": "+", "sub": "-", "and": "&", "or": "|", "neg": "-", "not": "!", "eq": "JEQ", "gt": "JGT", "lt": "JLT"}[command]
@@ -139,7 +140,9 @@ func TranslateArithmetic(command VMCommand) (string, error) {
 		asmcommand += fmt.Sprintf("D=%sD\n", op) // op x
 		asmcommand += push_D                     // push (op x)
 	case "eq", "gt", "lt":
-		prefix := op[1:]              // remove the first character 'J'
+		// generate unique labels for the true and false cases
+		// Example: EQ_0_TRUE, GT_1_FALSE, LT_2_END, etc.
+		prefix := op[1:] + fmt.Sprintf("_%d", cnt)
 		asmcommand += pop_R13         // y
 		asmcommand += pop_D           // x
 		asmcommand += "@R13\nD=D-M\n" // x-y
@@ -174,7 +177,8 @@ func (cw *CodeWriter) WriteArithmetic(command VMCommand) error {
 	if ctype := getCommandType(command); ctype != C_ARITHMETIC {
 		return fmt.Errorf("invalid command. expected C_ARITHMETIC, got %d", ctype)
 	}
-	asmcommand, err := TranslateArithmetic(command)
+	asmcommand, err := TranslateArithmetic(command, cw.commandCount)
+	cw.commandCount++
 	if err != nil {
 		return err
 	}
