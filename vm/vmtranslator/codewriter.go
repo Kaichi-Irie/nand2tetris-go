@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
 )
 
 type CodeWriter struct {
@@ -11,15 +12,15 @@ type CodeWriter struct {
 	fileNameStem string
 }
 
-func NewCodeWriter(fileName string) *CodeWriter {
-	if extension := fileName[len(fileName)-3:]; extension != ".vm" {
+func NewCodeWriter(vmFilePath string) *CodeWriter {
+	if filepath.Ext(vmFilePath) != ".vm" {
 		panic("invalid file extension")
 	}
-	fileNameStem := fileName[:len(fileName)-3]
-	file, err := os.Create(fileNameStem + ".asm")
+	file, err := os.Create(vmFilePath[:len(vmFilePath)-2] + "asm")
 	if err != nil {
 		panic(err)
 	}
+	fileNameStem := vmFilePath[:len(vmFilePath)-3]
 	return &CodeWriter{file, fileNameStem}
 }
 

@@ -4,23 +4,24 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"path/filepath"
 )
 
 func VMTranslator() error {
 	fmt.Println("VMTranslator")
 
-	fileName := os.Args[1]
-	if fileName[len(fileName)-3:] != ".vm" {
+	vmFilePath := os.Args[1]
+	if filepath.Ext(vmFilePath) != ".vm" {
 		return errors.New("invalid file extension")
 	}
-	file, err := os.Open(fileName)
+	file, err := os.Open(vmFilePath)
 	if err != nil {
 		return err
 	}
 	defer file.Close()
 
 	parser := NewParser(file, "//")
-	codeWriter := NewCodeWriter(fileName)
+	codeWriter := NewCodeWriter(vmFilePath)
 	defer codeWriter.Close()
 
 	for parser.advance() {
