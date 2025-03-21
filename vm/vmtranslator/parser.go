@@ -35,11 +35,14 @@ const (
 	C_CALL
 )
 
+// TODO: integrate this code into the hack assembler project
+// CodeScanner is a struct that reads a file line by line and skips empty lines and comments
 type CodeScanner struct {
 	scanner       *bufio.Scanner
-	commentPrefix string
+	commentPrefix string // the prefix that indicates a comment. Example: "//"
 }
 
+// NewCodeScanner creates a new CodeScanner with the given reader and comment prefix
 func NewCodeScanner(r io.Reader, commentPrefix string) CodeScanner {
 	return CodeScanner{scanner: bufio.NewScanner(r), commentPrefix: commentPrefix}
 }
@@ -54,10 +57,6 @@ func NewParser(r io.Reader, commentPrefix string) Parser {
 	cs := NewCodeScanner(r, commentPrefix)
 	return Parser{scanner: cs}
 }
-
-// advance reads the next instruction from the input and makes it the current instruction
-// It returns false if there are no more instructions
-// advance ignores empty lines and comments
 
 func (cs CodeScanner) isEmptyLine(line string) bool {
 	return len(line) == 0
@@ -114,6 +113,11 @@ func getCommandType(command VMCommand) VMCommandType {
 	}
 }
 
+/*
+advance reads the next instruction from the input and makes it the current instruction.
+It returns false if there are no more instructions.
+advance ignores empty lines and comments.
+*/
 func (p *Parser) advance() bool {
 	ok := p.scanner.scan()
 	if !ok {
@@ -126,9 +130,11 @@ func (p *Parser) advance() bool {
 	return true
 }
 
-// arg1 returns the first argument of the current instruction.
-// It returns the command itself if it is an arithmetic command.
-// It panics if the command is a return command.
+/*
+arg1 returns the first argument of the current instruction.
+It returns the command itself if it is an arithmetic command.
+It panics if the command is a return command.
+*/
 func arg1(command VMCommand) string {
 	words := strings.Fields(string(command))
 	switch ctype := getCommandType(command); ctype {

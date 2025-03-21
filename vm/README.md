@@ -23,6 +23,7 @@ Description: `parser.go` は、VM言語のコマンドをパースするため�
 | `NewParser(r io.Reader, commentPrefix string) Parser`           |             |                 | 新しい `Parser` 構造体を作成する。                                                                                                                                                              |
 | `NewCodeScanner(r io.Reader, commentPrefix string) CodeScanner` |             |                 | 新しい `CodeScanner` 構造体を作成する。                                                                                                                                                         |
 
+<!-- TODO: CodeWriterのドキュメントを完了する -->
 ## CodeWriter
 Description: `codewriter.go` は、VM言語のコマンドをHackアセンブリ言語に変換するための構造体と関数を提供する。
 
