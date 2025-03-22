@@ -44,6 +44,9 @@ var pop_R13 = pop_D + "@R13\nM=D\n"
 
 func TranslatePushPop(ctype VMCommandType, seg string, idx int, fileName string) (string, error) {
 	var asmcommand string
+	THISorTHAT := map[int]string{
+		0: "THIS", 1: "THAT",
+	}
 	// process the segment
 	// This process is common to both push and pop commands except for the static segment
 	switch seg {
@@ -62,18 +65,7 @@ func TranslatePushPop(ctype VMCommandType, seg string, idx int, fileName string)
 	case "temp":
 		asmcommand = "@5\nD=A\n"
 		asmcommand += fmt.Sprintf("@%d\n", idx)
-	case "pointer":
-		switch idx {
-		case 0:
-			asmcommand = "@THIS\nD=M\n"
-			asmcommand += fmt.Sprintf("@%d\n", idx)
-		case 1:
-			asmcommand = "@THAT\nD=M\n"
-			asmcommand += fmt.Sprintf("@%d\n", idx)
-		default:
-			return "", fmt.Errorf("invalid pointer index %d", idx)
-		}
-	case "static":
+	case "static", "pointer":
 		// do nothing
 		asmcommand = ""
 	case "constant":
@@ -96,6 +88,13 @@ func TranslatePushPop(ctype VMCommandType, seg string, idx int, fileName string)
 		asmcommand += fmt.Sprintf("@%s.%d\nD=M\n", fileName, idx)
 		// RAM[SP]=D, SP++ (push D)
 		asmcommand += push_D
+
+	case ctype == C_PUSH && seg == "pointer":
+		// push the value to the stack
+		// D=RAM[THIS(3) or THAT(4)]
+		asmcommand += fmt.Sprintf("@%s\nD=M\n", THISorTHAT[idx])
+		// RAM[SP]=D, SP++ (push D)
+		asmcommand += push_D
 	case ctype == C_PUSH:
 		// push the value to the stack
 		// D=RAM[segbase+idx]
@@ -110,6 +109,12 @@ func TranslatePushPop(ctype VMCommandType, seg string, idx int, fileName string)
 		asmcommand += pop_D
 		// RAM[fileName.idx]=D
 		asmcommand += fmt.Sprintf("@%s.%d\nM=D\n", fileName, idx)
+	case ctype == C_POP && seg == "pointer":
+		// pop the value from the stack
+		// SP--, D=RAM[SP]
+		asmcommand += pop_D
+		// RAM[3]=D
+		asmcommand += fmt.Sprintf("@%s\nM=D\n", THISorTHAT[idx])
 	case ctype == C_POP:
 		// pop the value from the stack
 		// D=segbase+idx, RAM[13]=D
