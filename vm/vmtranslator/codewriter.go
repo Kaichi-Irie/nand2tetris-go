@@ -160,32 +160,6 @@ func TranslateArithmetic(command VMCommand, cnt int) (string, error) {
 	return asmcommand, nil
 }
 
-func (cw *CodeWriter) WritePushPop(ctype VMCommandType, seg string, idx int) error {
-	if ctype != C_PUSH && ctype != C_POP {
-		return fmt.Errorf("invalid command type %d", ctype)
-	}
-
-	// translate the command
-	asmcommand, err := TranslatePushPop(ctype, seg, idx, cw.fileNameStem)
-	if err != nil {
-		return err
-	}
-	_, err = io.WriteString(cw, asmcommand)
-	return err
-}
-func (cw *CodeWriter) WriteArithmetic(command VMCommand) error {
-	if ctype := getCommandType(command); ctype != C_ARITHMETIC {
-		return fmt.Errorf("invalid command. expected C_ARITHMETIC, got %d", ctype)
-	}
-	asmcommand, err := TranslateArithmetic(command, cw.commandCount)
-	cw.commandCount++
-	if err != nil {
-		return err
-	}
-	io.WriteString(cw, asmcommand)
-	return nil
-}
-
 func (cw *CodeWriter) WriteCommand(command VMCommand) error {
 	// output the command as a comment
 	io.WriteString(cw, "// "+string(command)+"\n")
