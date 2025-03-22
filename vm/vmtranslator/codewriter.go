@@ -165,13 +165,24 @@ func TranslateArithmetic(command VMCommand, cnt int) (string, error) {
 	return asmcommand, nil
 }
 
+func TranslateLabel(label string) (string, error) {
+	return fmt.Sprintf("(%s)\n", label), nil
+}
+
+func TranslateGoto(label string) (string, error) {
+	return fmt.Sprintf("@%s\n0;JMP\n", label), nil
+}
+
+func TranslateIf(label string) (string, error) {
+	asmcommand := pop_D
+	asmcommand += fmt.Sprintf("@%s\nD;JNE\n", label)
+	return asmcommand, nil	
+}
+
 // TODO: implemt these.
-func TranslateLabel(label string) (string, error)
-func TranslateGoto(label string) (string, error)
-func TranslateIf(label string) (string, error)
-func TranslateFunction(label string) (string, error)
-func TranslateCall(label string) (string, error)
-func TranslateReturn(label string) (string, error)
+// func TranslateFunction(label string) (string, error)
+// func TranslateCall(label string) (string, error)
+// func TranslateReturn(label string) (string, error)
 
 func (cw *CodeWriter) WriteCommand(command VMCommand) error {
 	// output the command as a comment
@@ -193,13 +204,36 @@ func (cw *CodeWriter) WriteCommand(command VMCommand) error {
 		}
 		_, err = io.WriteString(cw, asmcommand)
 		return err
+	case C_LABEL:
+		asmcommand, err := TranslateLabel(arg1(command))
+		if err != nil {
+			return err
+		}
+		_, err = io.WriteString(cw, asmcommand)
+		return err
+	case C_GOTO:
+		asmcommand, err := TranslateGoto(arg1(command))
+		if err != nil {
+			return err
+		}
+		_, err = io.WriteString(cw, asmcommand)
+		return err
+	case C_IF:
+		asmcommand, err := TranslateIf(arg1(command))
+		if err != nil {
+			return err
+		}
+		_, err = io.WriteString(cw, asmcommand)
+		return err
 	default:
 		return fmt.Errorf("invalid command type %d", ctype)
 	}
 }
 
 func (cw *CodeWriter) WriteInfinityLoop() error {
-	_, err := io.WriteString(cw, "// infinite loop\n(END)\n@END\n0;JMP\n")
+	// TODO: Avoid label name collision
+	label := "INFINITE_LOOP_END"
+	_, err := io.WriteString(cw, fmt.Sprintf("// infinite loop\n(%s)\n@%s\n0;JMP\n", label, label))
 	return err
 }
 

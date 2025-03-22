@@ -83,3 +83,60 @@ func TestTranslateArithmetic(t *testing.T) {
 		}
 	}
 }
+
+func TestTranslateLabel(t *testing.T) {
+	tests := []struct {
+		label string
+		want  string
+	}{
+		{"LOOP", "(LOOP)\n"},
+		{"END", "(END)\n"},
+	}
+	for _, test := range tests {
+		asmcommand, err := TranslateLabel(test.label)
+		if err != nil {
+			t.Errorf("TranslateLabel failed: %v", err)
+		}
+		if asmcommand != test.want {
+			t.Errorf("TranslateLabel(%q) = %q, want %q", test.label, asmcommand, test.want)
+		}
+	}
+}
+
+func TestTranslateGoto(t *testing.T) {
+	tests := []struct {
+		label string
+		want  string
+	}{
+		{"LOOP", "@LOOP\n0;JMP\n"},
+		{"END", "@END\n0;JMP\n"},
+	}
+	for _, test := range tests {
+		asmcommand, err := TranslateGoto(test.label)
+		if err != nil {
+			t.Errorf("TranslateGoto failed: %v", err)
+		}
+		if asmcommand != test.want {
+			t.Errorf("TranslateGoto(%q) = %q, want %q", test.label, asmcommand, test.want)
+		}
+	}
+}
+
+func TestTranslateIf(t *testing.T) {
+	tests := []struct {
+		label string
+		want  string
+	}{
+		{"LOOP", "@SP\nM=M-1\nA=M\nD=M\n@LOOP\nD;JNE\n"},
+		{"END", "@SP\nM=M-1\nA=M\nD=M\n@END\nD;JNE\n"},
+	}
+	for _, test := range tests {
+		asmcommand, err := TranslateIf(test.label)
+		if err != nil {
+			t.Errorf("TranslateIf failed: %v", err)
+		}
+		if asmcommand != test.want {
+			t.Errorf("TranslateIf(%q) = %q, want %q", test.label, asmcommand, test.want)
+		}
+	}
+}
