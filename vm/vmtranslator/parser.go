@@ -68,6 +68,8 @@ func (cs CodeScanner) isCommentLine(line string) bool {
 
 func (cs CodeScanner) text() string {
 	text := cs.scanner.Text()
+	//Remove comment at the end of the line
+	text = strings.Split(text, cs.commentPrefix)[0]
 	// remove spaces at the beginning and end of the line
 	// replace multiple spaces with a single space
 	return strings.Join(strings.Fields(text), " ")
