@@ -160,6 +160,14 @@ func TranslateArithmetic(command VMCommand, cnt int) (string, error) {
 	return asmcommand, nil
 }
 
+// TODO: implemt these.
+func TranslateLabel(label string) (string, error)
+func TranslateGoto(label string) (string, error)
+func TranslateIf(label string) (string, error)
+func TranslateFunction(label string) (string, error)
+func TranslateCall(label string) (string, error)
+func TranslateReturn(label string) (string, error)
+
 func (cw *CodeWriter) WriteCommand(command VMCommand) error {
 	// output the command as a comment
 	io.WriteString(cw, "// "+string(command)+"\n")
@@ -189,3 +197,6 @@ func (cw *CodeWriter) WriteInfinityLoop() error {
 	_, err := io.WriteString(cw, "// infinite loop\n(END)\n@END\n0;JMP\n")
 	return err
 }
+
+// TODO: implement bootstrap
+// func (cw *CodeWriter) WriteBootStrap() error
