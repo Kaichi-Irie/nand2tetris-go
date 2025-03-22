@@ -7,18 +7,11 @@ M=D
 @SP
 M=M+1
 // pop pointer 0
-@THIS
-D=M
-@0
-D=D+A
-@R13
-M=D
 @SP
 M=M-1
 A=M
 D=M
-@R13
-A=M
+@THIS
 M=D
 // push constant 3040
 @3040
@@ -29,18 +22,11 @@ M=D
 @SP
 M=M+1
 // pop pointer 1
-@THAT
-D=M
-@1
-D=D+A
-@R13
-M=D
 @SP
 M=M-1
 A=M
 D=M
-@R13
-A=M
+@THAT
 M=D
 // push constant 32
 @32
@@ -89,9 +75,6 @@ M=D
 // push pointer 0
 @THIS
 D=M
-@0
-A=D+A
-D=M
 @SP
 A=M
 M=D
@@ -99,9 +82,6 @@ M=D
 M=M+1
 // push pointer 1
 @THAT
-D=M
-@1
-A=D+A
 D=M
 @SP
 A=M
@@ -185,6 +165,6 @@ M=D
 @SP
 M=M+1
 // infinite loop
-(END)
-@END
+(INFINITE_LOOP_END)
+@INFINITE_LOOP_END
 0;JMP
