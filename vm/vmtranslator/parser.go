@@ -7,20 +7,21 @@ import (
 	"strings"
 )
 
-// VMCommand is a string that represents an instruction
-// Example: "push constant 7", "add", "label LOOP"
+// VMCommand is a string that represents an instruction. Example: "push constant 7", "add", "label LOOP"
 type VMCommand string
 
-// VMCommandType is an enum that represents the type of an instruction.
-// C_ARITHMETIC: add, sub, neg, eq, gt, lt, and, or, not
-// C_PUSH: push segment i
-// C_POP: pop segment i
-// C_LABEL: label label
-// C_GOTO: goto label
-// C_IF: if-goto label
-// C_FUNCTION: function function n
-// C_RETURN: return
-// C_CALL: call function n
+/*
+VMCommandType is an enum that represents the type of an instruction.
+C_ARITHMETIC: add, sub, neg, eq, gt, lt, and, or, not
+C_PUSH: push segment i
+C_POP: pop segment i
+C_LABEL: label label
+C_GOTO: goto label
+C_IF: if-goto label
+C_FUNCTION: function function n
+C_RETURN: return
+C_CALL: call function n
+*/
 type VMCommandType int
 
 const (
@@ -36,7 +37,7 @@ const (
 )
 
 // TODO: integrate this code into the hack assembler project
-// CodeScanner is a struct that reads a file line by line and skips empty lines and comments
+// CodeScanner is a struct that reads a file line by line and skips empty lines and comments. It provides a method to get the current line of the scanner without leading and trailing spaces and comments.
 type CodeScanner struct {
 	scanner       *bufio.Scanner
 	commentPrefix string // the prefix that indicates a comment. Example: "//"
@@ -54,7 +55,7 @@ type Parser struct {
 	currentType    VMCommandType
 }
 
-// NewParser creates a new Parser with the given reader and comment prefix. It uses a CodeScanner to read the file. commentPrefix is the prefix that indicates a comment. Example: "//"
+// NewParser creates a new Parser with the given reader and comment prefix. It uses a [CodeScanner] to read the file. commentPrefix is the prefix that indicates a comment. Example: "//"
 func NewParser(r io.Reader, commentPrefix string) Parser {
 	cs := NewCodeScanner(r, commentPrefix)
 	return Parser{scanner: cs}
@@ -152,7 +153,7 @@ func arg1(command VMCommand) string {
 
 }
 
-// arg2 returns the second argument of the current instruction. It panics if the command has no second argument.
+// arg2 returns the second argument of the current instruction. This is valid only for push, pop, function, and call commands.
 func arg2(command VMCommand) int {
 	words := strings.Fields(string(command))
 	switch ctype := getCommandType(command); ctype {
