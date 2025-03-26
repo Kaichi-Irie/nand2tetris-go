@@ -275,9 +275,6 @@ func resolveLabel(functionName string, labelBase string) string {
 
 // WriteCommand writes the assembly code for the given VM command to the output file. It returns an error if the command is invalid. It also updates the internal state of the CodeWriter, which is used for generating unique labels.
 func (cw *CodeWriter) WriteCommand(gotoCommand VMCommand) error {
-	if cw.vmFileStem == "" {
-		return fmt.Errorf("fileNameStem is not set")
-	}
 	// output the command as a comment
 	io.WriteString(cw, "// "+string(gotoCommand)+"\n")
 	ctype := getCommandType(gotoCommand)
@@ -288,6 +285,9 @@ func (cw *CodeWriter) WriteCommand(gotoCommand VMCommand) error {
 		asmcommand, err = TranslateArithmetic(gotoCommand, cw.commandCount)
 		cw.commandCount++
 	case C_PUSH, C_POP:
+		if cw.vmFileStem == "" {
+			return fmt.Errorf("fileNameStem is not set")
+		}
 		asmcommand, err = TranslatePushPop(ctype, arg1(gotoCommand), arg2(gotoCommand), cw.vmFileStem)
 	case C_LABEL:
 		label := resolveLabel(cw.functionName, arg1(gotoCommand))
@@ -329,5 +329,17 @@ func (cw *CodeWriter) WriteInfinityLoop() error {
 	return err
 }
 
-// TODO: implement bootstrap
-// func (cw *CodeWriter) WriteBootStrap() error
+// WriteBootStrap writes the bootstrap code to the output file. It initializes the stack pointer and calls Sys.init.
+func (cw *CodeWriter) WriteBootStrap() error {
+	_, err := io.WriteString(cw, "// bootstrap code\n")
+	if err != nil {
+		return err
+	}
+	// SP=256
+	_, err = io.WriteString(cw, "@256\nD=A\n@SP\nM=D\n")
+	if err != nil {
+		return err
+	}
+	cw.vmFileStem = "Sys"
+	return cw.WriteCommand("call Sys.init 0")
+}

@@ -34,6 +34,13 @@ func VMTranslator(path string) error {
 
 	codeWriter := NewCodeWriter(asmFilePath)
 	defer codeWriter.Close()
+	if info.IsDir() {
+		// If the input is a directory, write the bootstrap code at the beginning of the .asm file. The bootstrap code initializes the stack pointer to 256 and calls Sys.init.
+		err := codeWriter.WriteBootStrap()
+		if err != nil {
+			panic(err)
+		}
+	}
 
 	for _, vmFilePath := range vmFilePaths {
 		vmFile, err := os.Open(vmFilePath)
@@ -54,8 +61,10 @@ func VMTranslator(path string) error {
 		}
 	}
 
-	// write infinite loop at the end of the file
-	codeWriter.WriteInfinityLoop()
+	// If the input is a file, write an infinite loop at the end of the .asm file
+	if !info.IsDir() {
+		codeWriter.WriteInfinityLoop()
+	}
 
 	fmt.Println("done")
 	return nil
