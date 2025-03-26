@@ -1,0 +1,40 @@
+name: generate-godoc-deploy-gh-pages
+
+on:
+  push:
+    branches:
+      - 'main'
+jobs:
+  generate-godoc-deploy-gh-pages:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 1.18
+      - name: Set git config
+        run: |
+          git config --global user.name github-actions[bot]
+          git config --global user.email 41898282+github-actions[bot]@users.noreply.github.com
+      - name: Generate godoc
+        run: |
+          git fetch origin
+          git switch gh-pages || git switch -c gh-pages
+          git merge main
+          rm -rf localhost:8888 docs
+          go install golang.org/x/tools/cmd/godoc@latest
+          $(go env GOPATH)/bin/godoc -http=localhost:8888 & \
+          sleep 30
+          wget -r -np -nv -N -E -p -k -e robots=off --reject-regex="png" "http://localhost:8888/pkg/github.com/Kaichi-Irie/nand2tetris-go/"
+          pkill godoc
+          mv localhost:8888/ docs/
+      - name: Push docs to gh-pages
+        run: |
+          git add docs \
+          && git diff --cached --quiet \
+          || (git commit -m "docs: godoc を更新" && git push origin gh-pages)
