@@ -11,6 +11,8 @@ type CodeWriter struct {
 	file         io.WriteCloser
 	vmFileStem   string // the base name of the .vm file without the .vm extension. e.g. "SimpleAdd"
 	commandCount int    // for generating unique labels
+	functionName string // for generating unique return labels
+	// returnCount  map[string]int // for generating unique return labels
 }
 
 // NewCodeWriter creates a new asm file with the given path and returns a CodeWriter. CodeWriter.FileNameStem is set to "", so it must be set before calling WriteCommand.
@@ -22,7 +24,9 @@ func NewCodeWriter(asmFilePath string) *CodeWriter {
 	if err != nil {
 		panic(err)
 	}
-	return &CodeWriter{asmFile, "", 0}
+	return &CodeWriter{
+		file: asmFile,
+	}
 }
 
 func (cw *CodeWriter) Write(b []byte) (int, error) {
@@ -180,9 +184,47 @@ func TranslateIf(label string) (string, error) {
 }
 
 // TODO: implemt these.
-// func TranslateFunction(label string) (string, error)
+func TranslateFunction(functionName string, nVars int) (string, error) {
+	if nVars < 0 {
+		return "", fmt.Errorf("nVars must be non-negative")
+	}
+	asmcommand, err := TranslateLabel(functionName)
+	if err != nil {
+		return "", err
+	}
+	for i := range nVars {
+		command1, err := TranslatePushPop(C_PUSH, "constant", 0, "")
+		if err != nil {
+			return "", err
+		}
+		command2, err := TranslatePushPop(C_POP, "local", i, "")
+		if err != nil {
+			return "", err
+		}
+		command3, err := TranslatePushPop(C_PUSH, "local", i, "")
+		if err != nil {
+			return "", err
+		}
+		asmcommand += command1 + command2 + command3
+	}
+	return asmcommand, nil
+}
+
 // func TranslateCall(label string) (string, error)
-// func TranslateReturn(label string) (string, error)
+func TranslateReturn() (string, error) {
+	asmcommand := "@LCL\nD=M\n@R14\nM=D\n"                 // R14=FRAME=LCL
+	asmcommand += "@R14\nD=M\n@5\nA=D-A\nD=M\n@R15\nM=D\n" // R15=RET=*(FRAME-5)
+	asmcommand += pop_D                                    // pop return value to D
+	asmcommand += "@ARG\nA=M\nM=D\n"                       // *ARG=pop()
+	asmcommand += "@ARG\nD=M+1\n@SP\nM=D\n"                // SP=ARG+1
+	// restore THAT, THIS, ARG, LCL
+	asmcommand += "@R14\nD=M\n@1\nA=D-A\nD=M\n@THAT\nM=D\n"
+	asmcommand += "@R14\nD=M\n@2\nA=D-A\nD=M\n@THIS\nM=D\n"
+	asmcommand += "@R14\nD=M\n@3\nA=D-A\nD=M\n@ARG\nM=D\n"
+	asmcommand += "@R14\nD=M\n@4\nA=D-A\nD=M\n@LCL\nM=D\n"
+	asmcommand += "@R15\nA=M\n0;JMP\n" // goto RET
+	return asmcommand, nil
+}
 
 func (cw *CodeWriter) WriteCommand(command VMCommand) error {
 	if cw.vmFileStem == "" {
@@ -208,21 +250,57 @@ func (cw *CodeWriter) WriteCommand(command VMCommand) error {
 		_, err = io.WriteString(cw, asmcommand)
 		return err
 	case C_LABEL:
-		asmcommand, err := TranslateLabel(arg1(command))
+		var label string
+		if cw.functionName == "" {
+			label = arg1(command)
+		} else {
+			label = cw.functionName + "$" + arg1(command)
+		}
+		asmcommand, err := TranslateLabel(label)
 		if err != nil {
 			return err
 		}
 		_, err = io.WriteString(cw, asmcommand)
 		return err
 	case C_GOTO:
-		asmcommand, err := TranslateGoto(arg1(command))
+		var label string
+		if cw.functionName == "" {
+			label = arg1(command)
+		} else {
+			label = cw.functionName + "$" + arg1(command)
+		}
+		asmcommand, err := TranslateGoto(label)
 		if err != nil {
 			return err
 		}
 		_, err = io.WriteString(cw, asmcommand)
 		return err
 	case C_IF:
-		asmcommand, err := TranslateIf(arg1(command))
+		var label string
+		if cw.functionName == "" {
+			label = arg1(command)
+		} else {
+			label = cw.functionName + "$" + arg1(command)
+		}
+		asmcommand, err := TranslateIf(label)
+		if err != nil {
+			return err
+		}
+		_, err = io.WriteString(cw, asmcommand)
+		return err
+	case C_FUNCTION:
+		asmcommand, err := TranslateFunction(arg1(command), arg2(command))
+		if err != nil {
+			return err
+		}
+		_, err = io.WriteString(cw, asmcommand)
+		if err != nil {
+			return err
+		}
+		cw.functionName = arg1(command)
+		return nil
+	case C_RETURN:
+		asmcommand, err := TranslateReturn()
 		if err != nil {
 			return err
 		}

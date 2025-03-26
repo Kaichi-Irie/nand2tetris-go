@@ -76,6 +76,7 @@ func TestVMTranslation(t *testing.T) {
 		{"../vm_files/StaticTest.vm", "../vm_files/StaticTest.asm"},
 		{"../vm_files/FibonacciSeries.vm", "../vm_files/FibonacciSeries.asm"},
 		{"../vm_files/PointerTest.vm", "../vm_files/PointerTest.asm"},
+		{"../vm_files/SimpleFunction.vm", "../vm_files/SimpleFunction.asm"},
 	}
 	for _, test := range tests {
 		err := singleTest(test.vmFilePath, test.asmFilePath)
