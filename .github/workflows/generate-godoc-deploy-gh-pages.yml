@@ -30,7 +30,7 @@ jobs:
           go install golang.org/x/tools/cmd/godoc@latest
           $(go env GOPATH)/bin/godoc -http=localhost:8888 & \
           sleep 30
-          wget -r -np -nv -N -E -p -k -e robots=off --reject-regex="png" "http://localhost:8888/pkg/github.com/Kaichi-Irie/nand2tetris-go/"
+          wget -r -np -nv -N -E -p -k -e robots=off --reject-regex="png" "http://localhost:8888/src/github.com/Kaichi-Irie/nand2tetris-go/"
           pkill godoc
           mv localhost:8888/ docs/
       - name: Push docs to gh-pages
