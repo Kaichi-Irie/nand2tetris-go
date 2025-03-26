@@ -9,20 +9,20 @@ import (
 
 type CodeWriter struct {
 	file         io.WriteCloser
-	fileNameStem string
-	commandCount int // for generating unique labels
+	vmFileStem   string // the base name of the .vm file without the .vm extension. e.g. "SimpleAdd"
+	commandCount int    // for generating unique labels
 }
 
-func NewCodeWriter(vmFilePath string) *CodeWriter {
-	if filepath.Ext(vmFilePath) != ".vm" {
+// NewCodeWriter creates a new asm file with the given path and returns a CodeWriter. CodeWriter.FileNameStem is set to "", so it must be set before calling WriteCommand.
+func NewCodeWriter(asmFilePath string) *CodeWriter {
+	if filepath.Ext(asmFilePath) != ".asm" {
 		panic("invalid file extension")
 	}
-	file, err := os.Create(vmFilePath[:len(vmFilePath)-2] + "asm")
+	asmFile, err := os.Create(asmFilePath)
 	if err != nil {
 		panic(err)
 	}
-	fileNameStem := vmFilePath[:len(vmFilePath)-3]
-	return &CodeWriter{file, fileNameStem, 0}
+	return &CodeWriter{asmFile, "", 0}
 }
 
 func (cw *CodeWriter) Write(b []byte) (int, error) {
@@ -176,7 +176,7 @@ func TranslateGoto(label string) (string, error) {
 func TranslateIf(label string) (string, error) {
 	asmcommand := pop_D
 	asmcommand += fmt.Sprintf("@%s\nD;JNE\n", label)
-	return asmcommand, nil	
+	return asmcommand, nil
 }
 
 // TODO: implemt these.
@@ -185,6 +185,9 @@ func TranslateIf(label string) (string, error) {
 // func TranslateReturn(label string) (string, error)
 
 func (cw *CodeWriter) WriteCommand(command VMCommand) error {
+	if cw.vmFileStem == "" {
+		return fmt.Errorf("fileNameStem is not set")
+	}
 	// output the command as a comment
 	io.WriteString(cw, "// "+string(command)+"\n")
 	ctype := getCommandType(command)
@@ -198,7 +201,7 @@ func (cw *CodeWriter) WriteCommand(command VMCommand) error {
 		_, err = io.WriteString(cw, asmcommand)
 		return err
 	case C_PUSH, C_POP:
-		asmcommand, err := TranslatePushPop(ctype, arg1(command), arg2(command), cw.fileNameStem)
+		asmcommand, err := TranslatePushPop(ctype, arg1(command), arg2(command), cw.vmFileStem)
 		if err != nil {
 			return err
 		}

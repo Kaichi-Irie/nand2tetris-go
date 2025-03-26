@@ -1,33 +1,56 @@
 package vmtranslator
 
 import (
-	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
 )
 
-func VMTranslator() error {
+// VMTranslator translates VM code to Hack assembly code. The input can be a .vm file or a directory containing .vm files. The output is a .asm file with the same name as the input file or directory.
+func VMTranslator(path string) error {
+	// path can be a .vm file or a directory containing .vm files
 	fmt.Println("VMTranslator")
-
-	vmFilePath := os.Args[1]
-	if filepath.Ext(vmFilePath) != ".vm" {
-		return errors.New("invalid file extension")
-	}
-	file, err := os.Open(vmFilePath)
+	info, err := os.Stat(path)
 	if err != nil {
-		return err
+		panic(err)
 	}
-	defer file.Close()
 
-	parser := NewParser(file, "//")
-	codeWriter := NewCodeWriter(vmFilePath)
+	var asmFilePath string
+	var vmFilePaths []string
+
+	if info.IsDir() {
+		dirName := filepath.Base(path)
+		asmFilePath = filepath.Join(path, dirName+".asm")
+		vmFilePaths, err = filepath.Glob(filepath.Join(path, "*.vm"))
+		if err != nil {
+			panic(err)
+		}
+	} else if filepath.Ext(path) == ".vm" {
+		asmFilePath = path[:len(path)-3] + ".asm"
+		vmFilePaths = []string{path}
+	} else {
+		return fmt.Errorf("input file must be a .vm file or a directory")
+	}
+
+	codeWriter := NewCodeWriter(asmFilePath)
 	defer codeWriter.Close()
 
-	for parser.advance() {
-		err := codeWriter.WriteCommand(parser.currentCommand)
+	for _, vmFilePath := range vmFilePaths {
+		vmFile, err := os.Open(vmFilePath)
 		if err != nil {
 			return err
+		}
+		defer vmFile.Close()
+
+		// vmFileBase is the base name of the .vm file with the .vm extension. e.g. "SimpleAdd.vm"
+		vmFileBase := filepath.Base(vmFilePath)
+		codeWriter.vmFileStem = vmFileBase[:len(vmFileBase)-3]
+		parser := NewParser(vmFile, "//")
+		for parser.advance() {
+			err := codeWriter.WriteCommand(parser.currentCommand)
+			if err != nil {
+				return err
+			}
 		}
 	}
 
