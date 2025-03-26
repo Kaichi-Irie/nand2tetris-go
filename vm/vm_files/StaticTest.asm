@@ -27,24 +27,24 @@ M=M+1
 M=M-1
 A=M
 D=M
-@./vm/vm_files/StaticTest.8
+@StaticTest.8
 M=D
 // pop static 3
 @SP
 M=M-1
 A=M
 D=M
-@./vm/vm_files/StaticTest.3
+@StaticTest.3
 M=D
 // pop static 1
 @SP
 M=M-1
 A=M
 D=M
-@./vm/vm_files/StaticTest.1
+@StaticTest.1
 M=D
 // push static 3
-@./vm/vm_files/StaticTest.3
+@StaticTest.3
 D=M
 @SP
 A=M
@@ -52,7 +52,7 @@ M=D
 @SP
 M=M+1
 // push static 1
-@./vm/vm_files/StaticTest.1
+@StaticTest.1
 D=M
 @SP
 A=M
@@ -78,7 +78,7 @@ M=D
 @SP
 M=M+1
 // push static 8
-@./vm/vm_files/StaticTest.8
+@StaticTest.8
 D=M
 @SP
 A=M
@@ -104,6 +104,6 @@ M=D
 @SP
 M=M+1
 // infinite loop
-(END)
-@END
+(INFINITE_LOOP_END)
+@INFINITE_LOOP_END
 0;JMP

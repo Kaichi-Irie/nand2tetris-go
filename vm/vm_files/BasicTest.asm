@@ -309,6 +309,6 @@ M=D
 @SP
 M=M+1
 // infinite loop
-(END)
-@END
+(INFINITE_LOOP_END)
+@INFINITE_LOOP_END
 0;JMP
