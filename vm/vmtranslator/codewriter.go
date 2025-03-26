@@ -9,10 +9,10 @@ import (
 
 type CodeWriter struct {
 	file         io.WriteCloser
-	vmFileStem   string // the base name of the .vm file without the .vm extension. e.g. "SimpleAdd"
-	commandCount int    // for generating unique labels
-	functionName string // for generating unique return labels
-	// returnCount  map[string]int // for generating unique return labels
+	vmFileStem   string         // the base name of the .vm file without the .vm extension. e.g. "SimpleAdd"
+	commandCount int            // for generating unique labels
+	functionName string         // for generating unique return labels
+	returnCount  map[string]int // for generating unique return labels
 }
 
 // NewCodeWriter creates a new asm file with the given path and returns a CodeWriter. CodeWriter.FileNameStem is set to "", so it must be set before calling WriteCommand.
@@ -25,7 +25,8 @@ func NewCodeWriter(asmFilePath string) *CodeWriter {
 		panic(err)
 	}
 	return &CodeWriter{
-		file: asmFile,
+		file:        asmFile,
+		returnCount: make(map[string]int),
 	}
 }
 
@@ -210,7 +211,36 @@ func TranslateFunction(functionName string, nVars int) (string, error) {
 	return asmcommand, nil
 }
 
-// func TranslateCall(label string) (string, error)
+// TranslateCall generates the assembly code for calling a function. functionName is the name of the function, nArgs is the number of arguments, and cnt is a counter for generating unique return labels.
+func TranslateCall(functionName string, nArgs int, cnt int) (string, error) {
+	// push return address
+	returnAddress := fmt.Sprintf("%s$%d", functionName, cnt)
+	asmcommand := fmt.Sprintf("@%s\nD=A\n", returnAddress)
+	asmcommand += push_D
+	// push LCL, ARG, THIS, THAT
+	for _, seg := range []string{"LCL", "ARG", "THIS", "THAT"} {
+		asmcommand += fmt.Sprintf("@%s\nD=M\n", seg)
+		asmcommand += push_D
+	}
+	// ARG=SP-nArgs-5
+	asmcommand += fmt.Sprintf("@5\nD=A\n@%d\nD=D+A\n@SP\nD=M-D\n@ARG\nM=D\n", nArgs)
+	// LCL=SP
+	asmcommand += "@SP\nD=M\n@LCL\nM=D\n"
+	// goto functionName
+	gotoCommand, err := TranslateGoto(functionName)
+	if err != nil {
+		return "", err
+	}
+	asmcommand += gotoCommand
+	// (returnAddress)
+	labelCommand, err := TranslateLabel(returnAddress)
+	if err != nil {
+		return "", err
+	}
+	asmcommand += labelCommand
+	return asmcommand, nil
+}
+
 func TranslateReturn() (string, error) {
 	asmcommand := "@LCL\nD=M\n@R14\nM=D\n"                 // R14=FRAME=LCL
 	asmcommand += "@R14\nD=M\n@5\nA=D-A\nD=M\n@R15\nM=D\n" // R15=RET=*(FRAME-5)
@@ -226,16 +256,16 @@ func TranslateReturn() (string, error) {
 	return asmcommand, nil
 }
 
-func (cw *CodeWriter) WriteCommand(command VMCommand) error {
+func (cw *CodeWriter) WriteCommand(gotoCommand VMCommand) error {
 	if cw.vmFileStem == "" {
 		return fmt.Errorf("fileNameStem is not set")
 	}
 	// output the command as a comment
-	io.WriteString(cw, "// "+string(command)+"\n")
-	ctype := getCommandType(command)
+	io.WriteString(cw, "// "+string(gotoCommand)+"\n")
+	ctype := getCommandType(gotoCommand)
 	switch ctype {
 	case C_ARITHMETIC:
-		asmcommand, err := TranslateArithmetic(command, cw.commandCount)
+		asmcommand, err := TranslateArithmetic(gotoCommand, cw.commandCount)
 		if err != nil {
 			return err
 		}
@@ -243,7 +273,7 @@ func (cw *CodeWriter) WriteCommand(command VMCommand) error {
 		_, err = io.WriteString(cw, asmcommand)
 		return err
 	case C_PUSH, C_POP:
-		asmcommand, err := TranslatePushPop(ctype, arg1(command), arg2(command), cw.vmFileStem)
+		asmcommand, err := TranslatePushPop(ctype, arg1(gotoCommand), arg2(gotoCommand), cw.vmFileStem)
 		if err != nil {
 			return err
 		}
@@ -252,9 +282,9 @@ func (cw *CodeWriter) WriteCommand(command VMCommand) error {
 	case C_LABEL:
 		var label string
 		if cw.functionName == "" {
-			label = arg1(command)
+			label = arg1(gotoCommand)
 		} else {
-			label = cw.functionName + "$" + arg1(command)
+			label = cw.functionName + "$" + arg1(gotoCommand)
 		}
 		asmcommand, err := TranslateLabel(label)
 		if err != nil {
@@ -265,9 +295,9 @@ func (cw *CodeWriter) WriteCommand(command VMCommand) error {
 	case C_GOTO:
 		var label string
 		if cw.functionName == "" {
-			label = arg1(command)
+			label = arg1(gotoCommand)
 		} else {
-			label = cw.functionName + "$" + arg1(command)
+			label = cw.functionName + "$" + arg1(gotoCommand)
 		}
 		asmcommand, err := TranslateGoto(label)
 		if err != nil {
@@ -278,9 +308,9 @@ func (cw *CodeWriter) WriteCommand(command VMCommand) error {
 	case C_IF:
 		var label string
 		if cw.functionName == "" {
-			label = arg1(command)
+			label = arg1(gotoCommand)
 		} else {
-			label = cw.functionName + "$" + arg1(command)
+			label = cw.functionName + "$" + arg1(gotoCommand)
 		}
 		asmcommand, err := TranslateIf(label)
 		if err != nil {
@@ -289,7 +319,7 @@ func (cw *CodeWriter) WriteCommand(command VMCommand) error {
 		_, err = io.WriteString(cw, asmcommand)
 		return err
 	case C_FUNCTION:
-		asmcommand, err := TranslateFunction(arg1(command), arg2(command))
+		asmcommand, err := TranslateFunction(arg1(gotoCommand), arg2(gotoCommand))
 		if err != nil {
 			return err
 		}
@@ -297,8 +327,21 @@ func (cw *CodeWriter) WriteCommand(command VMCommand) error {
 		if err != nil {
 			return err
 		}
-		cw.functionName = arg1(command)
+		cw.functionName = arg1(gotoCommand)
 		return nil
+	case C_CALL:
+		cnt, ok := cw.returnCount[arg1(gotoCommand)]
+		if !ok {
+			cnt = 0
+			cw.returnCount[arg1(gotoCommand)] = 0
+		}
+		asmcommand, err := TranslateCall(arg1(gotoCommand), arg2(gotoCommand), cnt)
+		if err != nil {
+			return err
+		}
+		_, err = io.WriteString(cw, asmcommand)
+		cw.returnCount[arg1(gotoCommand)]++
+		return err
 	case C_RETURN:
 		asmcommand, err := TranslateReturn()
 		if err != nil {

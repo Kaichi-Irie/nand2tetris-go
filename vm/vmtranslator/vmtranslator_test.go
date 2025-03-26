@@ -42,9 +42,9 @@ func singleTest(vmFilePath string, asmFilePath string) error {
 	buf := &bytes.Buffer{}
 	mwc := &MyWriteCloser{buf}
 	cw := &CodeWriter{
-		file:         mwc,
-		vmFileStem:   filepath.Base(vmFilePath)[:len(filepath.Base(vmFilePath))-3],
-		commandCount: 0,
+		file:        mwc,
+		vmFileStem:  filepath.Base(vmFilePath)[:len(filepath.Base(vmFilePath))-3],
+		returnCount: make(map[string]int),
 	}
 
 	parser := NewParser(vmFile, "//")
@@ -77,6 +77,7 @@ func TestVMTranslation(t *testing.T) {
 		{"../vm_files/FibonacciSeries.vm", "../vm_files/FibonacciSeries.asm"},
 		{"../vm_files/PointerTest.vm", "../vm_files/PointerTest.asm"},
 		{"../vm_files/SimpleFunction.vm", "../vm_files/SimpleFunction.asm"},
+		{"../vm_files/NestedCall/Sys.vm", "../vm_files/NestedCall/Sys.asm"},
 	}
 	for _, test := range tests {
 		err := singleTest(test.vmFilePath, test.asmFilePath)
