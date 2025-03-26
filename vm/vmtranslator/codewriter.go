@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 )
 
+// CodeWriter translates VM commands to Hack assembly code and writes the code to an output file.
 type CodeWriter struct {
 	file         io.WriteCloser
 	vmFileStem   string         // the base name of the .vm file without the .vm extension. e.g. "SimpleAdd"
@@ -30,10 +31,12 @@ func NewCodeWriter(asmFilePath string) *CodeWriter {
 	}
 }
 
+// Write writes the given bytes to the output file.
 func (cw *CodeWriter) Write(b []byte) (int, error) {
 	return cw.file.Write(b)
 }
 
+// Close closes the output file.
 func (cw *CodeWriter) Close() error {
 	return cw.file.Close()
 }
@@ -47,6 +50,7 @@ var pop_D = "@SP\nM=M-1\nA=M\nD=M\n"
 // pop the value from the stack to RAM[13]; SP--, RAM[13]=RAM[SP]
 var pop_R13 = pop_D + "@R13\nM=D\n"
 
+// TranslatePushPop generates the assembly code for VMcommand "push segment index" or "pop segment index". fileName is the name of the .vm file. It returns an error if the segment is invalid.
 func TranslatePushPop(ctype VMCommandType, seg string, idx int, fileName string) (string, error) {
 	var asmcommand string
 	THISorTHAT := map[int]string{
@@ -135,6 +139,7 @@ func TranslatePushPop(ctype VMCommandType, seg string, idx int, fileName string)
 	return asmcommand, nil
 }
 
+// TranslateArithmetic generates the assembly code for VMcommand "add", "sub", "and", "or", "neg", "not", "eq", "gt", or "lt". cnt is a counter for generating unique labels and used for eq, gt, and lt commands.
 func TranslateArithmetic(command VMCommand, cnt int) (string, error) {
 	asmcommand := ""
 	op := map[VMCommand]string{
@@ -170,21 +175,24 @@ func TranslateArithmetic(command VMCommand, cnt int) (string, error) {
 	return asmcommand, nil
 }
 
+// TranslateLabel generates the assembly code for VMcommand "label label". label is the label name.
 func TranslateLabel(label string) (string, error) {
 	return fmt.Sprintf("(%s)\n", label), nil
 }
 
+// TranslateGoto generates the assembly code for VMcommand "goto label". label is the label to jump to.
 func TranslateGoto(label string) (string, error) {
 	return fmt.Sprintf("@%s\n0;JMP\n", label), nil
 }
 
+// TranslateIf generates the assembly code for VMcommand "if-goto label". label is the label to jump to if the top of the stack is not zero.
 func TranslateIf(label string) (string, error) {
 	asmcommand := pop_D
 	asmcommand += fmt.Sprintf("@%s\nD;JNE\n", label)
 	return asmcommand, nil
 }
 
-// TODO: implemt these.
+// TranslateFunction generates the assembly code for VMcommand "function functionName nVars". functionName is the name of the function, and nVars is the number of local variables.
 func TranslateFunction(functionName string, nVars int) (string, error) {
 	if nVars < 0 {
 		return "", fmt.Errorf("nVars must be non-negative")
@@ -211,7 +219,7 @@ func TranslateFunction(functionName string, nVars int) (string, error) {
 	return asmcommand, nil
 }
 
-// TranslateCall generates the assembly code for calling a function. functionName is the name of the function, nArgs is the number of arguments, and cnt is a counter for generating unique return labels.
+// TranslateCall generates the assembly code for VMcommand "call functionName nArgs". functionName is the name of the function, nArgs is the number of arguments, and cnt is a counter for generating unique return labels.
 func TranslateCall(functionName string, nArgs int, cnt int) (string, error) {
 	// push return address
 	returnAddress := fmt.Sprintf("%s$%d", functionName, cnt)
@@ -241,6 +249,7 @@ func TranslateCall(functionName string, nArgs int, cnt int) (string, error) {
 	return asmcommand, nil
 }
 
+// TranslateReturn generates the assembly code for VMcommand "return".
 func TranslateReturn() (string, error) {
 	asmcommand := "@LCL\nD=M\n@R14\nM=D\n"                 // R14=FRAME=LCL
 	asmcommand += "@R14\nD=M\n@5\nA=D-A\nD=M\n@R15\nM=D\n" // R15=RET=*(FRAME-5)
@@ -256,6 +265,15 @@ func TranslateReturn() (string, error) {
 	return asmcommand, nil
 }
 
+// resolveLabel resolves the label name for a function and a label base. If functionName is empty, it returns labelBase. Otherwise, it returns functionName$labelBase.
+func resolveLabel(functionName string, labelBase string) string {
+	if functionName == "" {
+		return labelBase
+	}
+	return functionName + "$" + labelBase
+}
+
+// WriteCommand writes the assembly code for the given VM command to the output file. It returns an error if the command is invalid. It also updates the internal state of the CodeWriter, which is used for generating unique labels.
 func (cw *CodeWriter) WriteCommand(gotoCommand VMCommand) error {
 	if cw.vmFileStem == "" {
 		return fmt.Errorf("fileNameStem is not set")
@@ -263,97 +281,47 @@ func (cw *CodeWriter) WriteCommand(gotoCommand VMCommand) error {
 	// output the command as a comment
 	io.WriteString(cw, "// "+string(gotoCommand)+"\n")
 	ctype := getCommandType(gotoCommand)
+	var asmcommand string
+	var err error
 	switch ctype {
 	case C_ARITHMETIC:
-		asmcommand, err := TranslateArithmetic(gotoCommand, cw.commandCount)
-		if err != nil {
-			return err
-		}
+		asmcommand, err = TranslateArithmetic(gotoCommand, cw.commandCount)
 		cw.commandCount++
-		_, err = io.WriteString(cw, asmcommand)
-		return err
 	case C_PUSH, C_POP:
-		asmcommand, err := TranslatePushPop(ctype, arg1(gotoCommand), arg2(gotoCommand), cw.vmFileStem)
-		if err != nil {
-			return err
-		}
-		_, err = io.WriteString(cw, asmcommand)
-		return err
+		asmcommand, err = TranslatePushPop(ctype, arg1(gotoCommand), arg2(gotoCommand), cw.vmFileStem)
 	case C_LABEL:
-		var label string
-		if cw.functionName == "" {
-			label = arg1(gotoCommand)
-		} else {
-			label = cw.functionName + "$" + arg1(gotoCommand)
-		}
-		asmcommand, err := TranslateLabel(label)
-		if err != nil {
-			return err
-		}
-		_, err = io.WriteString(cw, asmcommand)
-		return err
+		label := resolveLabel(cw.functionName, arg1(gotoCommand))
+		asmcommand, err = TranslateLabel(label)
 	case C_GOTO:
-		var label string
-		if cw.functionName == "" {
-			label = arg1(gotoCommand)
-		} else {
-			label = cw.functionName + "$" + arg1(gotoCommand)
-		}
-		asmcommand, err := TranslateGoto(label)
-		if err != nil {
-			return err
-		}
-		_, err = io.WriteString(cw, asmcommand)
-		return err
+		label := resolveLabel(cw.functionName, arg1(gotoCommand))
+		asmcommand, err = TranslateGoto(label)
 	case C_IF:
-		var label string
-		if cw.functionName == "" {
-			label = arg1(gotoCommand)
-		} else {
-			label = cw.functionName + "$" + arg1(gotoCommand)
-		}
-		asmcommand, err := TranslateIf(label)
-		if err != nil {
-			return err
-		}
-		_, err = io.WriteString(cw, asmcommand)
-		return err
+		label := resolveLabel(cw.functionName, arg1(gotoCommand))
+		asmcommand, err = TranslateIf(label)
 	case C_FUNCTION:
-		asmcommand, err := TranslateFunction(arg1(gotoCommand), arg2(gotoCommand))
-		if err != nil {
-			return err
-		}
-		_, err = io.WriteString(cw, asmcommand)
-		if err != nil {
-			return err
-		}
+		asmcommand, err = TranslateFunction(arg1(gotoCommand), arg2(gotoCommand))
 		cw.functionName = arg1(gotoCommand)
-		return nil
 	case C_CALL:
 		cnt, ok := cw.returnCount[arg1(gotoCommand)]
 		if !ok {
 			cnt = 0
 			cw.returnCount[arg1(gotoCommand)] = 0
 		}
-		asmcommand, err := TranslateCall(arg1(gotoCommand), arg2(gotoCommand), cnt)
-		if err != nil {
-			return err
-		}
-		_, err = io.WriteString(cw, asmcommand)
+		asmcommand, err = TranslateCall(arg1(gotoCommand), arg2(gotoCommand), cnt)
 		cw.returnCount[arg1(gotoCommand)]++
-		return err
 	case C_RETURN:
-		asmcommand, err := TranslateReturn()
-		if err != nil {
-			return err
-		}
-		_, err = io.WriteString(cw, asmcommand)
-		return err
+		asmcommand, err = TranslateReturn()
 	default:
 		return fmt.Errorf("invalid command type %d", ctype)
 	}
+	if err != nil {
+		return err
+	}
+	_, err = io.WriteString(cw, asmcommand)
+	return err
 }
 
+// WriteInfinityLoop writes an infinite loop to the output file. It is used to prevent the program from exiting.
 func (cw *CodeWriter) WriteInfinityLoop() error {
 	// TODO: Avoid label name collision
 	label := "INFINITE_LOOP_END"

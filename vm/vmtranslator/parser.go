@@ -47,25 +47,30 @@ func NewCodeScanner(r io.Reader, commentPrefix string) CodeScanner {
 	return CodeScanner{scanner: bufio.NewScanner(r), commentPrefix: commentPrefix}
 }
 
+// Parser is a struct that reads VM commands from a file and provides methods to get the command type and arguments
 type Parser struct {
 	scanner        CodeScanner
 	currentCommand VMCommand
 	currentType    VMCommandType
 }
 
+// NewParser creates a new Parser with the given reader and comment prefix. It uses a CodeScanner to read the file. commentPrefix is the prefix that indicates a comment. Example: "//"
 func NewParser(r io.Reader, commentPrefix string) Parser {
 	cs := NewCodeScanner(r, commentPrefix)
 	return Parser{scanner: cs}
 }
 
+// isEmptyLine returns true if the line is empty
 func (cs CodeScanner) isEmptyLine(line string) bool {
 	return len(line) == 0
 }
 
+// isCommentLine returns true if the line is a comment line.
 func (cs CodeScanner) isCommentLine(line string) bool {
 	return line[0:2] == cs.commentPrefix
 }
 
+// text returns the current line of the scanner without leading and trailing spaces and comments. It replaces multiple spaces with a single space and removes comments at the end of the line.
 func (cs CodeScanner) text() string {
 	text := cs.scanner.Text()
 	//Remove comment at the end of the line
@@ -75,6 +80,7 @@ func (cs CodeScanner) text() string {
 	return strings.Join(strings.Fields(text), " ")
 }
 
+// scan reads the next line from the scanner and skips empty lines and comments. It returns false if there are no more lines.
 func (cs CodeScanner) scan() bool {
 	ok := cs.scanner.Scan()
 	if !ok {
@@ -88,6 +94,7 @@ func (cs CodeScanner) scan() bool {
 	return true
 }
 
+// getCommandType returns the type of the given command.
 func getCommandType(command VMCommand) VMCommandType {
 	// split the command into words
 	words := strings.Fields(string(command))
@@ -115,11 +122,7 @@ func getCommandType(command VMCommand) VMCommandType {
 	}
 }
 
-/*
-advance reads the next instruction from the input and makes it the current instruction.
-It returns false if there are no more instructions.
-advance ignores empty lines and comments.
-*/
+// advance reads the next instruction from the input and makes it the current instruction. It returns false if there are no more instructions. advance ignores empty lines and comments.
 func (p *Parser) advance() bool {
 	ok := p.scanner.scan()
 	if !ok {
@@ -132,11 +135,7 @@ func (p *Parser) advance() bool {
 	return true
 }
 
-/*
-arg1 returns the first argument of the current instruction.
-It returns the command itself if it is an arithmetic command.
-It panics if the command is a return command.
-*/
+// arg1 returns the first argument of the current instruction. It returns the command itself if it is an arithmetic command. It panics if the command is a return command.
 func arg1(command VMCommand) string {
 	words := strings.Fields(string(command))
 	switch ctype := getCommandType(command); ctype {
@@ -153,8 +152,7 @@ func arg1(command VMCommand) string {
 
 }
 
-// arg2 returns the second argument of the current instruction
-// It panics if the command has no second argument
+// arg2 returns the second argument of the current instruction. It panics if the command has no second argument.
 func arg2(command VMCommand) int {
 	words := strings.Fields(string(command))
 	switch ctype := getCommandType(command); ctype {
