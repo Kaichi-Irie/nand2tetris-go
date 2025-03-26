@@ -222,7 +222,7 @@ func TranslateFunction(functionName string, nVars int) (string, error) {
 // TranslateCall generates the assembly code for VMcommand "call functionName nArgs". functionName is the name of the function, nArgs is the number of arguments, and cnt is a counter for generating unique return labels.
 func TranslateCall(functionName string, nArgs int, cnt int) (string, error) {
 	// push return address
-	returnAddress := fmt.Sprintf("%s$%d", functionName, cnt)
+	returnAddress := fmt.Sprintf("%s$ret.%d", functionName, cnt)
 	asmcommand := fmt.Sprintf("@%s\nD=A\n", returnAddress)
 	asmcommand += push_D
 	// push LCL, ARG, THIS, THAT
