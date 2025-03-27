@@ -1,31 +1,14 @@
 package hack
 
-/*
-Description: symbol_table.go は、シンボルテーブルを表す構造体と関数を提供する。
-
-- Types:
-| types | description |
-|-------|-------------|
-| SymbolTable | シンボルテーブルを表す構造体。 変数用のRAM空間を管理するカウンタ`variableCount`と、シンボルテーブルを表す`map[SymbolOrConstant]int`を持つ。 |
-
-- Functions:
-| functions | arguments | return values | description |
-|-----------|-----------|---------------|-------------|
-| NewSymbolTable | | SymbolTable | 新しいシンボルテーブルを返す。 |
-| (s *SymbolTable) contains | SymbolOrConstant | bool | シンボルテーブルに引数のシンボルが含まれているかどうかを返す。 |
-| (s *SymbolTable) addVariable | SymbolOrConstant | | シンボルテーブルに変数を追加する。 |
-| (s *SymbolTable) addLabel | SymbolOrConstant, int | | シンボルテーブルにラベルを追加する。 |
-
-
-*/
-
 import "errors"
 
+// SymbolTable is a struct that represents a symbol table. It keeps track of the variables and labels in the assembly code. The table is a map of symbols to memory addresses. variableCount is the counter for the next available RAM space for variables.
 type SymbolTable struct {
 	table         map[SymbolOrConstant]int
 	variableCount int
 }
 
+// NewSymbolTable returns a new symbol table with the predefined symbols and variables.
 func NewSymbolTable() SymbolTable {
 	table := map[SymbolOrConstant]int{
 		"R0":     0,
@@ -58,6 +41,7 @@ func NewSymbolTable() SymbolTable {
 	}
 }
 
+// contains checks if the symbol table contains the given symbol
 func (s *SymbolTable) contains(symbol SymbolOrConstant) bool {
 	_, ok := s.table[symbol]
 	return ok

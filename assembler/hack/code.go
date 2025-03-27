@@ -27,8 +27,7 @@ import (
 // BinaryCode is a string that represents a 15-bit binary number
 type BinaryCode string
 
-// decimalToBinary converts a decimal number to a 15-bit binary number
-// Example: "100" -> "000000001100100"
+// decimalToBinary converts a decimal number to a 15-bit binary number. Example: "100" -> "000000001100100"
 func decimalToBinary(decimalExp string) (BinaryCode, error) {
 	i, err := strconv.Atoi(decimalExp)
 	if err != nil {
@@ -42,10 +41,7 @@ func decimalToBinary(decimalExp string) (BinaryCode, error) {
 	return BinaryCode(bin_exp), nil
 }
 
-// symbol converts a symbol or constant to a 15-bit binary number
-// if new variable is found, add it to the symbol table
-// "100" -> "000000001100100"
-// "LOOP" -> symbolTable.table["LOOP"]->"000000000000001"
+// symbol converts a symbol or constant to a 15-bit binary number. if new variable is found, add it to the symbol table. Example: "100" -> "000000001100100", "LOOP" -> symbolTable.table["LOOP"]->"000000000000001"
 func symbol(symOrConst SymbolOrConstant, symbolTable *SymbolTable) (BinaryCode, error) {
 	table, count := symbolTable.table, symbolTable.variableCount
 	// if it is a constant
@@ -84,6 +80,7 @@ func dest(mnemonic Mnemonic) (BinaryCode, error) {
 	return "", errors.New("invalid dest mnemonic")
 }
 
+// comp return the binary code of the comp mnemonic
 func comp(mnemonic Mnemonic) (BinaryCode, error) {
 	a := ""
 	cccccc := ""
@@ -138,6 +135,7 @@ func comp(mnemonic Mnemonic) (BinaryCode, error) {
 	return BinaryCode(a + cccccc), nil
 }
 
+// jump return the binary code of the jump mnemonic
 func jump(mnemonic Mnemonic) (BinaryCode, error) {
 	switch mnemonic {
 	case "null":

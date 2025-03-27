@@ -1,17 +1,5 @@
+// hack package provides functions to convert Hack assembly language programs to binary code.
 package hack
-
-/*
-Description:
-`hack` パッケージは、Hackコンピュータのアセンブリ言語プログラムをバイナリコードに変換するための関数を提供する。
-
-- Functions:
-| functions | arguments | return values | description |
-|-----------|-----------|---------------|-------------|
-| Hack | string | error | アセンブリ言語のファイルをバイナリコードに変換する。 ファイル名はコマンドライン引数として渡される。 書き込みファイルは入力ファイルと同じ名前で、拡張子が`.hack`になる。 |
-| firstPass | string | SymbolTable, error | 1回目のパス。L命令を探し、それらをシンボルテーブルに追加する。 |
-| secondPass | string, *os.File, SymbolTable | error | 2回目のパス。A命令とC命令を探し、それらをバイナリコードに変換する。 |
-
-*/
 
 import (
 	"bufio"
@@ -20,10 +8,9 @@ import (
 	"os"
 )
 
-func Hack() error {
+// Hack converts an assembly language file to a binary code file. The file name is passed as a command line argument. The output file has the same name as the input file but with a .hack extension.
+func Hack(fileName string) error {
 	fmt.Println("Hack")
-
-	fileName := os.Args[1]
 	if fileName[len(fileName)-4:] != ".asm" {
 		return errors.New("invalid file extension")
 	}
@@ -50,6 +37,7 @@ func Hack() error {
 	return nil
 }
 
+// firstPass looks for L instructions and add them to the symbol table.
 func firstPass(fileName string) (SymbolTable, error) {
 	fmt.Println("first pass")
 	asmFile, err := os.Open(fileName)
@@ -79,6 +67,7 @@ func firstPass(fileName string) (SymbolTable, error) {
 	return symbolTable, nil
 }
 
+// secondPass looks for A and C instructions and convert them to binary code.
 func secondPass(fileName string, hackFile *os.File, symbolTable SymbolTable) error {
 	fmt.Println("second pass")
 

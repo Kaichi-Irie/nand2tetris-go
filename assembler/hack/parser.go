@@ -1,31 +1,5 @@
 package hack
 
-/*
-Description: `parser.go` は、アセンブリ言語の命令をパースするための構造体と関数を提供する。
-- Types:
-| types | description |
-|-------|-------------|
-| Instruction | 命令を表す文字列。例: "@2", "D=M", "(LOOP)" |
-| Mnemonic | C命令のdest, comp, jumpのニーモニックを表す文字列。例: "D", "A", "M", "D+1", "A-1", "D-A", "D&A", "JGT" |
-| SymbolOrConstant | シンボルまたは定数を表す文字列。例: `"LOOP"`, `"100"` ,`"x"` |
-| InstructionType | 命令のタイプを表す列挙型。`A_Instruction`, `C_Instruction`, `L_Instruction` のいずれか。 |
-
-- Functions and methods:
-| functions/methods | arguments | return values | description |
-|-----------|-----------|---------------|-------------|
-| (p *Parser) advance   |           | bool          | `Parser` が次の命令を読み込み、それを現在の命令にする。もしもう命令がない場合は false を返す。 コメント行や空行は無視して，命令が見つかる，またはファイルの終わりに達するまでスキャンを続ける。 |
-| (p *Parser) text      |           | string        | 現在の命令を返す。 |
-| (p *Parser) symbol    |           | SymbolOrConstant, error | 現在の命令が`"@const"`の場合は`"const"`を返す。`"@variable"`の場合は`"variable"`を返す。`"(label)"`の場合は`"label"`を返す。 A命令でもL命令でもない場合はエラーを返す。 |
-| (p *Parser) dest      |           | Mnemonic, error | 現在のC命令のdestニーモニックを返す。 |
-| (p *Parser) comp      |           | Mnemonic, error | 現在のC命令のcompニーモニックを返す。 |
-| (p *Parser) jump      |           | Mnemonic, error | 現在のC命令のjumpニーモニックを返す。 |
-| isConst   | SymbolOrConstant | bool | 引数が定数かどうかを返す。 `string` を `int` に変換できるかどうかで判断する。 |
-| getInstructionType | Instruction | InstructionType | 命令のタイプを返す。 |
-| isEmptyLine | string | bool | 引数が空行かどうかを返す。 |
-| isCommentLine | string | bool | 引数がコメント行かどうかを返す。 |
-
-*/
-
 import (
 	"bufio"
 	"errors"
@@ -33,22 +7,16 @@ import (
 	"strings"
 )
 
-// Instruction is a string that represents an instruction
-// Example: "@2", "D=M", "(LOOP)"
+// Instruction is a string that represents an instruction. Example: "@2", "D=M", "(LOOP)"
 type Instruction string
 
-// Mnemonic is a string that represents a mnemonic
-// Example: "D", "A", "M", "D+1", "A-1", "D-A", "D&A", "JGT"
+// Mnemonic is a string that represents a mnemonic. Example: "D", "A", "M", "D+1", "A-1", "D-A", "D&A", "JGT"
 type Mnemonic string
 
-// SymbolOrConstant is a string that represents a symbol or a constant
-// Example: "LOOP", "100"
+// SymbolOrConstant is a string that represents a symbol or a constant. Example: "LOOP", "100"
 type SymbolOrConstant string
 
-// InstructionType is an enum that represents the type of an instruction.
-// A_Instruction: @value
-// C_Instruction: dest=comp;jump
-// L_Instruction: (label)
+// InstructionType is an enum that represents the type of an instruction. A_Instruction: @value, C_Instruction: dest=comp;jump, L_Instruction: (label)
 type InstructionType int
 
 const (
@@ -57,15 +25,14 @@ const (
 	L_Instruction
 )
 
+// Parser is a struct that represents a parser for the Hack assembly language
 type Parser struct {
 	scanner            *bufio.Scanner
 	currentInstruction Instruction
 	currentType        InstructionType
 }
 
-// advance reads the next instruction from the input and makes it the current instruction
-// It returns false if there are no more instructions
-// advance ignores empty lines and comments
+// advance reads the next instruction from the input and makes it the current instruction. It returns false if there are no more instructions. The function ignores empty lines and comments.
 func (p *Parser) advance() bool {
 	ok := p.scanner.Scan()
 	if !ok {
@@ -82,17 +49,18 @@ func (p *Parser) advance() bool {
 	return true
 }
 
-// text returns the current instruction.
-// It removes all spaces from the instruction
+// text returns the current instruction. It removes all spaces from the instruction
 func (p *Parser) text() string {
 	// remove spaces
 	return strings.ReplaceAll(p.scanner.Text(), " ", "")
 }
 
+// isEmptyLine returns true if the given line is empty
 func isEmptyLine(line string) bool {
 	return len(line) == 0
 }
 
+// isCommentLine returns true if the given line is a comment
 func isCommentLine(line string) bool {
 	return line[0:2] == "//"
 }
@@ -114,10 +82,10 @@ func getInstructionType(inst Instruction) InstructionType {
 	}
 }
 
-// symbol return the symbol or constant of the current instruction
-// @100 -> "100"
-// @LOOP -> "LOOP"
-// (LOOP) -> "LOOP"
+/*
+symbol return the symbol or constant of the current instruction
+Example: @100 -> "100", @LOOP -> "LOOP", (LOOP) -> "LOOP"
+*/
 func (p *Parser) symbol() (SymbolOrConstant, error) {
 	inst := p.currentInstruction
 	switch p.currentType {
@@ -152,6 +120,7 @@ func (p *Parser) dest() (Mnemonic, error) {
 	}
 }
 
+// comp return the comp mnemonic of the current C instruction
 func (p *Parser) comp() (Mnemonic, error) {
 	inst := p.currentInstruction
 	switch p.currentType {
@@ -171,6 +140,7 @@ func (p *Parser) comp() (Mnemonic, error) {
 	}
 }
 
+// jump return the jump mnemonic of the current C instruction
 func (p *Parser) jump() (Mnemonic, error) {
 	inst := p.currentInstruction
 	switch p.currentType {
