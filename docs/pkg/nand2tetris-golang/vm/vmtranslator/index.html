@@ -24,8 +24,8 @@
 </div><!-- #lowframe -->
 
 <div id="topbar" class="wide"><div class="container">
-<div class="top-heading" id="heading-wide"><a href="../../../index.html">Go Documentation Server</a></div>
-<div class="top-heading" id="heading-narrow"><a href="../../../index.html">GoDoc</a></div>
+<div class="top-heading" id="heading-wide"><a href="http://localhost:6060/pkg/">Go Documentation Server</a></div>
+<div class="top-heading" id="heading-narrow"><a href="http://localhost:6060/pkg/">GoDoc</a></div>
 <a href="index.html#" id="menu-button"><span id="menu-button-arrow">&#9661;</span></a>
 <form method="GET" action="http://localhost:6060/search">
 <div id="menu">
@@ -223,7 +223,7 @@
 				
 				
 			</h2>
-			<pre>func TranslateArithmetic(command <a href="index.html#VMCommand">VMCommand</a>, cnt <a href="../../../builtin/index.html#int">int</a>) (<a href="../../../builtin/index.html#string">string</a>, <a href="../../../builtin/index.html#error">error</a>)</pre>
+			<pre>func TranslateArithmetic(command <a href="index.html#VMCommand">VMCommand</a>, cnt <a href="http://localhost:6060/pkg/builtin/#int">int</a>) (<a href="http://localhost:6060/pkg/builtin/#string">string</a>, <a href="http://localhost:6060/pkg/builtin/#error">error</a>)</pre>
 			<p>TranslateArithmetic generates the assembly code for VMcommand &quot;add&quot;, &quot;sub&quot;, &quot;and&quot;, &quot;or&quot;, &quot;neg&quot;, &quot;not&quot;, &quot;eq&quot;, &quot;gt&quot;, or &quot;lt&quot;. cnt is a counter for generating unique labels and used for eq, gt, and lt commands.
 
 			
@@ -237,7 +237,7 @@
 				
 				
 			</h2>
-			<pre>func TranslateCall(functionName <a href="../../../builtin/index.html#string">string</a>, nArgs <a href="../../../builtin/index.html#int">int</a>, cnt <a href="../../../builtin/index.html#int">int</a>) (<a href="../../../builtin/index.html#string">string</a>, <a href="../../../builtin/index.html#error">error</a>)</pre>
+			<pre>func TranslateCall(functionName <a href="http://localhost:6060/pkg/builtin/#string">string</a>, nArgs <a href="http://localhost:6060/pkg/builtin/#int">int</a>, cnt <a href="http://localhost:6060/pkg/builtin/#int">int</a>) (<a href="http://localhost:6060/pkg/builtin/#string">string</a>, <a href="http://localhost:6060/pkg/builtin/#error">error</a>)</pre>
 			<p>TranslateCall generates the assembly code for VMcommand &quot;call functionName nArgs&quot;. functionName is the name of the function, nArgs is the number of arguments, and cnt is a counter for generating unique return labels.
 
 			
@@ -251,7 +251,7 @@
 				
 				
 			</h2>
-			<pre>func TranslateFunction(functionName <a href="../../../builtin/index.html#string">string</a>, nVars <a href="../../../builtin/index.html#int">int</a>) (<a href="../../../builtin/index.html#string">string</a>, <a href="../../../builtin/index.html#error">error</a>)</pre>
+			<pre>func TranslateFunction(functionName <a href="http://localhost:6060/pkg/builtin/#string">string</a>, nVars <a href="http://localhost:6060/pkg/builtin/#int">int</a>) (<a href="http://localhost:6060/pkg/builtin/#string">string</a>, <a href="http://localhost:6060/pkg/builtin/#error">error</a>)</pre>
 			<p>TranslateFunction generates the assembly code for VMcommand &quot;function functionName nVars&quot;. functionName is the name of the function, and nVars is the number of local variables.
 
 			
@@ -265,7 +265,7 @@
 				
 				
 			</h2>
-			<pre>func TranslateGoto(label <a href="../../../builtin/index.html#string">string</a>) (<a href="../../../builtin/index.html#string">string</a>, <a href="../../../builtin/index.html#error">error</a>)</pre>
+			<pre>func TranslateGoto(label <a href="http://localhost:6060/pkg/builtin/#string">string</a>) (<a href="http://localhost:6060/pkg/builtin/#string">string</a>, <a href="http://localhost:6060/pkg/builtin/#error">error</a>)</pre>
 			<p>TranslateGoto generates the assembly code for VMcommand &quot;goto label&quot;. label is the label to jump to.
 
 			
@@ -279,7 +279,7 @@
 				
 				
 			</h2>
-			<pre>func TranslateIf(label <a href="../../../builtin/index.html#string">string</a>) (<a href="../../../builtin/index.html#string">string</a>, <a href="../../../builtin/index.html#error">error</a>)</pre>
+			<pre>func TranslateIf(label <a href="http://localhost:6060/pkg/builtin/#string">string</a>) (<a href="http://localhost:6060/pkg/builtin/#string">string</a>, <a href="http://localhost:6060/pkg/builtin/#error">error</a>)</pre>
 			<p>TranslateIf generates the assembly code for VMcommand &quot;if-goto label&quot;. label is the label to jump to if the top of the stack is not zero.
 
 			
@@ -293,7 +293,7 @@
 				
 				
 			</h2>
-			<pre>func TranslateLabel(label <a href="../../../builtin/index.html#string">string</a>) (<a href="../../../builtin/index.html#string">string</a>, <a href="../../../builtin/index.html#error">error</a>)</pre>
+			<pre>func TranslateLabel(label <a href="http://localhost:6060/pkg/builtin/#string">string</a>) (<a href="http://localhost:6060/pkg/builtin/#string">string</a>, <a href="http://localhost:6060/pkg/builtin/#error">error</a>)</pre>
 			<p>TranslateLabel generates the assembly code for VMcommand &quot;label label&quot;. label is the label name.
 
 			
@@ -307,7 +307,7 @@
 				
 				
 			</h2>
-			<pre>func TranslatePushPop(ctype <a href="index.html#VMCommandType">VMCommandType</a>, seg <a href="../../../builtin/index.html#string">string</a>, idx <a href="../../../builtin/index.html#int">int</a>, fileName <a href="../../../builtin/index.html#string">string</a>) (<a href="../../../builtin/index.html#string">string</a>, <a href="../../../builtin/index.html#error">error</a>)</pre>
+			<pre>func TranslatePushPop(ctype <a href="index.html#VMCommandType">VMCommandType</a>, seg <a href="http://localhost:6060/pkg/builtin/#string">string</a>, idx <a href="http://localhost:6060/pkg/builtin/#int">int</a>, fileName <a href="http://localhost:6060/pkg/builtin/#string">string</a>) (<a href="http://localhost:6060/pkg/builtin/#string">string</a>, <a href="http://localhost:6060/pkg/builtin/#error">error</a>)</pre>
 			<p>TranslatePushPop generates the assembly code for VMcommand &quot;push segment index&quot; or &quot;pop segment index&quot;. fileName is the name of the .vm file. It returns an error if the segment is invalid.
 
 			
@@ -321,7 +321,7 @@
 				
 				
 			</h2>
-			<pre>func TranslateReturn() (<a href="../../../builtin/index.html#string">string</a>, <a href="../../../builtin/index.html#error">error</a>)</pre>
+			<pre>func TranslateReturn() (<a href="http://localhost:6060/pkg/builtin/#string">string</a>, <a href="http://localhost:6060/pkg/builtin/#error">error</a>)</pre>
 			<p>TranslateReturn generates the assembly code for VMcommand &quot;return&quot;.
 
 			
@@ -335,7 +335,7 @@
 				
 				
 			</h2>
-			<pre>func VMTranslator(path <a href="../../../builtin/index.html#string">string</a>) <a href="../../../builtin/index.html#error">error</a></pre>
+			<pre>func VMTranslator(path <a href="http://localhost:6060/pkg/builtin/#string">string</a>) <a href="http://localhost:6060/pkg/builtin/#error">error</a></pre>
 			<p>VMTranslator translates VM code to Hack assembly code. The input can be a .vm file or a directory containing .vm files. The output is a .asm file with the same name as the input file or directory.
 
 			
@@ -373,7 +373,7 @@ CodeScanner is a struct that reads a file line by line and skips empty lines and
 					
 					
 				</h3>
-				<pre>func NewCodeScanner(r <a href="../../../io/index.html">io</a>.<a href="../../../io/index.html#Reader">Reader</a>, commentPrefix <a href="../../../builtin/index.html#string">string</a>) <a href="index.html#CodeScanner">CodeScanner</a></pre>
+				<pre>func NewCodeScanner(r <a href="http://localhost:6060/pkg/io/">io</a>.<a href="http://localhost:6060/pkg/io/#Reader">Reader</a>, commentPrefix <a href="http://localhost:6060/pkg/builtin/#string">string</a>) <a href="index.html#CodeScanner">CodeScanner</a></pre>
 				<p>NewCodeScanner creates a new CodeScanner with the given reader and comment prefix
 
 				
@@ -411,7 +411,7 @@ CodeScanner is a struct that reads a file line by line and skips empty lines and
 					
 					
 				</h3>
-				<pre>func NewCodeWriter(asmFilePath <a href="../../../builtin/index.html#string">string</a>) *<a href="index.html#CodeWriter">CodeWriter</a></pre>
+				<pre>func NewCodeWriter(asmFilePath <a href="http://localhost:6060/pkg/builtin/#string">string</a>) *<a href="index.html#CodeWriter">CodeWriter</a></pre>
 				<p>NewCodeWriter creates a new asm file with the given path and returns a CodeWriter. CodeWriter.FileNameStem is set to &quot;&quot;, so it must be set before calling WriteCommand.
 
 				
@@ -425,7 +425,7 @@ CodeScanner is a struct that reads a file line by line and skips empty lines and
 					
 					
 				</h3>
-				<pre>func (cw *<a href="index.html#CodeWriter">CodeWriter</a>) Close() <a href="../../../builtin/index.html#error">error</a></pre>
+				<pre>func (cw *<a href="index.html#CodeWriter">CodeWriter</a>) Close() <a href="http://localhost:6060/pkg/builtin/#error">error</a></pre>
 				<p>Close closes the output file.
 
 				
@@ -438,7 +438,7 @@ CodeScanner is a struct that reads a file line by line and skips empty lines and
 					
 					
 				</h3>
-				<pre>func (cw *<a href="index.html#CodeWriter">CodeWriter</a>) Write(b []<a href="../../../builtin/index.html#byte">byte</a>) (<a href="../../../builtin/index.html#int">int</a>, <a href="../../../builtin/index.html#error">error</a>)</pre>
+				<pre>func (cw *<a href="index.html#CodeWriter">CodeWriter</a>) Write(b []<a href="http://localhost:6060/pkg/builtin/#byte">byte</a>) (<a href="http://localhost:6060/pkg/builtin/#int">int</a>, <a href="http://localhost:6060/pkg/builtin/#error">error</a>)</pre>
 				<p>Write writes the given bytes to the output file.
 
 				
@@ -451,7 +451,7 @@ CodeScanner is a struct that reads a file line by line and skips empty lines and
 					
 					
 				</h3>
-				<pre>func (cw *<a href="index.html#CodeWriter">CodeWriter</a>) WriteBootStrap() <a href="../../../builtin/index.html#error">error</a></pre>
+				<pre>func (cw *<a href="index.html#CodeWriter">CodeWriter</a>) WriteBootStrap() <a href="http://localhost:6060/pkg/builtin/#error">error</a></pre>
 				<p>WriteBootStrap writes the bootstrap code to the output file. It initializes the stack pointer and calls Sys.init.
 
 				
@@ -464,7 +464,7 @@ CodeScanner is a struct that reads a file line by line and skips empty lines and
 					
 					
 				</h3>
-				<pre>func (cw *<a href="index.html#CodeWriter">CodeWriter</a>) WriteCommand(gotoCommand <a href="index.html#VMCommand">VMCommand</a>) <a href="../../../builtin/index.html#error">error</a></pre>
+				<pre>func (cw *<a href="index.html#CodeWriter">CodeWriter</a>) WriteCommand(gotoCommand <a href="index.html#VMCommand">VMCommand</a>) <a href="http://localhost:6060/pkg/builtin/#error">error</a></pre>
 				<p>WriteCommand writes the assembly code for the given VM command to the output file. It returns an error if the command is invalid. It also updates the internal state of the CodeWriter, which is used for generating unique labels.
 
 				
@@ -477,7 +477,7 @@ CodeScanner is a struct that reads a file line by line and skips empty lines and
 					
 					
 				</h3>
-				<pre>func (cw *<a href="index.html#CodeWriter">CodeWriter</a>) WriteInfinityLoop() <a href="../../../builtin/index.html#error">error</a></pre>
+				<pre>func (cw *<a href="index.html#CodeWriter">CodeWriter</a>) WriteInfinityLoop() <a href="http://localhost:6060/pkg/builtin/#error">error</a></pre>
 				<p>WriteInfinityLoop writes an infinite loop to the output file. It is used to prevent the program from exiting.
 
 				
@@ -514,7 +514,7 @@ CodeScanner is a struct that reads a file line by line and skips empty lines and
 					
 					
 				</h3>
-				<pre>func NewParser(r <a href="../../../io/index.html">io</a>.<a href="../../../io/index.html#Reader">Reader</a>, commentPrefix <a href="../../../builtin/index.html#string">string</a>) <a href="index.html#Parser">Parser</a></pre>
+				<pre>func NewParser(r <a href="http://localhost:6060/pkg/io/">io</a>.<a href="http://localhost:6060/pkg/io/#Reader">Reader</a>, commentPrefix <a href="http://localhost:6060/pkg/builtin/#string">string</a>) <a href="index.html#Parser">Parser</a></pre>
 				<p>NewParser creates a new Parser with the given reader and comment prefix. It uses a <a href="index.html#CodeScanner">CodeScanner</a> to read the file. commentPrefix is the prefix that indicates a comment. Example: &quot;//&quot;
 
 				
@@ -532,7 +532,7 @@ CodeScanner is a struct that reads a file line by line and skips empty lines and
 			</h2>
 			<p>VMCommand is a string that represents an instruction. Example: &quot;push constant 7&quot;, &quot;add&quot;, &quot;label LOOP&quot;
 
-			<pre>type VMCommand <a href="../../../builtin/index.html#string">string</a></pre>
+			<pre>type VMCommand <a href="http://localhost:6060/pkg/builtin/#string">string</a></pre>
 
 			
 
@@ -564,12 +564,12 @@ C_FUNCTION: function function n
 C_RETURN: return
 C_CALL: call function n
 
-			<pre>type VMCommandType <a href="../../../builtin/index.html#int">int</a></pre>
+			<pre>type VMCommandType <a href="http://localhost:6060/pkg/builtin/#int">int</a></pre>
 
 			
 				
 				<pre>const (
-    <span id="C_ARITHMETIC">C_ARITHMETIC</span> <a href="index.html#VMCommandType">VMCommandType</a> = <a href="../../../builtin/index.html#iota">iota</a>
+    <span id="C_ARITHMETIC">C_ARITHMETIC</span> <a href="index.html#VMCommandType">VMCommandType</a> = <a href="http://localhost:6060/pkg/builtin/#iota">iota</a>
     <span id="C_PUSH">C_PUSH</span>
     <span id="C_POP">C_POP</span>
     <span id="C_LABEL">C_LABEL</span>

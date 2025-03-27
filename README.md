@@ -1,5 +1,5 @@
 # Nand2TetrisをGolangで実装する
-[O'Reilly Japan - コンピュータシステムの理論と実装 第2版](https://www.oreilly.co.jp/books/9784814400874/)（通称Nand2Tetris）を勉強がてら，go言語で実装していきます．パッケージのドキュメントは[こちら](https://kaichi-irie.github.io/nand2tetris-go/pkg/nand2tetris-golang.html)
+[O'Reilly Japan - コンピュータシステムの理論と実装 第2版](https://www.oreilly.co.jp/books/9784814400874/)（通称Nand2Tetris）を勉強がてら，go言語で実装していきます．パッケージのドキュメントは[こちら](https://kaichi-irie.github.io/nand2tetris-go/pkg/index.html)
 
 - [x] 6章: アセンブラ
 - [x] 7章: VM1: 処理
