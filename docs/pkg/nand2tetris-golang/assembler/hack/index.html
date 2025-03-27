@@ -93,7 +93,8 @@
 			</div>
 			<div class="expanded">
 				<h2 class="toggleButton" title="Click to hide Overview section">Overview ▾</h2>
-				
+				<p>hack package provides functions to convert Hack assembly language programs to binary code.
+
 				
 			</div>
 		</div>
@@ -112,7 +113,7 @@
 			
 			
 				
-				<dd><a href="index.html#Hack">func Hack() error</a></dd>
+				<dd><a href="index.html#Hack">func Hack(fileName string) error</a></dd>
 			
 			
 				
@@ -185,13 +186,14 @@
 		
 			
 			
-			<h2 id="Hack">func <a href="http://localhost:6060/src/nand2tetris-golang/assembler/hack/hack.go?s=938:955#L13">Hack</a>
+			<h2 id="Hack">func <a href="http://localhost:6060/src/nand2tetris-golang/assembler/hack/hack.go?s=350:382#L2">Hack</a>
 				<a class="permalink" href="index.html#Hack">&#xb6;</a>
 				
 				
 			</h2>
-			<pre>func Hack() <a href="http://localhost:6060/pkg/builtin/#error">error</a></pre>
-			
+			<pre>func Hack(fileName <a href="http://localhost:6060/pkg/builtin/#string">string</a>) <a href="http://localhost:6060/pkg/builtin/#error">error</a></pre>
+			<p>Hack converts an assembly language file to a binary code file. The file name is passed as a command line argument. The output file has the same name as the input file but with a .hack extension.
+
 			
 			
 
@@ -222,13 +224,12 @@
 		
 			
 			
-			<h2 id="Instruction">type <a href="http://localhost:6060/src/nand2tetris-golang/assembler/hack/parser.go?s=2371:2394#L28">Instruction</a>
+			<h2 id="Instruction">type <a href="http://localhost:6060/src/nand2tetris-golang/assembler/hack/parser.go?s=157:180#L1">Instruction</a>
 				<a class="permalink" href="index.html#Instruction">&#xb6;</a>
 				
 				
 			</h2>
-			<p>Instruction is a string that represents an instruction
-Example: &quot;@2&quot;, &quot;D=M&quot;, &quot;(LOOP)&quot;
+			<p>Instruction is a string that represents an instruction. Example: &quot;@2&quot;, &quot;D=M&quot;, &quot;(LOOP)&quot;
 
 			<pre>type Instruction <a href="http://localhost:6060/pkg/builtin/#string">string</a></pre>
 
@@ -246,15 +247,12 @@ Example: &quot;@2&quot;, &quot;D=M&quot;, &quot;(LOOP)&quot;
 		
 			
 			
-			<h2 id="InstructionType">type <a href="http://localhost:6060/src/nand2tetris-golang/assembler/hack/parser.go?s=2815:2839#L42">InstructionType</a>
+			<h2 id="InstructionType">type <a href="http://localhost:6060/src/nand2tetris-golang/assembler/hack/parser.go?s=590:614#L10">InstructionType</a>
 				<a class="permalink" href="index.html#InstructionType">&#xb6;</a>
 				
 				
 			</h2>
-			<p>InstructionType is an enum that represents the type of an instruction.
-A_Instruction: @value
-C_Instruction: dest=comp;jump
-L_Instruction: (label)
+			<p>InstructionType is an enum that represents the type of an instruction. A_Instruction: @value, C_Instruction: dest=comp;jump, L_Instruction: (label)
 
 			<pre>type InstructionType <a href="http://localhost:6060/pkg/builtin/#int">int</a></pre>
 
@@ -279,13 +277,12 @@ L_Instruction: (label)
 		
 			
 			
-			<h2 id="Mnemonic">type <a href="http://localhost:6060/src/nand2tetris-golang/assembler/hack/parser.go?s=2508:2528#L32">Mnemonic</a>
+			<h2 id="Mnemonic">type <a href="http://localhost:6060/src/nand2tetris-golang/assembler/hack/parser.go?s=292:312#L4">Mnemonic</a>
 				<a class="permalink" href="index.html#Mnemonic">&#xb6;</a>
 				
 				
 			</h2>
-			<p>Mnemonic is a string that represents a mnemonic
-Example: &quot;D&quot;, &quot;A&quot;, &quot;M&quot;, &quot;D+1&quot;, &quot;A-1&quot;, &quot;D-A&quot;, &quot;D&amp;A&quot;, &quot;JGT&quot;
+			<p>Mnemonic is a string that represents a mnemonic. Example: &quot;D&quot;, &quot;A&quot;, &quot;M&quot;, &quot;D+1&quot;, &quot;A-1&quot;, &quot;D-A&quot;, &quot;D&amp;A&quot;, &quot;JGT&quot;
 
 			<pre>type Mnemonic <a href="http://localhost:6060/pkg/builtin/#string">string</a></pre>
 
@@ -303,12 +300,13 @@ Example: &quot;D&quot;, &quot;A&quot;, &quot;M&quot;, &quot;D+1&quot;, &quot;A-1
 		
 			
 			
-			<h2 id="Parser">type <a href="http://localhost:6060/src/nand2tetris-golang/assembler/hack/parser.go?s=2920:3045#L50">Parser</a>
+			<h2 id="Parser">type <a href="http://localhost:6060/src/nand2tetris-golang/assembler/hack/parser.go?s=773:898#L19">Parser</a>
 				<a class="permalink" href="index.html#Parser">&#xb6;</a>
 				
 				
 			</h2>
-			
+			<p>Parser is a struct that represents a parser for the Hack assembly language
+
 			<pre>type Parser struct {
     <span class="comment">// contains filtered or unexported fields</span>
 }
@@ -328,13 +326,12 @@ Example: &quot;D&quot;, &quot;A&quot;, &quot;M&quot;, &quot;D+1&quot;, &quot;A-1
 		
 			
 			
-			<h2 id="SymbolOrConstant">type <a href="http://localhost:6060/src/nand2tetris-golang/assembler/hack/parser.go?s=2627:2655#L36">SymbolOrConstant</a>
+			<h2 id="SymbolOrConstant">type <a href="http://localhost:6060/src/nand2tetris-golang/assembler/hack/parser.go?s=409:437#L7">SymbolOrConstant</a>
 				<a class="permalink" href="index.html#SymbolOrConstant">&#xb6;</a>
 				
 				
 			</h2>
-			<p>SymbolOrConstant is a string that represents a symbol or a constant
-Example: &quot;LOOP&quot;, &quot;100&quot;
+			<p>SymbolOrConstant is a string that represents a symbol or a constant. Example: &quot;LOOP&quot;, &quot;100&quot;
 
 			<pre>type SymbolOrConstant <a href="http://localhost:6060/pkg/builtin/#string">string</a></pre>
 
@@ -352,12 +349,13 @@ Example: &quot;LOOP&quot;, &quot;100&quot;
 		
 			
 			
-			<h2 id="SymbolTable">type <a href="http://localhost:6060/src/nand2tetris-golang/assembler/hack/symbol_table.go?s=990:1076#L14">SymbolTable</a>
+			<h2 id="SymbolTable">type <a href="http://localhost:6060/src/nand2tetris-golang/assembler/hack/symbol_table.go?s=283:369#L1">SymbolTable</a>
 				<a class="permalink" href="index.html#SymbolTable">&#xb6;</a>
 				
 				
 			</h2>
-			
+			<p>SymbolTable is a struct that represents a symbol table. It keeps track of the variables and labels in the assembly code. The table is a map of symbols to memory addresses. variableCount is the counter for the next available RAM space for variables.
+
 			<pre>type SymbolTable struct {
     <span class="comment">// contains filtered or unexported fields</span>
 }
@@ -373,13 +371,14 @@ Example: &quot;LOOP&quot;, &quot;100&quot;
 
 			
 				
-				<h3 id="NewSymbolTable">func <a href="http://localhost:6060/src/nand2tetris-golang/assembler/hack/symbol_table.go?s=1078:1111#L19">NewSymbolTable</a>
+				<h3 id="NewSymbolTable">func <a href="http://localhost:6060/src/nand2tetris-golang/assembler/hack/symbol_table.go?s=459:492#L2">NewSymbolTable</a>
 					<a class="permalink" href="index.html#NewSymbolTable">&#xb6;</a>
 					
 					
 				</h3>
 				<pre>func NewSymbolTable() <a href="index.html#SymbolTable">SymbolTable</a></pre>
-				
+				<p>NewSymbolTable returns a new symbol table with the predefined symbols and variables.
+
 				
 				
 			
