@@ -1,3 +1,4 @@
+// This package translates VM code to Hack assembly code. The input can be a .vm file or a directory containing .vm files. The output is a .asm file with the same name as the input file or directory.
 package vmtranslator
 
 import (
