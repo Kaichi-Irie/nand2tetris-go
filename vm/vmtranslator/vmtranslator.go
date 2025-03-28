@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"slices"
 )
 
 // VMTranslator translates VM code to Hack assembly code. The input can be a .vm file or a directory containing .vm files. The output is a .asm file with the same name as the input file or directory.
@@ -24,6 +25,10 @@ func VMTranslator(path string) error {
 		vmFilePaths, err = filepath.Glob(filepath.Join(path, "*.vm"))
 		if err != nil {
 			panic(err)
+		}
+		// Sys.vm must be included in the list of .vm files
+		if exists := slices.Contains(vmFilePaths, filepath.Join(path, "Sys.vm")); !exists {
+			return fmt.Errorf("Sys.vm must be included in the given directory")
 		}
 	} else if filepath.Ext(path) == ".vm" {
 		asmFilePath = path[:len(path)-3] + ".asm"
