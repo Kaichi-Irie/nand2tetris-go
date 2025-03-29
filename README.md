@@ -1,3 +1,4 @@
+![img](img/nand2tetris-go.jpg)
 # Nand2TetrisをGolangで実装する
 [O'Reilly Japan - コンピュータシステムの理論と実装 第2版](https://www.oreilly.co.jp/books/9784814400874/)（通称Nand2Tetris）の実装プロジェクトを勉強がてら，go言語で実装していきます．パッケージのドキュメントは[こちら](https://kaichi-irie.github.io/nand2tetris-go/pkg/nand2tetris-golang/index.html)．
 
@@ -5,7 +6,7 @@
 - [x] 6章: アセンブラ
 - [x] 7章: VM1: 処理
 - [x] 8章: VM2: 制御
-- [ ] 9章: 高水準言語
+- [x] 9章: 高水準言語
 - [ ] 10章: コンパイラ1: 構文解析
 - [ ] 11章: コンパイラ2: コード生成
 - [ ] 12章: OS
