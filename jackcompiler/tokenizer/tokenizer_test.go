@@ -46,3 +46,26 @@ func TestExtractStringConst(t *testing.T) {
 		})
 	}
 }
+
+func TestExtractIdentifier(t *testing.T) {
+	tests := []struct {
+		token string
+		want  string
+	}{
+		{"hello + 3", "hello"},
+		{"_hello(\"str\")", "_hello"},
+		{"hello_world", "hello_world"},
+		{"hello123", "hello123"},
+		{"x)", "x"},
+		{"x.y", "x"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.token, func(t *testing.T) {
+			if got, err := extractIdentifier(tt.token); err != nil {
+				t.Errorf("extractIdentifier(%s) = %v, want %v", tt.token, err, tt.want)
+			} else if got != tt.want {
+				t.Errorf("extractIdentifier(%s) = %v, want %v", tt.token, got, tt.want)
+			}
+		})
+	}
+}

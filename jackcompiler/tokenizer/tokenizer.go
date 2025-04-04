@@ -111,7 +111,11 @@ func (t Tokenizer) advance() bool {
 	}
 
 	// check if the next token is an identifier
-	// TODO: implement identifier extraction
+	if id, ok := extractIdentifier(t.currentLine[pos:]); ok == nil {
+		t.currentPos += len(id)
+		t.currentToken = id
+		return true
+	}
 	return false
 }
 
@@ -140,4 +144,17 @@ func extractStringConst(s string) (string, error) {
 		return "", fmt.Errorf("not a string constant")
 	}
 	return s[1 : 1+idx], nil
+}
+
+// extractIdentifier extracts the identifier from the string. An identifier is a string that starts with a letter or an underscore
+func extractIdentifier(s string) (string, error) {
+	// check if the first character is a letter or an underscore
+	if s[0] != '_' && (s[0] < 'A' || s[0] > 'z') {
+		return "", fmt.Errorf("not an identifier")
+	}
+	idx := strings.IndexAny(s, " \t\n\r(){}[];,.+-*/&|<>=~")
+	if idx == -1 {
+		return s, nil
+	}
+	return s[0:idx], nil
 }
