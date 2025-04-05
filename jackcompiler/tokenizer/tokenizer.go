@@ -53,6 +53,7 @@ var keywords = []string{
 	"true", "false", "null", "this",
 }
 
+// Tokenizer is a struct that reads a file line by line and skips empty lines and comments. It provides a method to get the current line of the scanner without leading and trailing spaces and comments.
 type Tokenizer struct {
 	scanner           vmtranslator.CodeScanner
 	currentLine       string
@@ -60,7 +61,14 @@ type Tokenizer struct {
 	currentPos        int // currentPos is the position of the next token in the current line
 	currentToken      string
 }
+// NewTokenizer creates a new Tokenizer with the given reader. It uses a [CodeScanner] to read the file. commentPrefix is the prefix that indicates a comment. Example: "//"
+func NewTokenizer(r io.Reader) Tokenizer {
+	return Tokenizer{
+		scanner: vmtranslator.NewCodeScanner(r, "//"),
+	}
+}
 
+// advance advances the scanner to the next token. It returns true if there is a next token, false otherwise.
 func (t Tokenizer) advance() bool {
 	if t.currentPos >= t.currentLineLength {
 		t.currentLine = t.scanner.Text()

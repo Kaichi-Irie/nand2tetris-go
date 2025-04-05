@@ -1,6 +1,9 @@
 package tokenizer
 
-import "testing"
+import (
+	"strings"
+	"testing"
+)
 
 func TestGetTokenType(t *testing.T) {
 	tests := []struct {
@@ -280,5 +283,139 @@ func TestExtractIdentifier(t *testing.T) {
 				t.Errorf("extractIdentifier(%s) = %v, want %v", tt.token, got, tt.want)
 			}
 		})
+	}
+}
+
+func TestTokenizer(t *testing.T) {
+	var tokenizer = NewTokenizer(strings.NewReader(`
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/9/Average/Main.jack
+
+/*
+comment in multiple lines
+*/
+
+/**
+this is also supported comment.
+*/
+class Main {
+// comment
+
+// comment
+    function void main() {
+        var int x;
+		var int y;
+        let x = Keyboard.readInt("enter the number");
+		// comment
+        do Output.printInt(x);
+	 if (((x+y)<254) & ((x + y)<510)) {
+	 			// comment
+				do Output.printInt(x);
+      } else {
+		do Output.printInt(y);
+		// comment
+}
+
+        	return;
+
+    }// comment
+} // comment
+
+`))
+	tests := []struct {
+		wantToken string
+		wantType  tokenType
+	}{
+		{"class", TT_KEYWORD},
+		{"Main", TT_IDENTIFIER},
+		{"{", TT_SYMBOL},
+		{"function", TT_KEYWORD},
+		{"void", TT_KEYWORD},
+		{"main", TT_IDENTIFIER},
+		{"(", TT_SYMBOL},
+		{")", TT_SYMBOL},
+		{"{", TT_SYMBOL},
+		{"var", TT_KEYWORD},
+		{"int", TT_KEYWORD},
+		{"x", TT_IDENTIFIER},
+		{";", TT_SYMBOL},
+		{"var", TT_KEYWORD},
+		{"int", TT_KEYWORD},
+		{"y", TT_IDENTIFIER},
+		{";", TT_SYMBOL},
+		{"let", TT_KEYWORD},
+		{"x", TT_IDENTIFIER},
+		{"=", TT_SYMBOL},
+		{"Keyboard.readInt", TT_IDENTIFIER},
+		{"(", TT_SYMBOL},
+		{"\"enter the number\"", TT_STRING_CONST},
+		{")", TT_SYMBOL},
+		{";", TT_SYMBOL},
+		{"do", TT_KEYWORD},
+		{"Output.printInt", TT_IDENTIFIER},
+		{"(", TT_SYMBOL},
+		{"x", TT_IDENTIFIER},
+		{")", TT_SYMBOL},
+		{";", TT_SYMBOL},
+		{"if", TT_KEYWORD},
+		{"(", TT_SYMBOL},
+		{"(", TT_SYMBOL},
+		{"(", TT_SYMBOL},
+		{"x", TT_IDENTIFIER},
+		{"+", TT_SYMBOL},
+		{"y", TT_IDENTIFIER},
+		{")", TT_SYMBOL},
+		{"<", TT_SYMBOL},
+		{"254", TT_INT_CONST},
+		{")", TT_SYMBOL},
+		{"&", TT_SYMBOL},
+		{"(", TT_SYMBOL},
+		{"(", TT_SYMBOL},
+		{"x", TT_IDENTIFIER},
+		{"+", TT_SYMBOL},
+		{"y", TT_IDENTIFIER},
+		{")", TT_SYMBOL},
+		{"<", TT_SYMBOL},
+		{"510", TT_INT_CONST},
+		{")", TT_SYMBOL},
+		{"{", TT_SYMBOL},
+		{"do", TT_KEYWORD},
+		{"Output.printInt", TT_IDENTIFIER},
+		{"(", TT_SYMBOL},
+		{"x", TT_IDENTIFIER},
+		{")", TT_SYMBOL},
+		{";", TT_SYMBOL},
+		{"}", TT_SYMBOL},
+		{"else", TT_KEYWORD},
+		{"{", TT_SYMBOL},
+		{"do", TT_KEYWORD},
+		{"Output.printInt", TT_IDENTIFIER},
+		{"(", TT_SYMBOL},
+		{"y", TT_IDENTIFIER},
+		{")", TT_SYMBOL},
+		{";", TT_SYMBOL},
+		{"}", TT_SYMBOL},
+		{"return", TT_KEYWORD},
+		{";", TT_SYMBOL},
+		{"}", TT_SYMBOL},
+		{"}", TT_SYMBOL},
+	}
+
+	for i := 0; tokenizer.advance(); i++ {
+		token := tokenizer.currentToken
+		if i >= len(tests) {
+			t.Errorf("tokenizer returned more tokens than expected")
+			break
+		}
+		if tests[i].wantToken != token {
+			t.Errorf("tokenizer returned %s, expected %s", token, tests[i].wantToken)
+		}
+		if tokenType, err := GetTokenType(token); err != nil {
+			t.Errorf("getTokenType(%s) returned error: %v", token, err)
+		} else if tests[i].wantType != tokenType {
+			t.Errorf("tokenizer returned %d, expected %d", tokenType, tests[i].wantType)
+		}
 	}
 }
