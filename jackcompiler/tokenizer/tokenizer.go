@@ -8,20 +8,20 @@ import (
 	"strings"
 )
 
-type tokenType int
+type TokenType int
 
 const (
-	TT_KEYWORD tokenType = iota + 1
+	TT_KEYWORD TokenType = iota + 1
 	TT_SYMBOL
 	TT_IDENTIFIER
 	TT_INT_CONST
 	TT_STRING_CONST
 )
 
-type keyWordType int
+type KeyWordType int
 
 const (
-	KT_CLASS keyWordType = iota + 1
+	KT_CLASS KeyWordType = iota + 1
 	KT_METHOD
 	KT_FUNCTION
 	KT_CONSTRUCTOR
@@ -55,82 +55,82 @@ var keywords = []string{
 
 // Tokenizer is a struct that reads a file line by line and skips empty lines and comments. It provides a method to get the current line of the scanner without leading and trailing spaces and comments.
 type Tokenizer struct {
-	scanner           vmtranslator.CodeScanner
-	currentLine       string
-	currentLineLength int
-	currentPos        int // currentPos is the position of the next token in the current line
-	currentToken      string
+	Scanner           vmtranslator.CodeScanner
+	CurrentLine       string
+	CurrentLineLength int
+	CurrentPos        int // currentPos is the position of the next token in the current line
+	CurrentToken      string
 }
 
-// NewTokenizer creates a new Tokenizer with the given reader. It uses a [CodeScanner] to read the file. commentPrefix is the prefix that indicates a comment. Example: "//"
-func NewTokenizer(r io.Reader) *Tokenizer {
+// New creates a new Tokenizer with the given reader. It uses a [CodeScanner] to read the file. commentPrefix is the prefix that indicates a comment. Example: "//"
+func New(r io.Reader) *Tokenizer {
 	return &Tokenizer{
-		scanner: vmtranslator.NewCodeScanner(r, "//"),
+		Scanner: vmtranslator.NewCodeScanner(r, "//"),
 	}
 }
 
-// advance advances the scanner to the next token. It returns true if there is a next token, false otherwise.
-func (t *Tokenizer) advance() bool {
-	if t.currentPos >= t.currentLineLength {
-		t.currentLine = t.scanner.Text()
-		l := len(t.currentLine)
+// Advance advances the scanner to the next token. It returns true if there is a next token, false otherwise.
+func (t *Tokenizer) Advance() bool {
+	if t.CurrentPos >= t.CurrentLineLength {
+		t.CurrentLine = t.Scanner.Text()
+		l := len(t.CurrentLine)
 		if l == 0 {
 			return false
 		}
-		t.currentLineLength = l
-		t.currentPos = 0
+		t.CurrentLineLength = l
+		t.CurrentPos = 0
 	}
 
-	pos := t.currentPos
+	pos := t.CurrentPos
 	// skip spaces
-	if t.currentLine[pos] == ' ' {
-		t.currentPos++
-		return t.advance()
+	if t.CurrentLine[pos] == ' ' {
+		t.CurrentPos++
+		return t.Advance()
 	}
 
 	// check if the next token is a symbol
 	for _, s := range symbols {
-		if t.currentLine[pos:pos+len(s)] == s {
-			t.currentPos += len(s)
-			t.currentToken = s
+		if t.CurrentLine[pos:pos+len(s)] == s {
+			t.CurrentPos += len(s)
+			t.CurrentToken = s
 			return true
 		}
 	}
 
 	// check if the next token is a keyword
 	for _, kw := range keywords {
-		if t.currentLine[pos:pos+len(kw)] == kw {
-			t.currentPos += len(kw)
-			t.currentToken = kw
+		if t.CurrentLine[pos:pos+len(kw)] == kw {
+			t.CurrentPos += len(kw)
+			t.CurrentToken = kw
 			return true
 		}
 	}
 
 	// check if the next token is an integer constant
-	if i, ok := ParseIntConst(t.currentLine[pos:]); ok == nil {
-		t.currentPos += len(strconv.Itoa(i))
-		t.currentToken = strconv.Itoa(i)
+	if i, ok := ParseIntConst(t.CurrentLine[pos:]); ok == nil {
+		t.CurrentPos += len(strconv.Itoa(i))
+		t.CurrentToken = strconv.Itoa(i)
 		return true
 	}
 
 	// check if the next token is a string constant
-	if s, ok := ParseStringConst(t.currentLine[pos:]); ok == nil {
-		t.currentPos += len(s) + 2 // 2 for the quotes
-		t.currentToken = s
+	if s, ok := ParseStringConst(t.CurrentLine[pos:]); ok == nil {
+		t.CurrentPos += len(s) + 2 // 2 for the quotes
+		t.CurrentToken = s
 		return true
 	}
 
 	// check if the next token is an identifier
-	if id, ok := ParseIdentifier(t.currentLine[pos:]); ok == nil {
-		t.currentPos += len(id)
-		t.currentToken = id
+	if id, ok := ParseIdentifier(t.CurrentLine[pos:]); ok == nil {
+		t.CurrentPos += len(id)
+		t.CurrentToken = id
 		return true
 	}
 	return false
 }
 
 // GetTokenType returns the type of the token. It returns an error if the token is not a valid token.
-func GetTokenType(token string) (tokenType, error) {
+func GetTokenType(token string) (TokenType, error) {
 	switch {
 	case IsIdentifier(token):
 		return TT_IDENTIFIER, nil
@@ -148,7 +148,7 @@ func GetTokenType(token string) (tokenType, error) {
 }
 
 // GetKeyWordType returns the keyword type of the token. It returns an error if the token is not a valid keyword.
-func GetKeyWordType(token string) (keyWordType, error) {
+func GetKeyWordType(token string) (KeyWordType, error) {
 	switch token {
 	case "class":
 		return KT_CLASS, nil

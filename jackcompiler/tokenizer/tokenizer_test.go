@@ -8,7 +8,7 @@ import (
 func TestGetTokenType(t *testing.T) {
 	tests := []struct {
 		token string
-		want  tokenType
+		want  TokenType
 	}{
 		{"class", TT_KEYWORD},
 		{"method", TT_KEYWORD},
@@ -77,7 +77,7 @@ func TestGetTokenType(t *testing.T) {
 func TestGetKeyWordType(t *testing.T) {
 	tests := []struct {
 		token string
-		want  keyWordType
+		want  KeyWordType
 	}{
 		{"class", KT_CLASS},
 		{"method", KT_METHOD},
@@ -287,7 +287,7 @@ func TestExtractIdentifier(t *testing.T) {
 }
 
 func TestTokenizer(t *testing.T) {
-	var tokenizer = NewTokenizer(strings.NewReader(`
+	var tokenizer = New(strings.NewReader(`
 // This file is part of www.nand2tetris.org
 // and the book "The Elements of Computing Systems"
 // by Nisan and Schocken, MIT Press.
@@ -326,7 +326,7 @@ class Main {
 `))
 	tests := []struct {
 		wantToken string
-		wantType  tokenType
+		wantType  TokenType
 	}{
 		{"class", TT_KEYWORD},
 		{"Main", TT_IDENTIFIER},
@@ -403,8 +403,8 @@ class Main {
 		{"}", TT_SYMBOL},
 	}
 
-	for i := 0; tokenizer.advance(); i++ {
-		token := tokenizer.currentToken
+	for i := 0; tokenizer.Advance(); i++ {
+		token := tokenizer.CurrentToken
 		if i >= len(tests) {
 			t.Errorf("tokenizer returned more tokens than expected")
 			break
