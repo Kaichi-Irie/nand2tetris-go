@@ -10,7 +10,7 @@ import (
 type tokenType int
 
 const (
-	TT_KEYWORD tokenType = iota
+	TT_KEYWORD tokenType = iota + 1
 	TT_SYMBOL
 	TT_IDENTIFIER
 	TT_INT_CONST
@@ -20,7 +20,7 @@ const (
 type keyWordType int
 
 const (
-	KT_CLASS keyWordType = iota
+	KT_CLASS keyWordType = iota + 1
 	KT_METHOD
 	KT_FUNCTION
 	KT_CONSTRUCTOR
@@ -117,6 +117,74 @@ func (t Tokenizer) advance() bool {
 		return true
 	}
 	return false
+}
+
+// GetTokenType returns the type of the token. It returns an error if the token is not a valid token.
+func GetTokenType(token string) (tokenType, error) {
+	switch {
+	case IsIdentifier(token):
+		return TT_IDENTIFIER, nil
+	case IsIntConst(token):
+		return TT_INT_CONST, nil
+	case IsStringConst(token):
+		return TT_STRING_CONST, nil
+	case IsKeyword(token):
+		return TT_KEYWORD, nil
+	case IsSymbol(token):
+		return TT_SYMBOL, nil
+	default:
+		return 0, fmt.Errorf("unknown token type")
+	}
+}
+
+// GetKeyWordType returns the keyword type of the token. It returns an error if the token is not a valid keyword.
+func GetKeyWordType(token string) (keyWordType, error) {
+	switch token {
+	case "class":
+		return KT_CLASS, nil
+	case "method":
+		return KT_METHOD, nil
+	case "function":
+		return KT_FUNCTION, nil
+	case "constructor":
+		return KT_CONSTRUCTOR, nil
+	case "int":
+		return KT_INT, nil
+	case "boolean":
+		return KT_BOOLEAN, nil
+	case "char":
+		return KT_CHAR, nil
+	case "void":
+		return KT_VOID, nil
+	case "var":
+		return KT_VAR, nil
+	case "static":
+		return KT_STATIC, nil
+	case "field":
+		return KT_FIELD, nil
+	case "let":
+		return KT_LET, nil
+	case "do":
+		return KT_DO, nil
+	case "if":
+		return KT_IF, nil
+	case "else":
+		return KT_ELSE, nil
+	case "while":
+		return KT_WHILE, nil
+	case "return":
+		return KT_RETURN, nil
+	case "true":
+		return KT_TRUE, nil
+	case "false":
+		return KT_FALSE, nil
+	case "null":
+		return KT_NULL, nil
+	case "this":
+		return KT_THIS, nil
+	default:
+		return 0, fmt.Errorf("unknown keyword type")
+	}
 }
 
 // func intVal(token string) (int, error)

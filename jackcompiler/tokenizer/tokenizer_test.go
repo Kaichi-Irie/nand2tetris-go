@@ -2,6 +2,113 @@ package tokenizer
 
 import "testing"
 
+func TestGetTokenType(t *testing.T) {
+	tests := []struct {
+		token string
+		want  tokenType
+	}{
+		{"class", TT_KEYWORD},
+		{"method", TT_KEYWORD},
+		{"function", TT_KEYWORD},
+		{"constructor", TT_KEYWORD},
+		{"int", TT_KEYWORD},
+		{"boolean", TT_KEYWORD},
+		{"char", TT_KEYWORD},
+		{"void", TT_KEYWORD},
+		{"var", TT_KEYWORD},
+		{"static", TT_KEYWORD},
+		{"field", TT_KEYWORD},
+		{"let", TT_KEYWORD},
+		{"do", TT_KEYWORD},
+		{"if", TT_KEYWORD},
+		{"else", TT_KEYWORD},
+		{"while", TT_KEYWORD},
+		{"return", TT_KEYWORD},
+		{"true", TT_KEYWORD},
+		{"false", TT_KEYWORD},
+		{"null", TT_KEYWORD},
+		{"this", TT_KEYWORD},
+		{"123", TT_INT_CONST},
+		{"0", TT_INT_CONST},
+		{"999", TT_INT_CONST},
+		{"098", TT_INT_CONST},
+		{"hello0", TT_IDENTIFIER},
+		{"hello", TT_IDENTIFIER},
+		{"_hello", TT_IDENTIFIER},
+		{"hello_world", TT_IDENTIFIER},
+		{"\"hello\"", TT_STRING_CONST},
+		{"\"\"", TT_STRING_CONST},
+		{"\"123\"", TT_STRING_CONST},
+		{"\"hello world\"", TT_STRING_CONST},
+		{"(", TT_SYMBOL},
+		{")", TT_SYMBOL},
+		{"{", TT_SYMBOL},
+		{"}", TT_SYMBOL},
+		{"[", TT_SYMBOL},
+		{"]", TT_SYMBOL},
+		{";", TT_SYMBOL},
+		{",", TT_SYMBOL},
+		{".", TT_SYMBOL},
+		{"+", TT_SYMBOL},
+		{"-", TT_SYMBOL},
+		{"*", TT_SYMBOL},
+		{"/", TT_SYMBOL},
+		{"&", TT_SYMBOL},
+		{"|", TT_SYMBOL},
+		{"<", TT_SYMBOL},
+		{">", TT_SYMBOL},
+		{"=", TT_SYMBOL},
+		{"~", TT_SYMBOL},
+	}
+	for _, tt := range tests {
+		t.Run(tt.token, func(t *testing.T) {
+			if got, err := GetTokenType(tt.token); err != nil {
+				t.Errorf("getTokenType(%s) = %v, want %v", tt.token, err, tt.want)
+			} else if got != tt.want {
+				t.Errorf("getTokenType(%s) = %v, want %v", tt.token, got, tt.want)
+			}
+		})
+	}
+}
+
+func TestGetKeyWordType(t *testing.T) {
+	tests := []struct {
+		token string
+		want  keyWordType
+	}{
+		{"class", KT_CLASS},
+		{"method", KT_METHOD},
+		{"function", KT_FUNCTION},
+		{"constructor", KT_CONSTRUCTOR},
+		{"int", KT_INT},
+		{"boolean", KT_BOOLEAN},
+		{"char", KT_CHAR},
+		{"void", KT_VOID},
+		{"var", KT_VAR},
+		{"static", KT_STATIC},
+		{"field", KT_FIELD},
+		{"let", KT_LET},
+		{"do", KT_DO},
+		{"if", KT_IF},
+		{"else", KT_ELSE},
+		{"while", KT_WHILE},
+		{"return", KT_RETURN},
+		{"true", KT_TRUE},
+		{"false", KT_FALSE},
+		{"null", KT_NULL},
+		{"this", KT_THIS},
+	}
+	for _, tt := range tests {
+		t.Run(tt.token, func(t *testing.T) {
+			if got, err := GetKeyWordType(tt.token); err != nil {
+				t.Errorf("getKeyWordType(%s) = %v, want %v", tt.token, err, tt.want)
+			} else if got != tt.want {
+				t.Errorf("getKeyWordType(%s) = %v, want %v", tt.token, got, tt.want)
+			}
+		})
+	}
+}
+
 func TestIsIntConst(t *testing.T) {
 	tests := []struct {
 		token string
