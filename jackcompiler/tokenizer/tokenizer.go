@@ -2,6 +2,7 @@ package tokenizer
 
 import (
 	"fmt"
+	"io"
 	"nand2tetris-golang/vm/vmtranslator"
 	"strconv"
 	"strings"
@@ -210,12 +211,20 @@ func IsKeyword(token string) bool {
 	return false
 }
 
+func GetIntConst(token string) (int, error) {
+	i, err := strconv.Atoi(token)
+	if err != nil {
+		return 0, fmt.Errorf("not an integer constant")
+	}
+	return i, nil
+}
+
 /*
 IsIntConst checks if the string is an integer constant. This does not process any spaces, which means "123 " or "3\n" is not an integer constant
 and "123" is an integer constant.
 */
-func IsIntConst(s string) bool {
-	_, err := strconv.Atoi(s)
+func IsIntConst(token string) bool {
+	_, err := GetIntConst(token)
 	return err == nil
 }
 
@@ -235,23 +244,25 @@ func ExtractIntConst(s string) (int, error) {
 	if i == -1 {
 		i = len(s)
 	}
-	intConst := s[0:i]
-	if !IsIntConst(intConst) {
-		return 0, fmt.Errorf("not an integer constant")
+	return GetIntConst(s[0:i])
+}
+
+// GetStringConst checks if the string is a string constant. A string constant is a string that starts and ends with a double quote
+func GetStringConst(token string) (string, error) {
+	if len(token) < 2 || token[0] != '"' || token[len(token)-1] != '"' {
+		return "", fmt.Errorf("not a string constant")
 	}
-	return strconv.Atoi(intConst)
+	// check if the string contains any quotes or newlines inside
+	if idx := strings.IndexAny(token[1:len(token)-1], "\"\n\r"); idx != -1 {
+		return "", fmt.Errorf("string constant contains quotes or newlines")
+	}
+	return token[1 : len(token)-1], nil
 }
 
 // IsStringConst checks if the string is a string constant
-func IsStringConst(s string) bool {
-	if len(s) < 2 || s[0] != '"' || s[len(s)-1] != '"' {
-		return false
-	}
-	// check if the string contains any quotes or newlines inside
-	if idx := strings.IndexAny(s[1:len(s)-1], "\"\n\r"); idx != -1 {
-		return false
-	}
-	return true
+func IsStringConst(token string) bool {
+	_, err := GetStringConst(token)
+	return err == nil
 }
 
 /*
@@ -259,29 +270,33 @@ extractStringConst extracts the string constant at the beginning of the string.
 It returns the string constant without the quotes and an error if the string is not a string constant.
 */
 func ExtractStringConst(s string) (string, error) {
-	if len(s) == 0 {
-		return "", fmt.Errorf("empty string")
+	if len(s) < 2 || s[0] != '"' {
+		return "", fmt.Errorf("cannot extract string constant")
 	}
 	idx := strings.Index(s[1:], "\"")
-	strConst := s[1 : 1+idx]
+	if idx == -1 {
+		return "", fmt.Errorf("cannot find closing quote")
+	}
 
-	if !IsStringConst("\"" + strConst + "\"") {
-		return "", fmt.Errorf("not a string constant")
+	strConst, err := GetStringConst(s[0 : idx+2])
+	if err != nil {
+		return "", err
 	}
 	return strConst, nil
 }
 
-func IsIdentifier(s string) bool {
-	if len(s) == 0 {
-		return false
+// GetIdentifier checks if the string is an identifier. An identifier is a string that starts with a letter or an underscore
+func GetIdentifier(token string) (string, error) {
+	if len(token) == 0 {
+		return "", fmt.Errorf("not an identifier")
 	}
 	// check if the name does not conflict with a keyword
-	if IsKeyword(s) {
-		return false
+	if IsKeyword(token) {
+		return "", fmt.Errorf("this is a keyword")
 	}
 
 	// check if the rest of the string is a letter, digit or underscore
-	for i, c := range s {
+	for i, c := range token {
 		// check if the character is a letter, digit or underscore
 		if 'A' <= c && c <= 'Z' {
 			continue
@@ -297,9 +312,15 @@ func IsIdentifier(s string) bool {
 		if c == '_' {
 			continue
 		}
-		return false
+		return "", fmt.Errorf("not an identifier. invalid character %c", c)
 	}
-	return true
+	return token, nil
+}
+
+// IsIdentifier checks if the string is an identifier
+func IsIdentifier(token string) bool {
+	_, err := GetIdentifier(token)
+	return err == nil
 }
 
 // ExtractIdentifier extracts the identifier from the string. An identifier is a string that starts with a letter or an underscore
@@ -311,10 +332,5 @@ func ExtractIdentifier(s string) (string, error) {
 	if idx == -1 {
 		idx = len(s)
 	}
-
-	identifier := s[0:idx]
-	if !IsIdentifier(identifier) {
-		return "", fmt.Errorf("not an identifier")
-	}
-	return identifier, nil
+	return GetIdentifier(s[0:idx])
 }
