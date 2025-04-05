@@ -170,7 +170,7 @@ func (t *Tokenizer) ProcessKeyWord(kwType KeyWordType, w io.Writer) error {
 		return fmt.Errorf("token is not the expected keyword")
 	}
 
-	_, err := io.WriteString(w, "<keyword> "+kw+" </keyword>")
+	_, err := io.WriteString(w, "<keyword> "+kw+" </keyword>\n")
 	if err != nil {
 		return err
 	}
@@ -192,7 +192,7 @@ func (t *Tokenizer) ProcessSymbol(symbol string, w io.Writer) error {
 	if escaped, ok := XMLEscapes[symbol]; ok {
 		symbol = escaped
 	}
-	_, err := io.WriteString(w, "<symbol> "+symbol+" </symbol>")
+	_, err := io.WriteString(w, "<symbol> "+symbol+" </symbol>\n")
 	if err != nil {
 		return err
 	}
@@ -207,7 +207,7 @@ func (t *Tokenizer) ProcessIdentifier(w io.Writer) error {
 		return fmt.Errorf("token is not an identifier")
 	}
 
-	_, err := io.WriteString(w, "<identifier> "+id+" </identifier>")
+	_, err := io.WriteString(w, "<identifier> "+id+" </identifier>\n")
 	if err != nil {
 		return err
 	}
