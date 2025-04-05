@@ -63,14 +63,14 @@ type Tokenizer struct {
 }
 
 // NewTokenizer creates a new Tokenizer with the given reader. It uses a [CodeScanner] to read the file. commentPrefix is the prefix that indicates a comment. Example: "//"
-func NewTokenizer(r io.Reader) Tokenizer {
-	return Tokenizer{
+func NewTokenizer(r io.Reader) *Tokenizer {
+	return &Tokenizer{
 		scanner: vmtranslator.NewCodeScanner(r, "//"),
 	}
 }
 
 // advance advances the scanner to the next token. It returns true if there is a next token, false otherwise.
-func (t Tokenizer) advance() bool {
+func (t *Tokenizer) advance() bool {
 	if t.currentPos >= t.currentLineLength {
 		t.currentLine = t.scanner.Text()
 		l := len(t.currentLine)
