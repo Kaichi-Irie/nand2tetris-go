@@ -71,8 +71,8 @@ func (cs CodeScanner) isCommentLine(line string) bool {
 	return line[0:2] == cs.commentPrefix
 }
 
-// text returns the current line of the scanner without leading and trailing spaces and comments. It replaces multiple spaces with a single space and removes comments at the end of the line.
-func (cs CodeScanner) text() string {
+// Text returns the current line of the scanner without leading and trailing spaces and comments. It replaces multiple spaces with a single space and removes comments at the end of the line.
+func (cs CodeScanner) Text() string {
 	text := cs.scanner.Text()
 	//Remove comment at the end of the line
 	text = strings.Split(text, cs.commentPrefix)[0]
@@ -81,16 +81,16 @@ func (cs CodeScanner) text() string {
 	return strings.Join(strings.Fields(text), " ")
 }
 
-// scan reads the next line from the scanner and skips empty lines and comments. It returns false if there are no more lines.
-func (cs CodeScanner) scan() bool {
+// Scan reads the next line from the scanner and skips empty lines and comments. It returns false if there are no more lines.
+func (cs CodeScanner) Scan() bool {
 	ok := cs.scanner.Scan()
 	if !ok {
 		return false
 	}
-	line := cs.text()
+	line := cs.Text()
 	// skip empty or comment line
 	if cs.isEmptyLine(line) || cs.isCommentLine(line) {
-		return cs.scan()
+		return cs.Scan()
 	}
 	return true
 }
@@ -125,11 +125,11 @@ func getCommandType(command VMCommand) VMCommandType {
 
 // advance reads the next instruction from the input and makes it the current instruction. It returns false if there are no more instructions. advance ignores empty lines and comments.
 func (p *Parser) advance() bool {
-	ok := p.scanner.scan()
+	ok := p.scanner.Scan()
 	if !ok {
 		return false
 	}
-	line := p.scanner.text()
+	line := p.scanner.Text()
 	command := VMCommand(line)
 	p.currentCommand = command
 	p.currentType = getCommandType(command)

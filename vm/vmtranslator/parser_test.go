@@ -27,26 +27,26 @@ push constant   8
 
 func TestCodeScanner(t *testing.T) {
 	cs := CodeScanner{bufio.NewScanner(strings.NewReader(source)), "//"}
-	if !cs.scan() {
+	if !cs.Scan() {
 		t.Errorf("scan() returned false")
 	}
-	if cs.text() != "push constant 7" {
-		t.Errorf("Expected 'push constant 7', got %s", cs.text())
+	if cs.Text() != "push constant 7" {
+		t.Errorf("Expected 'push constant 7', got %s", cs.Text())
 	}
-	if !cs.scan() {
+	if !cs.Scan() {
 		t.Errorf("scan() returned false")
 	}
-	if cs.text() != "push constant 8" {
-		t.Errorf("Expected 'push constant 8', got %s", cs.text())
+	if cs.Text() != "push constant 8" {
+		t.Errorf("Expected 'push constant 8', got %s", cs.Text())
 	}
 
-	if !cs.scan() {
+	if !cs.Scan() {
 		t.Errorf("scan() returned false")
 	}
-	if cs.text() != "add" {
-		t.Errorf("Expected 'add', got %s", cs.text())
+	if cs.Text() != "add" {
+		t.Errorf("Expected 'add', got %s", cs.Text())
 	}
-	if cs.scan() {
+	if cs.Scan() {
 		t.Errorf("scan() returned true")
 	}
 }
