@@ -1,7 +1,7 @@
 package main
 
 import (
-	"nand2tetris-golang/jackcompiler/jackanalyzer"
+	"nand2tetris-go/jackcompiler/jackanalyzer"
 	"os"
 )
 

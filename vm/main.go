@@ -1,7 +1,7 @@
 package main
 
 import (
-	"nand2tetris-golang/vm/vmtranslator"
+	"nand2tetris-go/vm/vmtranslator"
 	"os"
 )
 

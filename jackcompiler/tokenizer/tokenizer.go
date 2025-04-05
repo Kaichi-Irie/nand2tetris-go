@@ -3,7 +3,7 @@ package tokenizer
 import (
 	"fmt"
 	"io"
-	"nand2tetris-golang/vm/vmtranslator"
+	"nand2tetris-go/vm/vmtranslator"
 	"strconv"
 	"strings"
 )
@@ -127,6 +127,55 @@ func (t *Tokenizer) Advance() bool {
 		return true
 	}
 	return false
+}
+
+// ProcessKeyWord checks if the current token is a keyword of the given type. If it is, it writes the keyword to the writer and advances to the next token. It returns an error if the current token is not a keyword of the given type.
+func (t *Tokenizer) ProcessKeyWord(kwType KeyWordType, w io.Writer) error {
+	kw := t.CurrentToken
+	if kt, err := GetKeyWordType(kw); err != nil {
+		return fmt.Errorf("token is not a keyword")
+	} else if kt != kwType {
+		return fmt.Errorf("token is not the expected keyword")
+	}
+
+	_, err := io.WriteString(w, "<keyword> "+kw+" </keyword>")
+	if err != nil {
+		return err
+	}
+
+	t.Advance()
+	return nil
+}
+
+// ProcessSymbol checks if the current token is a symbol. If it is, it writes the symbol to the writer and advances to the next token. It returns an error if the current token is not a symbol.
+func (t *Tokenizer) ProcessSymbol(symbol string, w io.Writer) error {
+	if !IsSymbol(symbol) {
+		return fmt.Errorf("given symbol is not a valid symbol")
+	}
+	if symbol != t.CurrentToken {
+		return fmt.Errorf("current token is not the expected symbol")
+	}
+	_, err := io.WriteString(w, "<symbol> "+symbol+" </symbol>")
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// ProcessIdentifier checks if the current token is an identifier. If it is, it writes the identifier to the writer and advances to the next token. It returns an error if the current token is not an identifier.
+func (t *Tokenizer) ProcessIdentifier(w io.Writer) error {
+	id := t.CurrentToken
+	if !IsIdentifier(id) {
+		return fmt.Errorf("token is not an identifier")
+	}
+
+	_, err := io.WriteString(w, "<identifier> "+id+" </identifier>")
+	if err != nil {
+		return err
+	}
+
+	t.Advance()
+	return nil
 }
 
 // GetTokenType returns the type of the token. It returns an error if the token is not a valid token.

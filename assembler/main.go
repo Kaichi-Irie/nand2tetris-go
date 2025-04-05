@@ -1,7 +1,7 @@
 package main
 
 import (
-	"nand2tetris-golang/assembler/hack"
+	"nand2tetris-go/assembler/hack"
 	"os"
 )
 
