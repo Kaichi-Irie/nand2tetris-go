@@ -399,3 +399,76 @@ func TestProcessKeyWord(t *testing.T) {
 		})
 	}
 }
+
+func TestProcessIdentifier(t *testing.T) {
+	tests := []struct {
+		s    string
+		want string
+	}{
+		{"hello", "<identifier> hello </identifier>"},
+		{"_hello", "<identifier> _hello </identifier>"},
+		{"hello_world", "<identifier> hello_world </identifier>"},
+		{"hello123", "<identifier> hello123 </identifier>"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.s, func(t *testing.T) {
+			tknz, err := CreateTokenizerWithFirstToken(strings.NewReader(tt.s))
+			if err != nil {
+				t.Errorf("createTokenizerWithFirstToken(%s) = %v", tt.s, err)
+				return
+			}
+			w := strings.Builder{}
+			if err := tknz.ProcessIdentifier(&w); err != nil {
+				t.Errorf("processIdentifier(%s) = %v", tt.s, err)
+				return
+			}
+			if w.String() != tt.want {
+				t.Errorf("processIdentifier(%s) = %s, want %s", tt.s, w.String(), tt.want)
+			}
+		})
+	}
+}
+
+func TestProcessSymbol(t *testing.T) {
+	tests := []struct {
+		s    string
+		want string
+	}{
+		{"{", "<symbol> { </symbol>"},
+		{"}", "<symbol> } </symbol>"},
+		{"(", "<symbol> ( </symbol>"},
+		{")", "<symbol> ) </symbol>"},
+		{"[", "<symbol> [ </symbol>"},
+		{"]", "<symbol> ] </symbol>"},
+		{";", "<symbol> ; </symbol>"},
+		{",", "<symbol> , </symbol>"},
+		{".", "<symbol> . </symbol>"},
+		{"+", "<symbol> + </symbol>"},
+		{"-", "<symbol> - </symbol>"},
+		{"*", "<symbol> * </symbol>"},
+		{"/", "<symbol> / </symbol>"},
+		{"|", "<symbol> | </symbol>"},
+		{"<", "<symbol> &lt; </symbol>"},
+		{">", "<symbol> &gt; </symbol>"},
+		{"=", "<symbol> = </symbol>"},
+		{"~", "<symbol> ~ </symbol>"},
+		{"&", "<symbol> &amp; </symbol>"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.s, func(t *testing.T) {
+			tknz, err := CreateTokenizerWithFirstToken(strings.NewReader(tt.s))
+			if err != nil {
+				t.Errorf("createTokenizerWithFirstToken(%s) = %v", tt.s, err)
+				return
+			}
+			w := strings.Builder{}
+			if err := tknz.ProcessSymbol(tt.s, &w); err != nil {
+				t.Errorf("processSymbol(%s) = %v", tt.s, err)
+				return
+			}
+			if w.String() != tt.want {
+				t.Errorf("processSymbol(%s) = %s, want %s", tt.s, w.String(), tt.want)
+			}
+		})
+	}
+}

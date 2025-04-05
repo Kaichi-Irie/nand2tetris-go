@@ -44,6 +44,13 @@ const (
 	KT_THIS
 )
 
+var XMLEscapes = map[string]string{
+	"<":  "&lt;",
+	">":  "&gt;",
+	"\"": "&quot;",
+	"&":  "&amp;",
+}
+
 var symbols = []string{
 	"{", "}", "(", ")", "[", "]", ".", ",", ";", "+", "-", "*", "/", "&", "|", "<", ">", "=", "~",
 }
@@ -179,6 +186,11 @@ func (t *Tokenizer) ProcessSymbol(symbol string, w io.Writer) error {
 	}
 	if symbol != t.CurrentToken {
 		return fmt.Errorf("current token is not the expected symbol")
+	}
+
+	// escape the symbol
+	if escaped, ok := XMLEscapes[symbol]; ok {
+		symbol = escaped
 	}
 	_, err := io.WriteString(w, "<symbol> "+symbol+" </symbol>")
 	if err != nil {
