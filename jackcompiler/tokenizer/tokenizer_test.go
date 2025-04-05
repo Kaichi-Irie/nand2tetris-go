@@ -149,7 +149,7 @@ func TestExtractIntConst(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.token, func(t *testing.T) {
-			if got, err := ExtractIntConst(tt.token); err != nil {
+			if got, err := ParseIntConst(tt.token); err != nil {
 				t.Errorf("extractIntConst(%s) = %v, want %v", tt.token, err, tt.want)
 			} else if got != tt.want {
 				t.Errorf("extractIntConst(%s) = %v, want %v", tt.token, got, tt.want)
@@ -191,7 +191,7 @@ func TestExtractStringConst(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.token, func(t *testing.T) {
-			if got, err := ExtractStringConst(tt.token); err != nil {
+			if got, err := ParseStringConst(tt.token); err != nil {
 				t.Errorf("extractStringConst(%s) = %v, want %v", tt.token, err, tt.want)
 			} else if got != tt.want {
 				t.Errorf("extractStringConst(%s) = %v, want %v", tt.token, got, tt.want)
@@ -277,7 +277,7 @@ func TestExtractIdentifier(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.token, func(t *testing.T) {
-			if got, err := ExtractIdentifier(tt.token); err != nil {
+			if got, err := ParseIdentifier(tt.token); err != nil {
 				t.Errorf("extractIdentifier(%s) = %v, want %v", tt.token, err, tt.want)
 			} else if got != tt.want {
 				t.Errorf("extractIdentifier(%s) = %v, want %v", tt.token, got, tt.want)

@@ -61,6 +61,7 @@ type Tokenizer struct {
 	currentPos        int // currentPos is the position of the next token in the current line
 	currentToken      string
 }
+
 // NewTokenizer creates a new Tokenizer with the given reader. It uses a [CodeScanner] to read the file. commentPrefix is the prefix that indicates a comment. Example: "//"
 func NewTokenizer(r io.Reader) Tokenizer {
 	return Tokenizer{
@@ -106,21 +107,21 @@ func (t Tokenizer) advance() bool {
 	}
 
 	// check if the next token is an integer constant
-	if i, ok := ExtractIntConst(t.currentLine[pos:]); ok == nil {
+	if i, ok := ParseIntConst(t.currentLine[pos:]); ok == nil {
 		t.currentPos += len(strconv.Itoa(i))
 		t.currentToken = strconv.Itoa(i)
 		return true
 	}
 
 	// check if the next token is a string constant
-	if s, ok := ExtractStringConst(t.currentLine[pos:]); ok == nil {
+	if s, ok := ParseStringConst(t.currentLine[pos:]); ok == nil {
 		t.currentPos += len(s) + 2 // 2 for the quotes
 		t.currentToken = s
 		return true
 	}
 
 	// check if the next token is an identifier
-	if id, ok := ExtractIdentifier(t.currentLine[pos:]); ok == nil {
+	if id, ok := ParseIdentifier(t.currentLine[pos:]); ok == nil {
 		t.currentPos += len(id)
 		t.currentToken = id
 		return true
@@ -237,11 +238,11 @@ func IsIntConst(token string) bool {
 }
 
 /*
-ExtractIntConst extracts the integer constant at the beginning of the string.
+ParseIntConst parses the integer constant at the beginning of the string.
 It returns the integer constant and an error if the string does not start with an integer constant.
 It also checks if the integer constant is a valid integer constant.
 */
-func ExtractIntConst(s string) (int, error) {
+func ParseIntConst(s string) (int, error) {
 	// check if the string is integer constant by itself
 	if IsIntConst(s) {
 		return strconv.Atoi(s)
@@ -274,12 +275,12 @@ func IsStringConst(token string) bool {
 }
 
 /*
-extractStringConst extracts the string constant at the beginning of the string.
+ParseStringConst parses the string constant at the beginning of the string.
 It returns the string constant without the quotes and an error if the string is not a string constant.
 */
-func ExtractStringConst(s string) (string, error) {
+func ParseStringConst(s string) (string, error) {
 	if len(s) < 2 || s[0] != '"' {
-		return "", fmt.Errorf("cannot extract string constant")
+		return "", fmt.Errorf("cannot parse string constant")
 	}
 	idx := strings.Index(s[1:], "\"")
 	if idx == -1 {
@@ -331,8 +332,8 @@ func IsIdentifier(token string) bool {
 	return err == nil
 }
 
-// ExtractIdentifier extracts the identifier from the string. An identifier is a string that starts with a letter or an underscore
-func ExtractIdentifier(s string) (string, error) {
+// ParseIdentifier parses the identifier from the string. An identifier is a string that starts with a letter or an underscore
+func ParseIdentifier(s string) (string, error) {
 	if IsIdentifier(s) {
 		return s, nil
 	}
