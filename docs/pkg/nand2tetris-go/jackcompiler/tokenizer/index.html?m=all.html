@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#375EAB">
+
+  <title>tokenizer - Go Documentation Server</title>
+
+<link type="text/css" rel="stylesheet" href="../../../../lib/godoc/style.css">
+
+<script>window.initFuncs = [];</script>
+<script src="../../../../lib/godoc/jquery.js" defer></script>
+
+
+
+<script>var goVersion = "go1.24.1";</script>
+<script src="../../../../lib/godoc/godocs.js" defer></script>
+</head>
+<body>
+
+<div id='lowframe' style="position: fixed; bottom: 0; left: 0; height: 0; width: 100%; border-top: thin solid grey; background-color: white; overflow: auto;">
+...
+</div><!-- #lowframe -->
+
+<div id="topbar" class="wide"><div class="container">
+<div class="top-heading" id="heading-wide"><a href="http://localhost:6060/pkg/">Go Documentation Server</a></div>
+<div class="top-heading" id="heading-narrow"><a href="http://localhost:6060/pkg/">GoDoc</a></div>
+<a href="index.html%3Fm=all.html#" id="menu-button"><span id="menu-button-arrow">&#9661;</span></a>
+<form method="GET" action="http://localhost:6060/search">
+<div id="menu">
+
+<span class="search-box"><input type="search" id="search" name="q" placeholder="Search" aria-label="Search" required><button type="submit"><span><!-- magnifying glass: --><svg width="24" height="24" viewBox="0 0 24 24"><title>submit search</title><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/><path d="M0 0h24v24H0z" fill="none"/></svg></span></button></span>
+</div>
+</form>
+
+</div></div>
+
+
+
+<div id="page" class="wide">
+<div class="container">
+
+
+  <h1>
+    Package tokenizer
+    <span class="text-muted"></span>
+  </h1>
+
+
+
+
+
+
+
+<div id="nav"></div>
+
+
+<!--
+	Copyright 2009 The Go Authors. All rights reserved.
+	Use of this source code is governed by a BSD-style
+	license that can be found in the LICENSE file.
+-->
+<!--
+	Note: Static (i.e., not template-generated) href and id
+	attributes start with "pkg-" to make it impossible for
+	them to conflict with generated attributes (some of which
+	correspond to Go identifiers).
+-->
+
+	<script>
+	document.ANALYSIS_DATA = null;
+	document.CALLGRAPH = null;
+	</script>
+
+	
+		
+		<div id="short-nav">
+			<dl>
+			<dd><code>import "nand2tetris-go/jackcompiler/tokenizer"</code></dd>
+			</dl>
+			<dl>
+			<dd><a href="index.html%3Fm=all.html#pkg-overview" class="overviewLink">Overview</a></dd>
+			<dd><a href="index.html%3Fm=all.html#pkg-index" class="indexLink">Index</a></dd>
+			
+			
+			</dl>
+		</div>
+		<!-- The package's Name is printed as title by the top-level template -->
+		<div id="pkg-overview" class="toggleVisible">
+			<div class="collapsed">
+				<h2 class="toggleButton" title="Click to show Overview section">Overview ▹</h2>
+			</div>
+			<div class="expanded">
+				<h2 class="toggleButton" title="Click to hide Overview section">Overview ▾</h2>
+				
+				
+			</div>
+		</div>
+
+		<div id="pkg-index" class="toggleVisible">
+		<div class="collapsed">
+			<h2 class="toggleButton" title="Click to show Index section">Index ▹</h2>
+		</div>
+		<div class="expanded">
+			<h2 class="toggleButton" title="Click to hide Index section">Index ▾</h2>
+
+		<!-- Table of contents for API; must be named manual-nav to turn off auto nav. -->
+			<div id="manual-nav">
+			<dl>
+			
+			
+				<dd><a href="index.html%3Fm=all.html#pkg-variables">Variables</a></dd>
+			
+			
+				
+				<dd><a href="index.html%3Fm=all.html#GetIdentifier">func GetIdentifier(token string) (string, error)</a></dd>
+			
+				
+				<dd><a href="index.html%3Fm=all.html#GetIntConst">func GetIntConst(token string) (int, error)</a></dd>
+			
+				
+				<dd><a href="index.html%3Fm=all.html#GetStringConst">func GetStringConst(token string) (string, error)</a></dd>
+			
+				
+				<dd><a href="index.html%3Fm=all.html#IsIdentifier">func IsIdentifier(token string) bool</a></dd>
+			
+				
+				<dd><a href="index.html%3Fm=all.html#IsIntConst">func IsIntConst(token string) bool</a></dd>
+			
+				
+				<dd><a href="index.html%3Fm=all.html#IsKeyword">func IsKeyword(token string) bool</a></dd>
+			
+				
+				<dd><a href="index.html%3Fm=all.html#IsStringConst">func IsStringConst(token string) bool</a></dd>
+			
+				
+				<dd><a href="index.html%3Fm=all.html#IsSymbol">func IsSymbol(token string) bool</a></dd>
+			
+				
+				<dd><a href="index.html%3Fm=all.html#ParseIdentifier">func ParseIdentifier(s string) (string, error)</a></dd>
+			
+				
+				<dd><a href="index.html%3Fm=all.html#ParseIntConst">func ParseIntConst(s string) (int, error)</a></dd>
+			
+				
+				<dd><a href="index.html%3Fm=all.html#ParseStringConst">func ParseStringConst(s string) (string, error)</a></dd>
+			
+			
+				
+				<dd><a href="index.html%3Fm=all.html#KeyWordType">type KeyWordType</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html%3Fm=all.html#GetKeyWordType">func GetKeyWordType(token string) (KeyWordType, error)</a></dd>
+				
+				
+			
+				
+				<dd><a href="index.html%3Fm=all.html#TokenType">type TokenType</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html%3Fm=all.html#GetTokenType">func GetTokenType(token string) (TokenType, error)</a></dd>
+				
+				
+			
+				
+				<dd><a href="index.html%3Fm=all.html#Tokenizer">type Tokenizer</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html%3Fm=all.html#New">func New(r io.Reader) *Tokenizer</a></dd>
+				
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html%3Fm=all.html#Tokenizer.Advance">func (t *Tokenizer) Advance() bool</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html%3Fm=all.html#Tokenizer.ProcessIdentifier">func (t *Tokenizer) ProcessIdentifier(w io.Writer) error</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html%3Fm=all.html#Tokenizer.ProcessKeyWord">func (t *Tokenizer) ProcessKeyWord(kwType KeyWordType, w io.Writer) error</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html%3Fm=all.html#Tokenizer.ProcessSymbol">func (t *Tokenizer) ProcessSymbol(symbol string, w io.Writer) error</a></dd>
+				
+			
+			
+			</dl>
+			</div><!-- #manual-nav -->
+
+		
+
+		
+			<h3>Package files</h3>
+			<p>
+			<span style="font-size:90%">
+			
+				<a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/tokenizer/tokenizer.go">tokenizer.go</a>
+			
+			</span>
+			</p>
+		
+		</div><!-- .expanded -->
+		</div><!-- #pkg-index -->
+
+		
+
+		
+		
+			<h2 id="pkg-variables">Variables</h2>
+			
+				
+				<pre>var <span id="keywords">keywords</span> = []<a href="http://localhost:6060/pkg/builtin/#string">string</a>{
+    &#34;class&#34;, &#34;method&#34;, &#34;function&#34;, &#34;constructor&#34;, &#34;int&#34;, &#34;boolean&#34;, &#34;char&#34;, &#34;void&#34;,
+    &#34;var&#34;, &#34;static&#34;, &#34;field&#34;, &#34;let&#34;, &#34;do&#34;, &#34;if&#34;, &#34;else&#34;, &#34;while&#34;, &#34;return&#34;,
+    &#34;true&#34;, &#34;false&#34;, &#34;null&#34;, &#34;this&#34;,
+}</pre>
+			
+				
+				<pre>var <span id="symbols">symbols</span> = []<a href="http://localhost:6060/pkg/builtin/#string">string</a>{
+    &#34;{&#34;, &#34;}&#34;, &#34;(&#34;, &#34;)&#34;, &#34;[&#34;, &#34;]&#34;, &#34;.&#34;, &#34;,&#34;, &#34;;&#34;, &#34;+&#34;, &#34;-&#34;, &#34;*&#34;, &#34;/&#34;, &#34;&amp;&#34;, &#34;|&#34;, &#34;&lt;&#34;, &#34;&gt;&#34;, &#34;=&#34;, &#34;~&#34;,
+}</pre>
+			
+		
+		
+			
+			
+			<h2 id="GetIdentifier">func <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/tokenizer/tokenizer.go?s=9026:9074#L337">GetIdentifier</a>
+				<a class="permalink" href="index.html%3Fm=all.html#GetIdentifier">&#xb6;</a>
+				
+				
+			</h2>
+			<pre>func GetIdentifier(token <a href="http://localhost:6060/pkg/builtin/#string">string</a>) (<a href="http://localhost:6060/pkg/builtin/#string">string</a>, <a href="http://localhost:6060/pkg/builtin/#error">error</a>)</pre>
+			<p>GetIdentifier checks if the string is an identifier. An identifier is a string that starts with a letter or an underscore
+
+			
+			
+
+		
+			
+			
+			<h2 id="GetIntConst">func <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/tokenizer/tokenizer.go?s=6587:6630#L262">GetIntConst</a>
+				<a class="permalink" href="index.html%3Fm=all.html#GetIntConst">&#xb6;</a>
+				
+				
+			</h2>
+			<pre>func GetIntConst(token <a href="http://localhost:6060/pkg/builtin/#string">string</a>) (<a href="http://localhost:6060/pkg/builtin/#int">int</a>, <a href="http://localhost:6060/pkg/builtin/#error">error</a>)</pre>
+			
+			
+			
+
+		
+			
+			
+			<h2 id="GetStringConst">func <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/tokenizer/tokenizer.go?s=7779:7828#L299">GetStringConst</a>
+				<a class="permalink" href="index.html%3Fm=all.html#GetStringConst">&#xb6;</a>
+				
+				
+			</h2>
+			<pre>func GetStringConst(token <a href="http://localhost:6060/pkg/builtin/#string">string</a>) (<a href="http://localhost:6060/pkg/builtin/#string">string</a>, <a href="http://localhost:6060/pkg/builtin/#error">error</a>)</pre>
+			<p>GetStringConst checks if the string is a string constant. A string constant is a string that starts and ends with a double quote
+
+			
+			
+
+		
+			
+			
+			<h2 id="IsIdentifier">func <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/tokenizer/tokenizer.go?s=9846:9882#L369">IsIdentifier</a>
+				<a class="permalink" href="index.html%3Fm=all.html#IsIdentifier">&#xb6;</a>
+				
+				
+			</h2>
+			<pre>func IsIdentifier(token <a href="http://localhost:6060/pkg/builtin/#string">string</a>) <a href="http://localhost:6060/pkg/builtin/#bool">bool</a></pre>
+			<p>IsIdentifier checks if the string is an identifier
+
+			
+			
+
+		
+			
+			
+			<h2 id="IsIntConst">func <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/tokenizer/tokenizer.go?s=6937:6971#L274">IsIntConst</a>
+				<a class="permalink" href="index.html%3Fm=all.html#IsIntConst">&#xb6;</a>
+				
+				
+			</h2>
+			<pre>func IsIntConst(token <a href="http://localhost:6060/pkg/builtin/#string">string</a>) <a href="http://localhost:6060/pkg/builtin/#bool">bool</a></pre>
+			<p>IsIntConst checks if the string is an integer constant. This does not process any spaces, which means &quot;123 &quot; or &quot;3\n&quot; is not an integer constant
+and &quot;123&quot; is an integer constant.
+
+			
+			
+
+		
+			
+			
+			<h2 id="IsKeyword">func <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/tokenizer/tokenizer.go?s=6462:6495#L253">IsKeyword</a>
+				<a class="permalink" href="index.html%3Fm=all.html#IsKeyword">&#xb6;</a>
+				
+				
+			</h2>
+			<pre>func IsKeyword(token <a href="http://localhost:6060/pkg/builtin/#string">string</a>) <a href="http://localhost:6060/pkg/builtin/#bool">bool</a></pre>
+			<p>IsKeyword checks if the token is a keyword
+
+			
+			
+
+		
+			
+			
+			<h2 id="IsStringConst">func <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/tokenizer/tokenizer.go?s=8263:8300#L311">IsStringConst</a>
+				<a class="permalink" href="index.html%3Fm=all.html#IsStringConst">&#xb6;</a>
+				
+				
+			</h2>
+			<pre>func IsStringConst(token <a href="http://localhost:6060/pkg/builtin/#string">string</a>) <a href="http://localhost:6060/pkg/builtin/#bool">bool</a></pre>
+			<p>IsStringConst checks if the string is a string constant
+
+			
+			
+
+		
+			
+			
+			<h2 id="IsSymbol">func <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/tokenizer/tokenizer.go?s=6295:6327#L243">IsSymbol</a>
+				<a class="permalink" href="index.html%3Fm=all.html#IsSymbol">&#xb6;</a>
+				
+				
+			</h2>
+			<pre>func IsSymbol(token <a href="http://localhost:6060/pkg/builtin/#string">string</a>) <a href="http://localhost:6060/pkg/builtin/#bool">bool</a></pre>
+			<p>IsSymbol checks if the token is a symbol
+
+			
+			
+
+		
+			
+			
+			<h2 id="ParseIdentifier">func <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/tokenizer/tokenizer.go?s=10066:10112#L375">ParseIdentifier</a>
+				<a class="permalink" href="index.html%3Fm=all.html#ParseIdentifier">&#xb6;</a>
+				
+				
+			</h2>
+			<pre>func ParseIdentifier(s <a href="http://localhost:6060/pkg/builtin/#string">string</a>) (<a href="http://localhost:6060/pkg/builtin/#string">string</a>, <a href="http://localhost:6060/pkg/builtin/#error">error</a>)</pre>
+			<p>ParseIdentifier parses the identifier from the string. An identifier is a string that starts with a letter or an underscore
+
+			
+			
+
+		
+			
+			
+			<h2 id="ParseIntConst">func <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/tokenizer/tokenizer.go?s=7274:7315#L284">ParseIntConst</a>
+				<a class="permalink" href="index.html%3Fm=all.html#ParseIntConst">&#xb6;</a>
+				
+				
+			</h2>
+			<pre>func ParseIntConst(s <a href="http://localhost:6060/pkg/builtin/#string">string</a>) (<a href="http://localhost:6060/pkg/builtin/#int">int</a>, <a href="http://localhost:6060/pkg/builtin/#error">error</a>)</pre>
+			<p>ParseIntConst parses the integer constant at the beginning of the string.
+It returns the integer constant and an error if the string does not start with an integer constant.
+It also checks if the integer constant is a valid integer constant.
+
+			
+			
+
+		
+			
+			
+			<h2 id="ParseStringConst">func <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/tokenizer/tokenizer.go?s=8543:8590#L320">ParseStringConst</a>
+				<a class="permalink" href="index.html%3Fm=all.html#ParseStringConst">&#xb6;</a>
+				
+				
+			</h2>
+			<pre>func ParseStringConst(s <a href="http://localhost:6060/pkg/builtin/#string">string</a>) (<a href="http://localhost:6060/pkg/builtin/#string">string</a>, <a href="http://localhost:6060/pkg/builtin/#error">error</a>)</pre>
+			<p>ParseStringConst parses the string constant at the beginning of the string.
+It returns the string constant without the quotes and an error if the string is not a string constant.
+
+			
+			
+
+		
+		
+			
+			
+			<h2 id="KeyWordType">type <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/tokenizer/tokenizer.go?s=221:241#L11">KeyWordType</a>
+				<a class="permalink" href="index.html%3Fm=all.html#KeyWordType">&#xb6;</a>
+				
+				
+			</h2>
+			
+			<pre>type KeyWordType <a href="http://localhost:6060/pkg/builtin/#int">int</a></pre>
+
+			
+				
+				<pre>const (
+    <span id="KT_CLASS">KT_CLASS</span> <a href="index.html%3Fm=all.html#KeyWordType">KeyWordType</a> = <a href="http://localhost:6060/pkg/builtin/#iota">iota</a> + 1
+    <span id="KT_METHOD">KT_METHOD</span>
+    <span id="KT_FUNCTION">KT_FUNCTION</span>
+    <span id="KT_CONSTRUCTOR">KT_CONSTRUCTOR</span>
+    <span id="KT_INT">KT_INT</span>
+    <span id="KT_BOOLEAN">KT_BOOLEAN</span>
+    <span id="KT_CHAR">KT_CHAR</span>
+    <span id="KT_VOID">KT_VOID</span>
+    <span id="KT_VAR">KT_VAR</span>
+    <span id="KT_STATIC">KT_STATIC</span>
+    <span id="KT_FIELD">KT_FIELD</span>
+    <span id="KT_LET">KT_LET</span>
+    <span id="KT_DO">KT_DO</span>
+    <span id="KT_IF">KT_IF</span>
+    <span id="KT_ELSE">KT_ELSE</span>
+    <span id="KT_WHILE">KT_WHILE</span>
+    <span id="KT_RETURN">KT_RETURN</span>
+    <span id="KT_TRUE">KT_TRUE</span>
+    <span id="KT_FALSE">KT_FALSE</span>
+    <span id="KT_NULL">KT_NULL</span>
+    <span id="KT_THIS">KT_THIS</span>
+)</pre>
+			
+
+			
+
+			
+			
+			
+
+			
+				
+				<h3 id="GetKeyWordType">func <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/tokenizer/tokenizer.go?s=5234:5288#L190">GetKeyWordType</a>
+					<a class="permalink" href="index.html%3Fm=all.html#GetKeyWordType">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func GetKeyWordType(token <a href="http://localhost:6060/pkg/builtin/#string">string</a>) (<a href="index.html%3Fm=all.html#KeyWordType">KeyWordType</a>, <a href="http://localhost:6060/pkg/builtin/#error">error</a>)</pre>
+				<p>GetKeyWordType returns the keyword type of the token. It returns an error if the token is not a valid keyword.
+
+				
+				
+			
+
+			
+		
+			
+			
+			<h2 id="TokenType">type <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/tokenizer/tokenizer.go?s=100:118#L1">TokenType</a>
+				<a class="permalink" href="index.html%3Fm=all.html#TokenType">&#xb6;</a>
+				
+				
+			</h2>
+			
+			<pre>type TokenType <a href="http://localhost:6060/pkg/builtin/#int">int</a></pre>
+
+			
+				
+				<pre>const (
+    <span id="TT_KEYWORD">TT_KEYWORD</span> <a href="index.html%3Fm=all.html#TokenType">TokenType</a> = <a href="http://localhost:6060/pkg/builtin/#iota">iota</a> + 1
+    <span id="TT_SYMBOL">TT_SYMBOL</span>
+    <span id="TT_IDENTIFIER">TT_IDENTIFIER</span>
+    <span id="TT_INT_CONST">TT_INT_CONST</span>
+    <span id="TT_STRING_CONST">TT_STRING_CONST</span>
+)</pre>
+			
+
+			
+
+			
+			
+			
+
+			
+				
+				<h3 id="GetTokenType">func <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/tokenizer/tokenizer.go?s=4735:4785#L172">GetTokenType</a>
+					<a class="permalink" href="index.html%3Fm=all.html#GetTokenType">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func GetTokenType(token <a href="http://localhost:6060/pkg/builtin/#string">string</a>) (<a href="index.html%3Fm=all.html#TokenType">TokenType</a>, <a href="http://localhost:6060/pkg/builtin/#error">error</a>)</pre>
+				<p>GetTokenType returns the type of the token. It returns an error if the token is not a valid token.
+
+				
+				
+			
+
+			
+		
+			
+			
+			<h2 id="Tokenizer">type <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/tokenizer/tokenizer.go?s=1023:1258#L47">Tokenizer</a>
+				<a class="permalink" href="index.html%3Fm=all.html#Tokenizer">&#xb6;</a>
+				
+				
+			</h2>
+			<p>Tokenizer is a struct that reads a file line by line and skips empty lines and comments. It provides a method to get the current line of the scanner without leading and trailing spaces and comments.
+
+			<pre>type Tokenizer struct {
+<span id="Tokenizer.Scanner"></span>    Scanner           <a href="../../vm/vmtranslator/index.html">vmtranslator</a>.<a href="../../vm/vmtranslator/index.html#CodeScanner">CodeScanner</a>
+<span id="Tokenizer.CurrentLine"></span>    CurrentLine       <a href="http://localhost:6060/pkg/builtin/#string">string</a>
+<span id="Tokenizer.CurrentLineLength"></span>    CurrentLineLength <a href="http://localhost:6060/pkg/builtin/#int">int</a>
+<span id="Tokenizer.CurrentPos"></span>    CurrentPos        <a href="http://localhost:6060/pkg/builtin/#int">int</a> <span class="comment">// currentPos is the position of the next token in the current line</span>
+<span id="Tokenizer.CurrentToken"></span>    CurrentToken      <a href="http://localhost:6060/pkg/builtin/#string">string</a>
+}
+</pre>
+
+			
+
+			
+
+			
+			
+			
+
+			
+				
+				<h3 id="New">func <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/tokenizer/tokenizer.go?s=1424:1456#L56">New</a>
+					<a class="permalink" href="index.html%3Fm=all.html#New">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func New(r <a href="http://localhost:6060/pkg/io/">io</a>.<a href="http://localhost:6060/pkg/io/#Reader">Reader</a>) *<a href="index.html%3Fm=all.html#Tokenizer">Tokenizer</a></pre>
+				<p>New creates a new Tokenizer with the given reader. It uses a [CodeScanner] to read the file. commentPrefix is the prefix that indicates a comment. Example: &quot;//&quot;
+
+				
+				
+			
+
+			
+				
+				<h3 id="Tokenizer.Advance">func (*Tokenizer) <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/tokenizer/tokenizer.go?s=1644:1678#L63">Advance</a>
+					<a class="permalink" href="index.html%3Fm=all.html#Tokenizer.Advance">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (t *<a href="index.html%3Fm=all.html#Tokenizer">Tokenizer</a>) Advance() <a href="http://localhost:6060/pkg/builtin/#bool">bool</a></pre>
+				<p>Advance advances the scanner to the next token. It returns true if there is a next token, false otherwise.
+
+				
+				
+				
+			
+				
+				<h3 id="Tokenizer.ProcessIdentifier">func (*Tokenizer) <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/tokenizer/tokenizer.go?s=4346:4402#L156">ProcessIdentifier</a>
+					<a class="permalink" href="index.html%3Fm=all.html#Tokenizer.ProcessIdentifier">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (t *<a href="index.html%3Fm=all.html#Tokenizer">Tokenizer</a>) ProcessIdentifier(w <a href="http://localhost:6060/pkg/io/">io</a>.<a href="http://localhost:6060/pkg/io/#Writer">Writer</a>) <a href="http://localhost:6060/pkg/builtin/#error">error</a></pre>
+				<p>ProcessIdentifier checks if the current token is an identifier. If it is, it writes the identifier to the writer and advances to the next token. It returns an error if the current token is not an identifier.
+
+				
+				
+				
+			
+				
+				<h3 id="Tokenizer.ProcessKeyWord">func (*Tokenizer) <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/tokenizer/tokenizer.go?s=3178:3251#L123">ProcessKeyWord</a>
+					<a class="permalink" href="index.html%3Fm=all.html#Tokenizer.ProcessKeyWord">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (t *<a href="index.html%3Fm=all.html#Tokenizer">Tokenizer</a>) ProcessKeyWord(kwType <a href="index.html%3Fm=all.html#KeyWordType">KeyWordType</a>, w <a href="http://localhost:6060/pkg/io/">io</a>.<a href="http://localhost:6060/pkg/io/#Writer">Writer</a>) <a href="http://localhost:6060/pkg/builtin/#error">error</a></pre>
+				<p>ProcessKeyWord checks if the current token is a keyword of the given type. If it is, it writes the keyword to the writer and advances to the next token. It returns an error if the current token is not a keyword of the given type.
+
+				
+				
+				
+			
+				
+				<h3 id="Tokenizer.ProcessSymbol">func (*Tokenizer) <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/tokenizer/tokenizer.go?s=3772:3839#L141">ProcessSymbol</a>
+					<a class="permalink" href="index.html%3Fm=all.html#Tokenizer.ProcessSymbol">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (t *<a href="index.html%3Fm=all.html#Tokenizer">Tokenizer</a>) ProcessSymbol(symbol <a href="http://localhost:6060/pkg/builtin/#string">string</a>, w <a href="http://localhost:6060/pkg/io/">io</a>.<a href="http://localhost:6060/pkg/io/#Writer">Writer</a>) <a href="http://localhost:6060/pkg/builtin/#error">error</a></pre>
+				<p>ProcessSymbol checks if the current token is a symbol. If it is, it writes the symbol to the writer and advances to the next token. It returns an error if the current token is not a symbol.
+
+				
+				
+				
+			
+		
+	
+
+	
+
+
+
+
+
+
+
+<div id="footer">
+Build version go1.24.1.<br>
+Except as <a href="https://developers.google.com/site-policies#restrictions">noted</a>,
+the content of this page is licensed under the
+Creative Commons Attribution 3.0 License,
+and code is licensed under a <a href="http://localhost:6060/LICENSE">BSD license</a>.<br>
+<a href="https://golang.org/doc/tos.html">Terms of Service</a> |
+<a href="https://www.google.com/intl/en/policies/privacy/">Privacy Policy</a>
+</div>
+
+</div><!-- .container -->
+</div><!-- #page -->
+</body>
+</html>
