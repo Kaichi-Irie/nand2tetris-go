@@ -359,27 +359,27 @@ func TestProcessKeyWord(t *testing.T) {
 		T    KeyWordType
 		want string
 	}{
-		{"class", KT_CLASS, "<keyword> class </keyword>"},
-		{"method", KT_METHOD, "<keyword> method </keyword>"},
-		{"function", KT_FUNCTION, "<keyword> function </keyword>"},
-		{"constructor", KT_CONSTRUCTOR, "<keyword> constructor </keyword>"},
-		{"int", KT_INT, "<keyword> int </keyword>"},
-		{"boolean", KT_BOOLEAN, "<keyword> boolean </keyword>"},
-		{"char", KT_CHAR, "<keyword> char </keyword>"},
-		{"void", KT_VOID, "<keyword> void </keyword>"},
-		{"var", KT_VAR, "<keyword> var </keyword>"},
-		{"static", KT_STATIC, "<keyword> static </keyword>"},
-		{"field", KT_FIELD, "<keyword> field </keyword>"},
-		{"let", KT_LET, "<keyword> let </keyword>"},
-		{"do", KT_DO, "<keyword> do </keyword>"},
-		{"if", KT_IF, "<keyword> if </keyword>"},
-		{"else", KT_ELSE, "<keyword> else </keyword>"},
-		{"while", KT_WHILE, "<keyword> while </keyword>"},
-		{"return", KT_RETURN, "<keyword> return </keyword>"},
-		{"true", KT_TRUE, "<keyword> true </keyword>"},
-		{"false", KT_FALSE, "<keyword> false </keyword>"},
-		{"null", KT_NULL, "<keyword> null </keyword>"},
-		{"this", KT_THIS, "<keyword> this </keyword>"},
+		{"class", KT_CLASS, "<keyword> class </keyword>\n"},
+		{"method", KT_METHOD, "<keyword> method </keyword>\n"},
+		{"function", KT_FUNCTION, "<keyword> function </keyword>\n"},
+		{"constructor", KT_CONSTRUCTOR, "<keyword> constructor </keyword>\n"},
+		{"int", KT_INT, "<keyword> int </keyword>\n"},
+		{"boolean", KT_BOOLEAN, "<keyword> boolean </keyword>\n"},
+		{"char", KT_CHAR, "<keyword> char </keyword>\n"},
+		{"void", KT_VOID, "<keyword> void </keyword>\n"},
+		{"var", KT_VAR, "<keyword> var </keyword>\n"},
+		{"static", KT_STATIC, "<keyword> static </keyword>\n"},
+		{"field", KT_FIELD, "<keyword> field </keyword>\n"},
+		{"let", KT_LET, "<keyword> let </keyword>\n"},
+		{"do", KT_DO, "<keyword> do </keyword>\n"},
+		{"if", KT_IF, "<keyword> if </keyword>\n"},
+		{"else", KT_ELSE, "<keyword> else </keyword>\n"},
+		{"while", KT_WHILE, "<keyword> while </keyword>\n"},
+		{"return", KT_RETURN, "<keyword> return </keyword>\n"},
+		{"true", KT_TRUE, "<keyword> true </keyword>\n"},
+		{"false", KT_FALSE, "<keyword> false </keyword>\n"},
+		{"null", KT_NULL, "<keyword> null </keyword>\n"},
+		{"this", KT_THIS, "<keyword> this </keyword>\n"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.s, func(t *testing.T) {
@@ -405,10 +405,10 @@ func TestProcessIdentifier(t *testing.T) {
 		s    string
 		want string
 	}{
-		{"hello", "<identifier> hello </identifier>"},
-		{"_hello", "<identifier> _hello </identifier>"},
-		{"hello_world", "<identifier> hello_world </identifier>"},
-		{"hello123", "<identifier> hello123 </identifier>"},
+		{"hello", "<identifier> hello </identifier>\n"},
+		{"_hello", "<identifier> _hello </identifier>\n"},
+		{"hello_world", "<identifier> hello_world </identifier>\n"},
+		{"hello123", "<identifier> hello123 </identifier>\n"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.s, func(t *testing.T) {
@@ -434,25 +434,25 @@ func TestProcessSymbol(t *testing.T) {
 		s    string
 		want string
 	}{
-		{"{", "<symbol> { </symbol>"},
-		{"}", "<symbol> } </symbol>"},
-		{"(", "<symbol> ( </symbol>"},
-		{")", "<symbol> ) </symbol>"},
-		{"[", "<symbol> [ </symbol>"},
-		{"]", "<symbol> ] </symbol>"},
-		{";", "<symbol> ; </symbol>"},
-		{",", "<symbol> , </symbol>"},
-		{".", "<symbol> . </symbol>"},
-		{"+", "<symbol> + </symbol>"},
-		{"-", "<symbol> - </symbol>"},
-		{"*", "<symbol> * </symbol>"},
-		{"/", "<symbol> / </symbol>"},
-		{"|", "<symbol> | </symbol>"},
-		{"<", "<symbol> &lt; </symbol>"},
-		{">", "<symbol> &gt; </symbol>"},
-		{"=", "<symbol> = </symbol>"},
-		{"~", "<symbol> ~ </symbol>"},
-		{"&", "<symbol> &amp; </symbol>"},
+		{"{", "<symbol> { </symbol>\n"},
+		{"}", "<symbol> } </symbol>\n"},
+		{"(", "<symbol> ( </symbol>\n"},
+		{")", "<symbol> ) </symbol>\n"},
+		{"[", "<symbol> [ </symbol>\n"},
+		{"]", "<symbol> ] </symbol>\n"},
+		{";", "<symbol> ; </symbol>\n"},
+		{",", "<symbol> , </symbol>\n"},
+		{".", "<symbol> . </symbol>\n"},
+		{"+", "<symbol> + </symbol>\n"},
+		{"-", "<symbol> - </symbol>\n"},
+		{"*", "<symbol> * </symbol>\n"},
+		{"/", "<symbol> / </symbol>\n"},
+		{"|", "<symbol> | </symbol>\n"},
+		{"<", "<symbol> &lt; </symbol>\n"},
+		{">", "<symbol> &gt; </symbol>\n"},
+		{"=", "<symbol> = </symbol>\n"},
+		{"~", "<symbol> ~ </symbol>\n"},
+		{"&", "<symbol> &amp; </symbol>\n"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.s, func(t *testing.T) {
