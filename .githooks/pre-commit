@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Run go test
-output=$(go test -v nand2tetris-go/vm/vmtranslator)
+output=$(go test -v ./...)
 exit_code=$?
 
 # Check if the test failed
