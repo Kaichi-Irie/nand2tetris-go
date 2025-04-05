@@ -2,7 +2,6 @@ package jackanalyzer
 
 import (
 	"fmt"
-	"nand2tetris-golang/jackcompiler/tokenizer"
 	"os"
 	"path/filepath"
 )
@@ -35,22 +34,12 @@ func Analize(path string) error {
 		}
 		defer jackFile.Close()
 		// TODO: implement the analyzer
-		tokenizer := tokenizer.NewTokenizer(jackFile)
-		for tokenizer.advance() {
-			token := tokenizer.currentToken
-			tokenType, err := tokenizer.GetTokenType(token)
-			if err != nil {
-				return err
-			}
-			// TODO: implement the token type handling
-		}
 
 		vmFile, err := os.Create(vmFilePath)
 		if err != nil {
 			return err
 		}
 		defer vmFile.Close()
-
 	}
 	fmt.Println("done")
 	return nil
