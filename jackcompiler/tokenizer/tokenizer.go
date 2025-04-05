@@ -64,14 +64,32 @@ type Tokenizer struct {
 
 // New creates a new Tokenizer with the given reader. It uses a [CodeScanner] to read the file. commentPrefix is the prefix that indicates a comment. Example: "//"
 func New(r io.Reader) *Tokenizer {
-	return &Tokenizer{
-		Scanner: vmtranslator.NewCodeScanner(r, "//"),
+	t := &Tokenizer{
+		Scanner:           vmtranslator.NewCodeScanner(r, "//"),
+		CurrentLine:       "",
+		CurrentLineLength: 0,
+		CurrentPos:        0,
+		CurrentToken:      "",
 	}
+	return t
+}
+
+// CreateTokenizerWithFirstToken creates a new Tokenizer with the given reader and advances to the first token. It returns an error if there are no tokens in the file.
+func CreateTokenizerWithFirstToken(r io.Reader) (*Tokenizer, error) {
+	t := New(r)
+	if !t.Advance() {
+		return nil, fmt.Errorf("no tokens found")
+	}
+	return t, nil
 }
 
 // Advance advances the scanner to the next token. It returns true if there is a next token, false otherwise.
 func (t *Tokenizer) Advance() bool {
 	if t.CurrentPos >= t.CurrentLineLength {
+		ok := t.Scanner.Scan()
+		if !ok {
+			return false
+		}
 		t.CurrentLine = t.Scanner.Text()
 		l := len(t.CurrentLine)
 		if l == 0 {
@@ -90,6 +108,9 @@ func (t *Tokenizer) Advance() bool {
 
 	// check if the next token is a symbol
 	for _, s := range symbols {
+		if pos+len(s) > t.CurrentLineLength {
+			continue
+		}
 		if t.CurrentLine[pos:pos+len(s)] == s {
 			t.CurrentPos += len(s)
 			t.CurrentToken = s
@@ -99,6 +120,9 @@ func (t *Tokenizer) Advance() bool {
 
 	// check if the next token is a keyword
 	for _, kw := range keywords {
+		if pos+len(kw) > t.CurrentLineLength {
+			continue
+		}
 		if t.CurrentLine[pos:pos+len(kw)] == kw {
 			t.CurrentPos += len(kw)
 			t.CurrentToken = kw
@@ -113,9 +137,10 @@ func (t *Tokenizer) Advance() bool {
 		return true
 	}
 
-	// check if the next token is a string constant
+	// check if the next token is a string constant. A string constant is a string that starts and ends with a double quote, so s contains the double quotes.
 	if s, ok := ParseStringConst(t.CurrentLine[pos:]); ok == nil {
-		t.CurrentPos += len(s) + 2 // 2 for the quotes
+		fmt.Println("string constant", s)
+		t.CurrentPos += len(s)
 		t.CurrentToken = s
 		return true
 	}
@@ -159,6 +184,7 @@ func (t *Tokenizer) ProcessSymbol(symbol string, w io.Writer) error {
 	if err != nil {
 		return err
 	}
+	t.Advance()
 	return nil
 }
 
@@ -305,7 +331,7 @@ func ParseIntConst(s string) (int, error) {
 	return GetIntConst(s[0:i])
 }
 
-// GetStringConst checks if the string is a string constant. A string constant is a string that starts and ends with a double quote
+// GetStringConst checks if the string is a string constant and returns the string constant (including the quotes).
 func GetStringConst(token string) (string, error) {
 	if len(token) < 2 || token[0] != '"' || token[len(token)-1] != '"' {
 		return "", fmt.Errorf("not a string constant")
@@ -314,7 +340,7 @@ func GetStringConst(token string) (string, error) {
 	if idx := strings.IndexAny(token[1:len(token)-1], "\"\n\r"); idx != -1 {
 		return "", fmt.Errorf("string constant contains quotes or newlines")
 	}
-	return token[1 : len(token)-1], nil
+	return token[0:len(token)], nil
 }
 
 // IsStringConst checks if the string is a string constant
@@ -325,7 +351,7 @@ func IsStringConst(token string) bool {
 
 /*
 ParseStringConst parses the string constant at the beginning of the string.
-It returns the string constant without the quotes and an error if the string is not a string constant.
+It returns the string constant (including the quotes) and an error if the string does not start with a string constant.
 */
 func ParseStringConst(s string) (string, error) {
 	if len(s) < 2 || s[0] != '"' {

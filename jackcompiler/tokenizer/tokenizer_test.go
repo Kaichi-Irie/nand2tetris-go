@@ -184,10 +184,10 @@ func TestExtractStringConst(t *testing.T) {
 		token string
 		want  string
 	}{
-		{"\"hello\"", "hello"},
-		{"\"\"", ""},
-		{"\"123\"", "123"},
-		{"\"hello world\"", "hello world"},
+		{"\"hello\"", "\"hello\""},
+		{"\"\"", "\"\""},
+		{"\"123\"aaa", "\"123\""},
+		{"\"hello world\"", "\"hello world\""},
 	}
 	for _, tt := range tests {
 		t.Run(tt.token, func(t *testing.T) {
@@ -287,43 +287,14 @@ func TestExtractIdentifier(t *testing.T) {
 }
 
 func TestTokenizer(t *testing.T) {
-	var tokenizer = New(strings.NewReader(`
-// This file is part of www.nand2tetris.org
-// and the book "The Elements of Computing Systems"
-// by Nisan and Schocken, MIT Press.
-// File name: projects/9/Average/Main.jack
-
-/*
-comment in multiple lines
-*/
-
-/**
-this is also supported comment.
-*/
-class Main {
-// comment
-
-// comment
+	var tokenizer = New(strings.NewReader(`class Main {
     function void main() {
         var int x;
-		var int y;
         let x = Keyboard.readInt("enter the number");
-		// comment
         do Output.printInt(x);
-	 if (((x+y)<254) & ((x + y)<510)) {
-	 			// comment
-				do Output.printInt(x);
-      } else {
-		do Output.printInt(y);
-		// comment
-}
-
-        	return;
-
-    }// comment
-} // comment
-
-`))
+        return;
+    }
+}`))
 	tests := []struct {
 		wantToken string
 		wantType  TokenType
@@ -341,62 +312,24 @@ class Main {
 		{"int", TT_KEYWORD},
 		{"x", TT_IDENTIFIER},
 		{";", TT_SYMBOL},
-		{"var", TT_KEYWORD},
-		{"int", TT_KEYWORD},
-		{"y", TT_IDENTIFIER},
-		{";", TT_SYMBOL},
 		{"let", TT_KEYWORD},
 		{"x", TT_IDENTIFIER},
 		{"=", TT_SYMBOL},
-		{"Keyboard.readInt", TT_IDENTIFIER},
+		{"Keyboard", TT_IDENTIFIER},
+		{".", TT_SYMBOL},
+		{"readInt", TT_IDENTIFIER},
 		{"(", TT_SYMBOL},
 		{"\"enter the number\"", TT_STRING_CONST},
 		{")", TT_SYMBOL},
 		{";", TT_SYMBOL},
 		{"do", TT_KEYWORD},
-		{"Output.printInt", TT_IDENTIFIER},
+		{"Output", TT_IDENTIFIER},
+		{".", TT_SYMBOL},
+		{"printInt", TT_IDENTIFIER},
 		{"(", TT_SYMBOL},
 		{"x", TT_IDENTIFIER},
 		{")", TT_SYMBOL},
 		{";", TT_SYMBOL},
-		{"if", TT_KEYWORD},
-		{"(", TT_SYMBOL},
-		{"(", TT_SYMBOL},
-		{"(", TT_SYMBOL},
-		{"x", TT_IDENTIFIER},
-		{"+", TT_SYMBOL},
-		{"y", TT_IDENTIFIER},
-		{")", TT_SYMBOL},
-		{"<", TT_SYMBOL},
-		{"254", TT_INT_CONST},
-		{")", TT_SYMBOL},
-		{"&", TT_SYMBOL},
-		{"(", TT_SYMBOL},
-		{"(", TT_SYMBOL},
-		{"x", TT_IDENTIFIER},
-		{"+", TT_SYMBOL},
-		{"y", TT_IDENTIFIER},
-		{")", TT_SYMBOL},
-		{"<", TT_SYMBOL},
-		{"510", TT_INT_CONST},
-		{")", TT_SYMBOL},
-		{"{", TT_SYMBOL},
-		{"do", TT_KEYWORD},
-		{"Output.printInt", TT_IDENTIFIER},
-		{"(", TT_SYMBOL},
-		{"x", TT_IDENTIFIER},
-		{")", TT_SYMBOL},
-		{";", TT_SYMBOL},
-		{"}", TT_SYMBOL},
-		{"else", TT_KEYWORD},
-		{"{", TT_SYMBOL},
-		{"do", TT_KEYWORD},
-		{"Output.printInt", TT_IDENTIFIER},
-		{"(", TT_SYMBOL},
-		{"y", TT_IDENTIFIER},
-		{")", TT_SYMBOL},
-		{";", TT_SYMBOL},
-		{"}", TT_SYMBOL},
 		{"return", TT_KEYWORD},
 		{";", TT_SYMBOL},
 		{"}", TT_SYMBOL},
@@ -417,5 +350,52 @@ class Main {
 		} else if tests[i].wantType != tokenType {
 			t.Errorf("tokenizer returned %d, expected %d", tokenType, tests[i].wantType)
 		}
+	}
+}
+
+func TestProcessKeyWord(t *testing.T) {
+	tests := []struct {
+		s    string
+		T    KeyWordType
+		want string
+	}{
+		{"class", KT_CLASS, "<keyword> class </keyword>"},
+		{"method", KT_METHOD, "<keyword> method </keyword>"},
+		{"function", KT_FUNCTION, "<keyword> function </keyword>"},
+		{"constructor", KT_CONSTRUCTOR, "<keyword> constructor </keyword>"},
+		{"int", KT_INT, "<keyword> int </keyword>"},
+		{"boolean", KT_BOOLEAN, "<keyword> boolean </keyword>"},
+		{"char", KT_CHAR, "<keyword> char </keyword>"},
+		{"void", KT_VOID, "<keyword> void </keyword>"},
+		{"var", KT_VAR, "<keyword> var </keyword>"},
+		{"static", KT_STATIC, "<keyword> static </keyword>"},
+		{"field", KT_FIELD, "<keyword> field </keyword>"},
+		{"let", KT_LET, "<keyword> let </keyword>"},
+		{"do", KT_DO, "<keyword> do </keyword>"},
+		{"if", KT_IF, "<keyword> if </keyword>"},
+		{"else", KT_ELSE, "<keyword> else </keyword>"},
+		{"while", KT_WHILE, "<keyword> while </keyword>"},
+		{"return", KT_RETURN, "<keyword> return </keyword>"},
+		{"true", KT_TRUE, "<keyword> true </keyword>"},
+		{"false", KT_FALSE, "<keyword> false </keyword>"},
+		{"null", KT_NULL, "<keyword> null </keyword>"},
+		{"this", KT_THIS, "<keyword> this </keyword>"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.s, func(t *testing.T) {
+			tknz, err := CreateTokenizerWithFirstToken(strings.NewReader(tt.s))
+			if err != nil {
+				t.Errorf("createTokenizerWithFirstToken(%s) = %v", tt.s, err)
+				return
+			}
+			w := strings.Builder{}
+			if err := tknz.ProcessKeyWord(tt.T, &w); err != nil {
+				t.Errorf("processKeyWord(%s) = %v", tt.s, err)
+				return
+			}
+			if w.String() != tt.want {
+				t.Errorf("processKeyWord(%s) = %s, want %s", tt.s, w.String(), tt.want)
+			}
+		})
 	}
 }

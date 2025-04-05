@@ -38,6 +38,8 @@ const (
 
 // TODO: integrate this code into the hack assembler project
 // CodeScanner is a struct that reads a file line by line and skips empty lines and comments. It provides a method to get the current line of the scanner without leading and trailing spaces and comments.
+// TODO: support multiple comment prefixes. Example: "//" and "#"
+// TODO: support multiple comment styles. Example: "//" and "/* */"
 type CodeScanner struct {
 	scanner       *bufio.Scanner
 	commentPrefix string // the prefix that indicates a comment. Example: "//"
@@ -68,7 +70,12 @@ func (cs CodeScanner) isEmptyLine(line string) bool {
 
 // isCommentLine returns true if the line is a comment line.
 func (cs CodeScanner) isCommentLine(line string) bool {
-	return line[0:2] == cs.commentPrefix
+	if len(line) < 2 {
+		return false
+	}
+	// check if the line starts with the comment prefix
+	p := cs.commentPrefix
+	return line[0:len(p)] == p
 }
 
 // Text returns the current line of the scanner without leading and trailing spaces and comments. It replaces multiple spaces with a single space and removes comments at the end of the line.
