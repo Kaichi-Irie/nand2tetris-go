@@ -331,7 +331,51 @@ func (ce *CompilationEngine) CompileSubroutineBody() error {
 
 // func (ce *CompilationEngine) CompileStatements() error
 
-// func (ce *CompilationEngine) CompileLet() error
+func (ce *CompilationEngine) CompileLet() error {
+	_, err := io.WriteString(ce.xmlFile, "<letStatement>\n")
+	if err != nil {
+		return err
+	}
+
+	// process the let keyword
+	err = ce.t.ProcessKeyWord(tokenizer.KT_LET, ce.xmlFile)
+	if err != nil {
+		return err
+	}
+
+	// process the var name
+	err = ce.t.ProcessIdentifier(ce.xmlFile)
+	if err != nil {
+		return err
+	}
+
+	// TODO: process the [ or =
+
+	// process the =
+	err = ce.t.ProcessSymbol("=", ce.xmlFile)
+	if err != nil {
+		return err
+	}
+
+	// process the expression
+	err = ce.CompileExpression()
+	if err != nil {
+		return err
+	}
+
+	// process the ;
+	err = ce.t.ProcessSymbol(";", ce.xmlFile)
+	if err != nil {
+		return err
+	}
+
+	_, err = io.WriteString(ce.xmlFile, "</letStatement>\n")
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 // func (ce *CompilationEngine) CompileIf() error
 // func (ce *CompilationEngine) CompileWhile() error
 // func (ce *CompilationEngine) CompileDo() error

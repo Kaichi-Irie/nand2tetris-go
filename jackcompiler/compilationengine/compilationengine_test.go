@@ -352,41 +352,46 @@ func TestCompileExpression(t *testing.T) {
 	}
 }
 
-// func TestCompileLet(t *testing.T) {
-// 	xmlFile := &bytes.Buffer{}
-// 	ce := New(xmlFile, strings.NewReader(""))
+func TestCompileLet(t *testing.T) {
+	xmlFile := &bytes.Buffer{}
+	ce := New(xmlFile, strings.NewReader(""))
 
-// 	tests := []struct {
-// 		jackCode    string
-// 		expectedXML string
-// 	}{
-// 		{
-// 			jackCode: `let i = j;`,
-// 			expectedXML: `<letStatement>
-// <keyword> let </keyword>
-// <identifier> i </identifier>
-// <symbol> = </symbol>
-// <identifier> j </identifier>
-// <symbol> ; </symbol>
-// </letStatement>
-// `,
-// 		},
-// 	}
-// 	for _, test := range tests {
-// 		ce.t, _ = tokenizer.CreateTokenizerWithFirstToken(strings.NewReader(test.jackCode))
-// 		err := ce.CompileLet()
-// 		if err != nil {
-// 			t.Errorf("CompileClass() error: %v", err)
-// 		}
-// 		// remove leading and trailing whitespace from the actual XML
-// 		if xmlFile.String() != test.expectedXML {
-// 			t.Errorf("CompileClass() = %v, want %v", xmlFile.String(), test.expectedXML)
-// 			diff := cmp.Diff(xmlFile.String(), test.expectedXML)
-// 			t.Errorf("Diff: %s", diff)
-// 		}
-// 		xmlFile.Reset()
-// 	}
-// }
+	tests := []struct {
+		jackCode    string
+		expectedXML string
+	}{
+		{
+			jackCode: `let i = j;`,
+			expectedXML: `<letStatement>
+<keyword> let </keyword>
+<identifier> i </identifier>
+<symbol> = </symbol>
+<expression>
+<term>
+<identifier> j </identifier>
+</term>
+</expression>
+<symbol> ; </symbol>
+</letStatement>
+`,
+		},
+	}
+	for _, test := range tests {
+		ce.t, _ = tokenizer.CreateTokenizerWithFirstToken(strings.NewReader(test.jackCode))
+		err := ce.CompileLet()
+		if err != nil {
+			t.Errorf("CompileClass() error: %v", err)
+		}
+		// remove leading and trailing whitespace from the actual XML
+		if xmlFile.String() != test.expectedXML {
+			t.Errorf("CompileClass() = %v, want %v", xmlFile.String(), test.expectedXML)
+			diff := cmp.Diff(xmlFile.String(), test.expectedXML)
+			t.Errorf("Diff: %s", diff)
+		}
+		xmlFile.Reset()
+	}
+}
+
 // func TestCompileIf(t *testing.T) {
 // 	xmlFile := &bytes.Buffer{}
 // 	ce := New(xmlFile, strings.NewReader(""))
