@@ -311,6 +311,47 @@ func TestCompileTerm(t *testing.T) {
 	}
 }
 
+func TestCompileExpression(t *testing.T) {
+	xmlFile := &bytes.Buffer{}
+	ce := New(xmlFile, strings.NewReader(""))
+
+	tests := []struct {
+		jackCode    string
+		expectedXML string
+	}{
+		{
+			jackCode: `i`,
+			expectedXML: `<expression>
+<term>
+<identifier> i </identifier>
+</term>
+</expression>
+`,
+		}, {
+			jackCode: "\"hello world\"",
+			expectedXML: `<expression>
+<term>
+<stringConstant> hello world </stringConstant>
+</term>
+</expression>
+`,
+		}}
+	for _, test := range tests {
+		ce.t, _ = tokenizer.CreateTokenizerWithFirstToken(strings.NewReader(test.jackCode))
+		err := ce.CompileExpression()
+		if err != nil {
+			t.Errorf("CompileClass() error: %v", err)
+		}
+		// remove leading and trailing whitespace from the actual XML
+		if xmlFile.String() != test.expectedXML {
+			t.Errorf("CompileClass() = %v, want %v", xmlFile.String(), test.expectedXML)
+			diff := cmp.Diff(xmlFile.String(), test.expectedXML)
+			t.Errorf("Diff: %s", diff)
+		}
+		xmlFile.Reset()
+	}
+}
+
 // func TestCompileLet(t *testing.T) {
 // 	xmlFile := &bytes.Buffer{}
 // 	ce := New(xmlFile, strings.NewReader(""))

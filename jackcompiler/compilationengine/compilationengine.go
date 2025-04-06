@@ -336,7 +336,6 @@ func (ce *CompilationEngine) CompileSubroutineBody() error {
 // func (ce *CompilationEngine) CompileWhile() error
 // func (ce *CompilationEngine) CompileDo() error
 // func (ce *CompilationEngine) CompileReturn() error
-// func (ce *CompilationEngine) CompileExpression() error
 func (ce *CompilationEngine) CompileTerm() error {
 	_, err := io.WriteString(ce.xmlFile, "<term>\n")
 	if err != nil {
@@ -387,6 +386,28 @@ func (ce *CompilationEngine) CompileTerm() error {
 	}
 
 	_, err = io.WriteString(ce.xmlFile, "</term>\n")
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (ce *CompilationEngine) CompileExpression() error {
+	_, err := io.WriteString(ce.xmlFile, "<expression>\n")
+	if err != nil {
+		return err
+	}
+
+	// process the term
+	err = ce.CompileTerm()
+	if err != nil {
+		return err
+	}
+
+	// process the operator
+	// TODO: implement the operator
+
+	_, err = io.WriteString(ce.xmlFile, "</expression>\n")
 	if err != nil {
 		return err
 	}
