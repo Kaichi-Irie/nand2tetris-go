@@ -45,9 +45,7 @@ func TestCompileClass(t *testing.T) {
 <keyword> field </keyword>
 <identifier> MyClass </identifier>
 <identifier> i </identifier>
-<symbol> ; </symbol>
-<keyword> field </keyword>
-<identifier> MyClass </identifier>
+<symbol> , </symbol>
 <identifier> j </identifier>
 <symbol> ; </symbol>
 <symbol> } </symbol>
@@ -100,9 +98,7 @@ func TestCompileClassVarDec(t *testing.T) {
 			expectedXML: `<keyword> field </keyword>
 <keyword> int </keyword>
 <identifier> i </identifier>
-<symbol> ; </symbol>
-<keyword> field </keyword>
-<keyword> int </keyword>
+<symbol> , </symbol>
 <identifier> j </identifier>
 <symbol> ; </symbol>
 `,
@@ -113,9 +109,7 @@ func TestCompileClassVarDec(t *testing.T) {
 			expectedXML: `<keyword> static </keyword>
 <keyword> int </keyword>
 <identifier> i </identifier>
-<symbol> ; </symbol>
-<keyword> static </keyword>
-<keyword> int </keyword>
+<symbol> , </symbol>
 <identifier> j </identifier>
 <symbol> ; </symbol>
 `,
@@ -126,13 +120,9 @@ func TestCompileClassVarDec(t *testing.T) {
 			expectedXML: `<keyword> field </keyword>
 <identifier> MyClass </identifier>
 <identifier> A </identifier>
-<symbol> ; </symbol>
-<keyword> field </keyword>
-<identifier> MyClass </identifier>
+<symbol> , </symbol>
 <identifier> B </identifier>
-<symbol> ; </symbol>
-<keyword> field </keyword>
-<identifier> MyClass </identifier>
+<symbol> , </symbol>
 <identifier> C </identifier>
 <symbol> ; </symbol>
 `,

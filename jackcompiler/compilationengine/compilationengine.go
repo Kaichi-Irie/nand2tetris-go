@@ -81,18 +81,14 @@ func (ce *CompilationEngine) CompileClassVarDec(staticOrField tokenizer.KeyWordT
 		return err
 	}
 
-	var typeToken string
-	// process the type
+	// process the type: int, char, boolean or className
 	switch {
 	case ce.t.CurrentToken == "int" || ce.t.CurrentToken == "char" || ce.t.CurrentToken == "boolean":
-		typeToken = ce.t.CurrentToken // int, char, boolean
 		err = ce.t.ProcessKeyWord(tokenizer.KT_INT, ce.xmlFile)
 		if err != nil {
 			return err
 		}
-
 	case tokenizer.IsIdentifier(ce.t.CurrentToken):
-		typeToken = ce.t.CurrentToken // className
 		err = ce.t.ProcessIdentifier(ce.xmlFile)
 		if err != nil {
 			return err
@@ -101,7 +97,6 @@ func (ce *CompilationEngine) CompileClassVarDec(staticOrField tokenizer.KeyWordT
 		return fmt.Errorf("expected int, char, boolean or className, got %s", ce.t.CurrentToken)
 	}
 
-	// TODO: process the multiple var names
 	// process the var name
 	err = ce.t.ProcessIdentifier(ce.xmlFile)
 	if err != nil {
@@ -111,30 +106,11 @@ func (ce *CompilationEngine) CompileClassVarDec(staticOrField tokenizer.KeyWordT
 	// process the comma or semicolon
 	for ce.t.CurrentToken == "," {
 		// process the comma
-		ce.t.CurrentToken = ";"
-		err = ce.t.ProcessSymbol(";", ce.xmlFile)
+		err = ce.t.ProcessSymbol(",", ce.xmlFile)
 		if err != nil {
 			return err
 		}
-
-		_, err = io.WriteString(ce.xmlFile, "<keyword> "+tokenizer.KeywordsMap[staticOrField]+" </keyword>\n")
-		if err != nil {
-			return err
-		}
-		if typeToken == "int" || typeToken == "char" || typeToken == "boolean" {
-			_, err = io.WriteString(ce.xmlFile, "<keyword> "+typeToken+" </keyword>\n")
-			if err != nil {
-				return err
-			}
-
-		} else {
-			_, err = io.WriteString(ce.xmlFile, "<identifier> "+typeToken+" </identifier>\n")
-			if err != nil {
-				return err
-			}
-
-		}
-
+		// process the var name
 		err = ce.t.ProcessIdentifier(ce.xmlFile)
 		if err != nil {
 			return err
