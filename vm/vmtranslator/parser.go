@@ -70,6 +70,7 @@ func (cs CodeScanner) isEmptyLine(line string) bool {
 
 // isCommentLine returns true if the line is a comment line.
 func (cs CodeScanner) isCommentLine(line string) bool {
+	line = strings.TrimSpace(line)
 	if len(line) < 2 {
 		return false
 	}

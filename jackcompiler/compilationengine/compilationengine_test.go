@@ -11,7 +11,10 @@ import (
 
 func TestCompileClass(t *testing.T) {
 	xmlFile := &bytes.Buffer{}
-	ce := New(xmlFile, strings.NewReader(""))
+	ce := CompilationEngine{
+		xmlFile: xmlFile,
+		t:       tokenizer.New(strings.NewReader("")),
+	}
 
 	tests := []struct {
 		jackCode    string
@@ -23,14 +26,18 @@ func TestCompileClass(t *testing.T) {
 <keyword> class </keyword>
 <identifier> Main </identifier>
 <symbol> { </symbol>
+<classVarDec>
 <keyword> static </keyword>
 <keyword> int </keyword>
 <identifier> i </identifier>
 <symbol> ; </symbol>
+</classVarDec>
+<classVarDec>
 <keyword> static </keyword>
 <keyword> int </keyword>
 <identifier> j </identifier>
 <symbol> ; </symbol>
+</classVarDec>
 <symbol> } </symbol>
 </class>
 `,
@@ -42,16 +49,56 @@ func TestCompileClass(t *testing.T) {
 <keyword> class </keyword>
 <identifier> Main </identifier>
 <symbol> { </symbol>
+<classVarDec>
 <keyword> field </keyword>
 <identifier> MyClass </identifier>
 <identifier> i </identifier>
 <symbol> , </symbol>
 <identifier> j </identifier>
 <symbol> ; </symbol>
+</classVarDec>
 <symbol> } </symbol>
 </class>
 `,
-		},
+		}, {
+			jackCode: `class Main {
+			field MyClass i,j;
+			function void main() {return;}
+			}`,
+			expectedXML: `<class>
+<keyword> class </keyword>
+<identifier> Main </identifier>
+<symbol> { </symbol>
+<classVarDec>
+<keyword> field </keyword>
+<identifier> MyClass </identifier>
+<identifier> i </identifier>
+<symbol> , </symbol>
+<identifier> j </identifier>
+<symbol> ; </symbol>
+</classVarDec>
+<subroutineDec>
+<keyword> function </keyword>
+<keyword> void </keyword>
+<identifier> main </identifier>
+<symbol> ( </symbol>
+<parameterList>
+</parameterList>
+<symbol> ) </symbol>
+<subroutineBody>
+<symbol> { </symbol>
+<statements>
+<returnStatement>
+<keyword> return </keyword>
+<symbol> ; </symbol>
+</returnStatement>
+</statements>
+<symbol> } </symbol>
+</subroutineBody>
+</subroutineDec>
+<symbol> } </symbol>
+</class>
+`},
 	}
 	var err error
 	for _, test := range tests {
@@ -86,38 +133,45 @@ func TestCompileClassVarDec(t *testing.T) {
 		{
 			jackCode:      `static int i;`,
 			fieldOrStatic: tokenizer.KT_STATIC,
-			expectedXML: `<keyword> static </keyword>
+			expectedXML: `<classVarDec>
+<keyword> static </keyword>
 <keyword> int </keyword>
 <identifier> i </identifier>
 <symbol> ; </symbol>
+</classVarDec>
 `,
 		},
 		{
 			jackCode:      `field int i,j;`,
 			fieldOrStatic: tokenizer.KT_FIELD,
-			expectedXML: `<keyword> field </keyword>
+			expectedXML: `<classVarDec>
+<keyword> field </keyword>
 <keyword> int </keyword>
 <identifier> i </identifier>
 <symbol> , </symbol>
 <identifier> j </identifier>
 <symbol> ; </symbol>
+</classVarDec>
 `,
 		},
 		{
 			jackCode:      `static int i,j;`,
 			fieldOrStatic: tokenizer.KT_STATIC,
-			expectedXML: `<keyword> static </keyword>
+			expectedXML: `<classVarDec>
+<keyword> static </keyword>
 <keyword> int </keyword>
 <identifier> i </identifier>
 <symbol> , </symbol>
 <identifier> j </identifier>
 <symbol> ; </symbol>
+</classVarDec>
 `,
 		},
 		{
 			jackCode:      `field MyClass A,B,C;`,
 			fieldOrStatic: tokenizer.KT_FIELD,
-			expectedXML: `<keyword> field </keyword>
+			expectedXML: `<classVarDec>
+<keyword> field </keyword>
 <identifier> MyClass </identifier>
 <identifier> A </identifier>
 <symbol> , </symbol>
@@ -125,6 +179,7 @@ func TestCompileClassVarDec(t *testing.T) {
 <symbol> , </symbol>
 <identifier> C </identifier>
 <symbol> ; </symbol>
+</classVarDec>
 `,
 		},
 	}

@@ -18,6 +18,17 @@ func New(xmlFile io.Writer, r io.Reader) *CompilationEngine {
 	}
 }
 
+func CreateCEwithFirstToken(xmlFile io.Writer, r io.Reader) *CompilationEngine {
+	t, err := tokenizer.CreateTokenizerWithFirstToken(r)
+	if err != nil {
+		panic(err)
+	}
+	return &CompilationEngine{
+		xmlFile: xmlFile,
+		t:       t,
+	}
+}
+
 /*
 CompileClass compiles a class and writes it to the XML file.
 Class: 'class' className '{' classVarDec* subroutineDec* '}'
@@ -44,22 +55,40 @@ func (ce *CompilationEngine) CompileClass() error {
 		return err
 	}
 
+VARDEC:
 	// class var dec
 	for {
 		token := ce.t.CurrentToken
-
-		if kwt, _ := tokenizer.GetKeyWordType(token); kwt == tokenizer.KT_STATIC || kwt == tokenizer.KT_FIELD {
-			err = ce.CompileClassVarDec(kwt)
+		switch token {
+		case tokenizer.KeywordsMap[tokenizer.KT_STATIC]:
+			err = ce.CompileClassVarDec(tokenizer.KT_STATIC)
 			if err != nil {
 				return err
 			}
-			continue
-		} else {
-			break
+		case tokenizer.KeywordsMap[tokenizer.KT_FIELD]:
+			err = ce.CompileClassVarDec(tokenizer.KT_FIELD)
+			if err != nil {
+				return err
+			}
+		default:
+			break VARDEC
 		}
-
 	}
 
+SUBROUTINEDEC:
+	// subroutine dec
+	for {
+		token := ce.t.CurrentToken
+		switch token {
+		case tokenizer.KeywordsMap[tokenizer.KT_CONSTRUCTOR], tokenizer.KeywordsMap[tokenizer.KT_FUNCTION], tokenizer.KeywordsMap[tokenizer.KT_METHOD]:
+			err = ce.CompileSubroutine()
+			if err != nil {
+				return err
+			}
+		default:
+			break SUBROUTINEDEC
+		}
+	}
 	// }
 	err = ce.t.ProcessSymbol("}", ce.xmlFile)
 	if err != nil {
@@ -75,8 +104,13 @@ CompileClassVarDec compiles a class variable declaration and writes it to the XM
 ClassVarDec: (static | field) type varName (',' varName)* ';'
 */
 func (ce *CompilationEngine) CompileClassVarDec(staticOrField tokenizer.KeyWordType) error {
+	_, err := io.WriteString(ce.xmlFile, "<classVarDec>\n")
+	if err != nil {
+		return err
+	}
+
 	// static or field keyword
-	err := ce.t.ProcessKeyWord(staticOrField, ce.xmlFile)
+	err = ce.t.ProcessKeyWord(staticOrField, ce.xmlFile)
 	if err != nil {
 		return err
 	}
@@ -108,6 +142,10 @@ func (ce *CompilationEngine) CompileClassVarDec(staticOrField tokenizer.KeyWordT
 	}
 	// process the semicolon
 	err = ce.t.ProcessSymbol(";", ce.xmlFile)
+	if err != nil {
+		return err
+	}
+	_, err = io.WriteString(ce.xmlFile, "</classVarDec>\n")
 	if err != nil {
 		return err
 	}

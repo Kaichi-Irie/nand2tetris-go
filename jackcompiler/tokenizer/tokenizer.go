@@ -114,7 +114,7 @@ func New(r io.Reader) *Tokenizer {
 func CreateTokenizerWithFirstToken(r io.Reader) (*Tokenizer, error) {
 	t := New(r)
 	if !t.Advance() {
-		return nil, fmt.Errorf("no tokens found")
+		return nil, fmt.Errorf("create tokenizer with first token: no tokens in the file")
 	}
 	return t, nil
 }
@@ -279,7 +279,7 @@ func (t *Tokenizer) ProcessIdentifier(w io.Writer) error {
 
 // ProcessStringConst checks if the current token is a string constant. If it is, it writes the string constant to the writer and advances to the next token. It returns an error if the current token is not a string constant.
 func (t *Tokenizer) ProcessStringConst(w io.Writer) error {
-	strConst , err := GetStringConst(t.CurrentToken)
+	strConst, err := GetStringConst(t.CurrentToken)
 	if err != nil {
 		return err
 	}
