@@ -89,7 +89,21 @@ func IsBoolean(token string) bool {
 	return token == KeywordsMap[KT_BOOLEAN]
 }
 
+// IsOp checks if the token is an operator. An operator is a string that is one of the following: +, -, *, /, &, |, <, >, =
+func IsOp(token string) bool {
+	return token == "+" || token == "-" || token == "*" || token == "/" ||
+		token == "&" || token == "|" || token == "<" || token == ">" || token == "="
+}
 
+// IsUnaryOp checks if the token is a unary operator. A unary operator is a string that is one of the following: -, ~
+func IsUnaryOp(token string) bool {
+	return token == "-" || token == "~"
+}
+
+// IsKeywordUnaryOp checks if the token is a keyword unary operator. A keyword unary operator is a string that is one of the following: true, false, null, this
+func IsKeywordConst(token string) bool {
+	return token == KeywordsMap[KT_TRUE] || token == KeywordsMap[KT_FALSE] || token == KeywordsMap[KT_NULL] || token == KeywordsMap[KT_THIS]
+}
 
 // Tokenizer is a struct that reads a file line by line and skips empty lines and comments. It provides a method to get the current line of the scanner without leading and trailing spaces and comments.
 type Tokenizer struct {
@@ -188,7 +202,6 @@ func (t *Tokenizer) Advance() bool {
 
 	// check if the next token is a string constant. A string constant is a string that starts and ends with a double quote, so s contains the double quotes.
 	if s, ok := ParseStringConst(t.CurrentLine[pos:]); ok == nil {
-		fmt.Println("string constant", s)
 		t.CurrentPos += len(s)
 		t.CurrentToken = s
 		return true
