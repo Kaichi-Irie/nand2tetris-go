@@ -54,10 +54,29 @@ var XMLEscapes = map[string]string{
 var symbols = []string{
 	"{", "}", "(", ")", "[", "]", ".", ",", ";", "+", "-", "*", "/", "&", "|", "<", ">", "=", "~",
 }
-var keywords = []string{
-	"class", "method", "function", "constructor", "int", "boolean", "char", "void",
-	"var", "static", "field", "let", "do", "if", "else", "while", "return",
-	"true", "false", "null", "this",
+
+var KeywordsMap = map[KeyWordType]string{
+	KT_CLASS:       "class",
+	KT_METHOD:      "method",
+	KT_FUNCTION:    "function",
+	KT_CONSTRUCTOR: "constructor",
+	KT_INT:         "int",
+	KT_BOOLEAN:     "boolean",
+	KT_CHAR:        "char",
+	KT_VOID:        "void",
+	KT_VAR:         "var",
+	KT_STATIC:      "static",
+	KT_FIELD:       "field",
+	KT_LET:         "let",
+	KT_DO:          "do",
+	KT_IF:          "if",
+	KT_ELSE:        "else",
+	KT_WHILE:       "while",
+	KT_RETURN:      "return",
+	KT_TRUE:        "true",
+	KT_FALSE:       "false",
+	KT_NULL:        "null",
+	KT_THIS:        "this",
 }
 
 // Tokenizer is a struct that reads a file line by line and skips empty lines and comments. It provides a method to get the current line of the scanner without leading and trailing spaces and comments.
@@ -126,7 +145,7 @@ func (t *Tokenizer) Advance() bool {
 	}
 
 	// check if the next token is a keyword
-	for _, kw := range keywords {
+	for _, kw := range KeywordsMap {
 		if pos+len(kw) > t.CurrentLineLength {
 			continue
 		}
@@ -161,6 +180,7 @@ func (t *Tokenizer) Advance() bool {
 	return false
 }
 
+// TODO: Move ProcessXXX functions to  compilation engine
 // ProcessKeyWord checks if the current token is a keyword of the given type. If it is, it writes the keyword to the writer and advances to the next token. It returns an error if the current token is not a keyword of the given type.
 func (t *Tokenizer) ProcessKeyWord(kwType KeyWordType, w io.Writer) error {
 	kw := t.CurrentToken
@@ -299,7 +319,7 @@ func IsSymbol(token string) bool {
 
 // IsKeyword checks if the token is a keyword
 func IsKeyword(token string) bool {
-	for _, kw := range keywords {
+	for _, kw := range KeywordsMap {
 		if token == kw {
 			return true
 		}
