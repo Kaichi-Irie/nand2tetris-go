@@ -8,7 +8,6 @@ import (
 )
 
 func Analize(path string) error {
-	// path can be a .vm file or a directory containing .vm files
 	fmt.Println("jack analyzer")
 	info, err := os.Stat(path)
 	if err != nil {
