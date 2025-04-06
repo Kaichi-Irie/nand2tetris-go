@@ -244,6 +244,73 @@ func TestCompileParameterList(t *testing.T) {
 	}
 }
 
+func TestCompileTerm(t *testing.T) {
+	xmlFile := &bytes.Buffer{}
+	ce := New(xmlFile, strings.NewReader(""))
+
+	tests := []struct {
+		jackCode    string
+		expectedXML string
+	}{
+		{
+			jackCode: `i`,
+			expectedXML: `<term>
+<identifier> i </identifier>
+</term>
+`,
+		}, {
+			jackCode: `123`,
+			expectedXML: `<term>
+<integerConstant> 123 </integerConstant>
+</term>
+`,
+		}, {
+			jackCode: `true`,
+			expectedXML: `<term>
+<keyword> true </keyword>
+</term>
+`,
+		}, {
+			jackCode: "\"hello world\"",
+			expectedXML: `<term>
+<stringConstant> hello world </stringConstant>
+</term>
+`,
+		}, {
+			jackCode: `this`,
+			expectedXML: `<term>
+<keyword> this </keyword>
+</term>
+`,
+		}, {
+			jackCode: `false`,
+			expectedXML: `<term>
+<keyword> false </keyword>
+</term>
+`,
+		}, {
+			jackCode: `null`,
+			expectedXML: `<term>
+<keyword> null </keyword>
+</term>
+`,
+		}}
+	for _, test := range tests {
+		ce.t, _ = tokenizer.CreateTokenizerWithFirstToken(strings.NewReader(test.jackCode))
+		err := ce.CompileTerm()
+		if err != nil {
+			t.Errorf("CompileClass() error: %v", err)
+		}
+		// remove leading and trailing whitespace from the actual XML
+		if xmlFile.String() != test.expectedXML {
+			t.Errorf("CompileClass() = %v, want %v", xmlFile.String(), test.expectedXML)
+			diff := cmp.Diff(xmlFile.String(), test.expectedXML)
+			t.Errorf("Diff: %s", diff)
+		}
+		xmlFile.Reset()
+	}
+}
+
 // func TestCompileLet(t *testing.T) {
 // 	xmlFile := &bytes.Buffer{}
 // 	ce := New(xmlFile, strings.NewReader(""))

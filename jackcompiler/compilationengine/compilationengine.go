@@ -121,7 +121,7 @@ func (ce *CompilationEngine) CompileSubroutine() error {
 		return err
 	}
 
-	// subroutine keyword
+	// subroutine keyword: constructor, function, method
 	kwt, err := tokenizer.GetKeyWordType(ce.t.CurrentToken)
 	if err != nil {
 		return err
@@ -129,7 +129,46 @@ func (ce *CompilationEngine) CompileSubroutine() error {
 		return fmt.Errorf("expected constructor, function or method, got %d", kwt)
 	}
 
-	err = ce.t.ProcessKeyWord(kwt, ce.xmlFile)
+	// process the void or type: int, char, boolean, className
+	if token := ce.t.CurrentToken; token == "void" {
+		err = ce.t.ProcessKeyWord(tokenizer.KT_VOID, ce.xmlFile)
+		if err != nil {
+			return err
+		}
+	} else {
+		// int, char, boolean, className
+		err = ce.t.ProcessType(ce.xmlFile)
+		if err != nil {
+			return err
+		}
+	}
+
+	// process the subroutine name
+	err = ce.t.ProcessIdentifier(ce.xmlFile)
+	if err != nil {
+		return err
+	}
+
+	// process the (
+	err = ce.t.ProcessSymbol("(", ce.xmlFile)
+	if err != nil {
+		return err
+	}
+
+	// process the parameter list
+	err = ce.CompileParameterList()
+	if err != nil {
+		return err
+	}
+
+	// process the )
+	err = ce.t.ProcessSymbol(")", ce.xmlFile)
+	if err != nil {
+		return err
+	}
+
+	// process the subroutine body
+	err = ce.CompileSubroutineBody()
 	if err != nil {
 		return err
 	}
@@ -250,13 +289,108 @@ func (ce *CompilationEngine) CompileParameterList() error {
 	return nil
 }
 
-// func (ce *CompilationEngine) CompileSubroutineBody() error
+func (ce *CompilationEngine) CompileSubroutineBody() error {
+	_, err := io.WriteString(ce.xmlFile, "<subroutineBody>\n")
+	if err != nil {
+		return err
+	}
+
+	// process the {
+	err = ce.t.ProcessSymbol("{", ce.xmlFile)
+	if err != nil {
+		return err
+	}
+
+	// process the var dec
+	for ce.t.CurrentToken == "var" {
+		err = ce.CompileVarDec()
+		if err != nil {
+			return err
+		}
+	}
+
+	// process the statements
+	// TODO: implement the statements
+	// err = ce.CompileStatements()
+	if err != nil {
+		return err
+	}
+
+	// process the }
+	err = ce.t.ProcessSymbol("}", ce.xmlFile)
+	if err != nil {
+		return err
+	}
+
+	_, err = io.WriteString(ce.xmlFile, "</subroutineBody>\n")
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 // func (ce *CompilationEngine) CompileStatements() error
+
 // func (ce *CompilationEngine) CompileLet() error
 // func (ce *CompilationEngine) CompileIf() error
 // func (ce *CompilationEngine) CompileWhile() error
 // func (ce *CompilationEngine) CompileDo() error
 // func (ce *CompilationEngine) CompileReturn() error
 // func (ce *CompilationEngine) CompileExpression() error
-// func (ce *CompilationEngine) CompileTerm() error
+func (ce *CompilationEngine) CompileTerm() error {
+	_, err := io.WriteString(ce.xmlFile, "<term>\n")
+	if err != nil {
+		return err
+	}
+
+	// process the term
+	// TODO: implement the term
+	switch token := ce.t.CurrentToken; {
+	case tokenizer.IsIdentifier(token):
+		err = ce.t.ProcessIdentifier(ce.xmlFile)
+		if err != nil {
+			return err
+		}
+	case tokenizer.IsStringConst(token):
+		err = ce.t.ProcessStringConst(ce.xmlFile)
+		if err != nil {
+			return err
+		}
+
+	case tokenizer.IsIntConst(token):
+		err = ce.t.ProcessIntConst(ce.xmlFile)
+		if err != nil {
+			return err
+		}
+	case token == tokenizer.KeywordsMap[tokenizer.KT_TRUE]:
+		err = ce.t.ProcessKeyWord(tokenizer.KT_TRUE, ce.xmlFile)
+		if err != nil {
+			return err
+		}
+	case token == tokenizer.KeywordsMap[tokenizer.KT_FALSE]:
+		err = ce.t.ProcessKeyWord(tokenizer.KT_FALSE, ce.xmlFile)
+		if err != nil {
+			return err
+		}
+	case token == tokenizer.KeywordsMap[tokenizer.KT_NULL]:
+		err = ce.t.ProcessKeyWord(tokenizer.KT_NULL, ce.xmlFile)
+		if err != nil {
+			return err
+		}
+	case token == tokenizer.KeywordsMap[tokenizer.KT_THIS]:
+		err = ce.t.ProcessKeyWord(tokenizer.KT_THIS, ce.xmlFile)
+		if err != nil {
+			return err
+		}
+	default:
+		return fmt.Errorf("unexpected token %s", token)
+	}
+
+	_, err = io.WriteString(ce.xmlFile, "</term>\n")
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 // func (ce *CompilationEngine) CompileExpressionList() error
