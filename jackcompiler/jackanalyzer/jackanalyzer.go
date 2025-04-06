@@ -2,6 +2,7 @@ package jackanalyzer
 
 import (
 	"fmt"
+	"nand2tetris-go/jackcompiler/compilationengine"
 	"os"
 	"path/filepath"
 )
@@ -27,19 +28,24 @@ func Analize(path string) error {
 		return fmt.Errorf("input path must be a .jack file or a directory")
 	}
 	for _, jackFilePath := range jackFilePaths {
-		vmFilePath := jackFilePath[:len(jackFilePath)-5] + ".vm"
+		xmlFilePath := jackFilePath[:len(jackFilePath)-5] + ".xml"
 		jackFile, err := os.Open(jackFilePath)
 		if err != nil {
 			return err
 		}
 		defer jackFile.Close()
-		// TODO: implement the analyzer
 
-		vmFile, err := os.Create(vmFilePath)
+		xmlFile, err := os.Create(xmlFilePath)
 		if err != nil {
 			return err
 		}
-		defer vmFile.Close()
+		defer xmlFile.Close()
+		ce := compilationengine.CreateCEwithFirstToken(xmlFile, jackFile)
+		err = ce.CompileClass()
+		if err != nil {
+			return err
+		}
+
 	}
 	fmt.Println("done")
 	return nil
