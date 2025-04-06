@@ -197,3 +197,104 @@ func TestCompileVarDec(t *testing.T) {
 	}
 }
 
+func TestCompileParameterList(t *testing.T) {
+	xmlFile := &bytes.Buffer{}
+	ce := New(xmlFile, strings.NewReader(""))
+
+	tests := []struct {
+		jackCode    string
+		expectedXML string
+	}{
+		{
+			jackCode: `int i, boolean b, MyClass c`,
+			expectedXML: `<parameterList>
+<keyword> int </keyword>
+<identifier> i </identifier>
+<symbol> , </symbol>
+<keyword> boolean </keyword>
+<identifier> b </identifier>
+<symbol> , </symbol>
+<identifier> MyClass </identifier>
+<identifier> c </identifier>
+</parameterList>
+`,
+		},
+		{
+			jackCode: `int i`,
+			expectedXML: `<parameterList>
+<keyword> int </keyword>
+<identifier> i </identifier>
+</parameterList>
+`,
+		},
+	}
+	for _, test := range tests {
+		ce.t, _ = tokenizer.CreateTokenizerWithFirstToken(strings.NewReader(test.jackCode))
+		err := ce.CompileParameterList()
+		if err != nil {
+			t.Errorf("CompileClass() error: %v", err)
+		}
+		// remove leading and trailing whitespace from the actual XML
+		if xmlFile.String() != test.expectedXML {
+			t.Errorf("CompileClass() = %v, want %v", xmlFile.String(), test.expectedXML)
+			diff := cmp.Diff(xmlFile.String(), test.expectedXML)
+			t.Errorf("Diff: %s", diff)
+		}
+		xmlFile.Reset()
+	}
+}
+
+// func TestSubroutine(t *testing.T) {
+// 	xmlFile := &bytes.Buffer{}
+// 	ce := New(xmlFile, strings.NewReader(""))
+
+// 	tests := []struct {
+// 		jackCode    string
+// 		expectedXML string
+// 	}{
+// 		{
+// 			jackCode: `function void main() {
+// 			var int i;
+// 			return;
+// 			}`,
+// 			expectedXML: `<subroutineDec>
+// <keyword> function </keyword>
+// <keyword> void </keyword>
+// <identifier> main </identifier>
+// <symbol> ( </symbol>
+// <parameterList>
+// </parameterList>
+// <symbol> ) </symbol>
+// <subroutineBody>
+// <symbol> { </symbol>
+// <varDec>
+// <keyword> var </keyword>
+// <keyword> int </keyword>
+// <identifier> i </identifier>
+// <symbol> ; </symbol>
+// </varDec>
+// <returnStatement>
+// <keyword> return </keyword>
+// <symbol> ; </symbol>
+// </returnStatement>
+// <symbol> } </symbol>
+// </subroutineBody>
+// </subroutineDec>
+// `,
+// 		}}
+
+// 	for _, test := range tests {
+// 		ce.t, _ = tokenizer.CreateTokenizerWithFirstToken(strings.NewReader(test.jackCode))
+// 		err := ce.CompileSubroutine()
+// 		if err != nil {
+// 			t.Errorf("CompileClass() error: %v", err)
+// 		}
+// 		// remove leading and trailing whitespace from the actual XML
+// 		if xmlFile.String() != test.expectedXML {
+// 			t.Errorf("CompileClass() = %v, want %v", xmlFile.String(), test.expectedXML)
+// 			diff := cmp.Diff(xmlFile.String(), test.expectedXML)
+// 			t.Errorf("Diff: %s", diff)
+// 		}
+// 		xmlFile.Reset()
+// 	}
+// }

@@ -213,7 +213,93 @@ func (ce *CompilationEngine) CompileVarDec() error {
 	return nil
 }
 
-// func (ce *CompilationEngine) CompileParameterList() error
+func (ce *CompilationEngine) CompileParameterList() error {
+
+	// no parameters
+	if ce.t.CurrentToken == ")" {
+		_, err := io.WriteString(ce.xmlFile, "<parameterList>\n</parameterList>\n")
+		if err != nil {
+			return err
+		}
+		return nil
+	}
+
+	// parameter list
+	_, err := io.WriteString(ce.xmlFile, "<parameterList>\n")
+	if err != nil {
+		return err
+	}
+
+	// process the type: int, char, boolean or className
+	switch token := ce.t.CurrentToken; {
+	case token == "int" || token == "char" || token == "boolean":
+		kwt, err := tokenizer.GetKeyWordType(token)
+		if err != nil {
+			return err
+		}
+
+		err = ce.t.ProcessKeyWord(kwt, ce.xmlFile)
+		if err != nil {
+			return err
+		}
+	case tokenizer.IsIdentifier(ce.t.CurrentToken):
+		err = ce.t.ProcessIdentifier(ce.xmlFile)
+		if err != nil {
+			return err
+		}
+	default:
+		return fmt.Errorf("expected int, char, boolean or className, got %s", ce.t.CurrentToken)
+	}
+
+	// process the var name
+	err = ce.t.ProcessIdentifier(ce.xmlFile)
+	if err != nil {
+		return err
+	}
+
+	// process the comma or semicolon
+	// process the comma
+	for ce.t.CurrentToken == "," {
+		err = ce.t.ProcessSymbol(",", ce.xmlFile)
+		if err != nil {
+			return err
+		}
+
+		// process the type: int, char, boolean or className
+		switch token := ce.t.CurrentToken; {
+		case token == "int" || token == "char" || token == "boolean":
+			kwt, err := tokenizer.GetKeyWordType(token)
+			if err != nil {
+				return err
+			}
+			err = ce.t.ProcessKeyWord(kwt, ce.xmlFile)
+			if err != nil {
+				return err
+			}
+
+		case tokenizer.IsIdentifier(ce.t.CurrentToken):
+			err = ce.t.ProcessIdentifier(ce.xmlFile)
+			if err != nil {
+				return err
+			}
+		default:
+			return fmt.Errorf("expected int, char, boolean or className, got %s", ce.t.CurrentToken)
+		}
+
+		err = ce.t.ProcessIdentifier(ce.xmlFile)
+		if err != nil {
+			return err
+		}
+	}
+
+	_, err = io.WriteString(ce.xmlFile, "</parameterList>\n")
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // func (ce *CompilationEngine) CompileSubroutineBody() error
 // func (ce *CompilationEngine) CompileStatements() error
 // func (ce *CompilationEngine) CompileLet() error
