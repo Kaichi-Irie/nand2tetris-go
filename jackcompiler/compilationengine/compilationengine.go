@@ -379,7 +379,38 @@ func (ce *CompilationEngine) CompileLet() error {
 // func (ce *CompilationEngine) CompileIf() error
 // func (ce *CompilationEngine) CompileWhile() error
 // func (ce *CompilationEngine) CompileDo() error
-// func (ce *CompilationEngine) CompileReturn() error
+func (ce *CompilationEngine) CompileReturn() error {
+	_, err := io.WriteString(ce.xmlFile, "<returnStatement>\n")
+	if err != nil {
+		return err
+	}
+
+	// process the return keyword
+	err = ce.t.ProcessKeyWord(tokenizer.KT_RETURN, ce.xmlFile)
+	if err != nil {
+		return err
+	}
+
+	// process the expression. Skip if the case is return;
+	if ce.t.CurrentToken != ";" {
+		// process the expression
+		err = ce.CompileExpression()
+		if err != nil {
+			return err
+		}
+	}
+	// process the ;
+	err = ce.t.ProcessSymbol(";", ce.xmlFile)
+	if err != nil {
+		return err
+	}
+
+	_, err = io.WriteString(ce.xmlFile, "</returnStatement>\n")
+	if err != nil {
+		return err
+	}
+	return nil
+}
 func (ce *CompilationEngine) CompileTerm() error {
 	_, err := io.WriteString(ce.xmlFile, "<term>\n")
 	if err != nil {
