@@ -150,3 +150,50 @@ func TestCompileClassVarDec(t *testing.T) {
 	}
 
 }
+
+func TestCompileVarDec(t *testing.T) {
+	xmlFile := &bytes.Buffer{}
+	ce := New(xmlFile, strings.NewReader(""))
+
+	tests := []struct {
+		jackCode    string
+		expectedXML string
+	}{
+		{
+			jackCode: `var int i,j;`,
+			expectedXML: `<varDec>
+<keyword> var </keyword>
+<keyword> int </keyword>
+<identifier> i </identifier>
+<symbol> , </symbol>
+<identifier> j </identifier>
+<symbol> ; </symbol>
+</varDec>
+`,
+		},
+		{
+			jackCode: `var MyClass i;`,
+			expectedXML: `<varDec>
+<keyword> var </keyword>
+<identifier> MyClass </identifier>
+<identifier> i </identifier>
+<symbol> ; </symbol>
+</varDec>
+`,
+		}}
+	for _, test := range tests {
+		ce.t, _ = tokenizer.CreateTokenizerWithFirstToken(strings.NewReader(test.jackCode))
+		err := ce.CompileVarDec()
+		if err != nil {
+			t.Errorf("CompileClass() error: %v", err)
+		}
+		// remove leading and trailing whitespace from the actual XML
+		if xmlFile.String() != test.expectedXML {
+			t.Errorf("CompileClass() = %v, want %v", xmlFile.String(), test.expectedXML)
+			diff := cmp.Diff(xmlFile.String(), test.expectedXML)
+			t.Errorf("Diff: %s", diff)
+		}
+		xmlFile.Reset()
+	}
+}
+

@@ -126,7 +126,10 @@ func (ce *CompilationEngine) CompileClassVarDec(staticOrField tokenizer.KeyWordT
 }
 
 func (ce *CompilationEngine) CompileSubroutine() error {
-	io.WriteString(ce.xmlFile, "<subroutineDec>\n")
+	_, err := io.WriteString(ce.xmlFile, "<subroutineDec>\n")
+	if err != nil {
+		return err
+	}
 
 	// subroutine keyword
 	kwt, err := tokenizer.GetKeyWordType(ce.t.CurrentToken)
@@ -140,12 +143,78 @@ func (ce *CompilationEngine) CompileSubroutine() error {
 	if err != nil {
 		return err
 	}
+
+	_, err = io.WriteString(ce.xmlFile, "</subroutineDec>\n")
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+/*
+CompileVarDec compiles a variable declaration and writes it to the XML file.
+VarDec: 'var' type varName (',' varName)* ';'
+*/
+func (ce *CompilationEngine) CompileVarDec() error {
+	_, err := io.WriteString(ce.xmlFile, "<varDec>\n")
+	if err != nil {
+		return err
+	}
+
+	// var keyword
+	err = ce.t.ProcessKeyWord(tokenizer.KT_VAR, ce.xmlFile)
+	if err != nil {
+		return err
+	}
+
+	// process the type: int, char, boolean or className
+	switch {
+	case ce.t.CurrentToken == "int" || ce.t.CurrentToken == "char" || ce.t.CurrentToken == "boolean":
+		err = ce.t.ProcessKeyWord(tokenizer.KT_INT, ce.xmlFile)
+		if err != nil {
+			return err
+		}
+	case tokenizer.IsIdentifier(ce.t.CurrentToken):
+		err = ce.t.ProcessIdentifier(ce.xmlFile)
+		if err != nil {
+			return err
+		}
+
+	default:
+		return fmt.Errorf("expected int, char, boolean or className, got %s", ce.t.CurrentToken)
+	}
+	// process the var name
+	err = ce.t.ProcessIdentifier(ce.xmlFile)
+	if err != nil {
+		return err
+	}
+	// process the comma or semicolon
+	for ce.t.CurrentToken == "," {
+		// process the comma
+		err = ce.t.ProcessSymbol(",", ce.xmlFile)
+		if err != nil {
+			return err
+		}
+		// process the var name
+		err = ce.t.ProcessIdentifier(ce.xmlFile)
+		if err != nil {
+			return err
+		}
+	}
+	// process the semicolon
+	err = ce.t.ProcessSymbol(";", ce.xmlFile)
+	if err != nil {
+		return err
+	}
+	_, err = io.WriteString(ce.xmlFile, "</varDec>\n")
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
 // func (ce *CompilationEngine) CompileParameterList() error
 // func (ce *CompilationEngine) CompileSubroutineBody() error
-// func (ce *CompilationEngine) CompileVarDec() error
 // func (ce *CompilationEngine) CompileStatements() error
 // func (ce *CompilationEngine) CompileLet() error
 // func (ce *CompilationEngine) CompileIf() error
