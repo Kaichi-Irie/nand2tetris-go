@@ -89,6 +89,8 @@ func IsBoolean(token string) bool {
 	return token == KeywordsMap[KT_BOOLEAN]
 }
 
+
+
 // Tokenizer is a struct that reads a file line by line and skips empty lines and comments. It provides a method to get the current line of the scanner without leading and trailing spaces and comments.
 type Tokenizer struct {
 	Scanner           vmtranslator.CodeScanner
@@ -159,7 +161,18 @@ func (t *Tokenizer) Advance() bool {
 		if pos+len(kw) > t.CurrentLineLength {
 			continue
 		}
-		if t.CurrentLine[pos:pos+len(kw)] == kw {
+		kwCandidate := t.CurrentLine[pos : pos+len(kw)]
+		if pos+len(kw) < t.CurrentLineLength {
+			followingChar := t.CurrentLine[pos+len(kw)]
+			// if followingChar is alphanumeric, or underscore, then it is not a keyword. followingChar is the character just after the keyword
+			if 'a' <= followingChar && followingChar <= 'z' ||
+				'A' <= followingChar && followingChar <= 'Z' ||
+				'0' <= followingChar && followingChar <= '9' ||
+				followingChar == '_' {
+				continue
+			}
+		}
+		if kwCandidate == kw {
 			t.CurrentPos += len(kw)
 			t.CurrentToken = kw
 			return true

@@ -253,7 +253,8 @@ func TestIsIdentifier(t *testing.T) {
 		{"123", false},
 		{"\"hello\"", false},
 		{"\"hello world\"", false},
-		{"(", false}}
+		{"(", false},
+		{"classVar", true}}
 	for _, tt := range tests {
 		t.Run(tt.token, func(t *testing.T) {
 			if got := IsIdentifier(tt.token); got != tt.want {
@@ -274,6 +275,7 @@ func TestExtractIdentifier(t *testing.T) {
 		{"hello123", "hello123"},
 		{"x)", "x"},
 		{"x.y", "x"},
+		{"boolx.y.z", "boolx"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.token, func(t *testing.T) {
@@ -289,9 +291,9 @@ func TestExtractIdentifier(t *testing.T) {
 func TestTokenizer(t *testing.T) {
 	var tokenizer = New(strings.NewReader(`class Main {
     function void main() {
-        var int x;
-        let x = Keyboard.readInt("enter the number");
-        do Output.printInt(x);
+        var int returnValue;
+        let returnValue = Keyboard.readInt("enter the number");
+        do Output.printInt(returnValue);
         return;
     }
 }`))
@@ -310,10 +312,10 @@ func TestTokenizer(t *testing.T) {
 		{"{", TT_SYMBOL},
 		{"var", TT_KEYWORD},
 		{"int", TT_KEYWORD},
-		{"x", TT_IDENTIFIER},
+		{"returnValue", TT_IDENTIFIER},
 		{";", TT_SYMBOL},
 		{"let", TT_KEYWORD},
-		{"x", TT_IDENTIFIER},
+		{"returnValue", TT_IDENTIFIER},
 		{"=", TT_SYMBOL},
 		{"Keyboard", TT_IDENTIFIER},
 		{".", TT_SYMBOL},
@@ -327,7 +329,7 @@ func TestTokenizer(t *testing.T) {
 		{".", TT_SYMBOL},
 		{"printInt", TT_IDENTIFIER},
 		{"(", TT_SYMBOL},
-		{"x", TT_IDENTIFIER},
+		{"returnValue", TT_IDENTIFIER},
 		{")", TT_SYMBOL},
 		{";", TT_SYMBOL},
 		{"return", TT_KEYWORD},
