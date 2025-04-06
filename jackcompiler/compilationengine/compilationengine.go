@@ -18,16 +18,6 @@ func New(xmlFile io.Writer, r io.Reader) *CompilationEngine {
 	}
 }
 
-func isInt(token string) bool {
-	return token == tokenizer.KeywordsMap[tokenizer.KT_INT]
-}
-func isChar(token string) bool {
-	return token == tokenizer.KeywordsMap[tokenizer.KT_CHAR]
-}
-func isBoolean(token string) bool {
-	return token == tokenizer.KeywordsMap[tokenizer.KT_BOOLEAN]
-}
-
 /*
 CompileClass compiles a class and writes it to the XML file.
 Class: 'class' className '{' classVarDec* subroutineDec* '}'
@@ -91,30 +81,10 @@ func (ce *CompilationEngine) CompileClassVarDec(staticOrField tokenizer.KeyWordT
 		return err
 	}
 
-	// process the type: int, char, boolean or className
-	switch token := ce.t.CurrentToken; {
-	case isInt(token):
-		err = ce.t.ProcessKeyWord(tokenizer.KT_INT, ce.xmlFile)
-		if err != nil {
-			return err
-		}
-	case isChar(token):
-		err = ce.t.ProcessKeyWord(tokenizer.KT_CHAR, ce.xmlFile)
-		if err != nil {
-			return err
-		}
-	case isBoolean(token):
-		err = ce.t.ProcessKeyWord(tokenizer.KT_BOOLEAN, ce.xmlFile)
-		if err != nil {
-			return err
-		}
-	case tokenizer.IsIdentifier(token):
-		err = ce.t.ProcessIdentifier(ce.xmlFile)
-		if err != nil {
-			return err
-		}
-	default:
-		return fmt.Errorf("expected int, char, boolean or className, got %s", token)
+	// process the type: int, char, boolean, className
+	err = ce.t.ProcessType(ce.xmlFile)
+	if err != nil {
+		return err
 	}
 
 	// process the var name
@@ -187,30 +157,10 @@ func (ce *CompilationEngine) CompileVarDec() error {
 		return err
 	}
 
-	// process the type: int, char, boolean or className
-	switch token := ce.t.CurrentToken; {
-	case isInt(token):
-		err = ce.t.ProcessKeyWord(tokenizer.KT_INT, ce.xmlFile)
-		if err != nil {
-			return err
-		}
-	case isChar(token):
-		err = ce.t.ProcessKeyWord(tokenizer.KT_CHAR, ce.xmlFile)
-		if err != nil {
-			return err
-		}
-	case isBoolean(token):
-		err = ce.t.ProcessKeyWord(tokenizer.KT_BOOLEAN, ce.xmlFile)
-		if err != nil {
-			return err
-		}
-	case tokenizer.IsIdentifier(token):
-		err = ce.t.ProcessIdentifier(ce.xmlFile)
-		if err != nil {
-			return err
-		}
-	default:
-		return fmt.Errorf("expected int, char, boolean or className, got %s", token)
+	// process the type: int, char, boolean, className
+	err = ce.t.ProcessType(ce.xmlFile)
+	if err != nil {
+		return err
 	}
 
 	// process the var name
@@ -260,30 +210,10 @@ func (ce *CompilationEngine) CompileParameterList() error {
 		return err
 	}
 
-	// process the type: int, char, boolean or className
-	switch token := ce.t.CurrentToken; {
-	case isInt(token):
-		err = ce.t.ProcessKeyWord(tokenizer.KT_INT, ce.xmlFile)
-		if err != nil {
-			return err
-		}
-	case isChar(token):
-		err = ce.t.ProcessKeyWord(tokenizer.KT_CHAR, ce.xmlFile)
-		if err != nil {
-			return err
-		}
-	case isBoolean(token):
-		err = ce.t.ProcessKeyWord(tokenizer.KT_BOOLEAN, ce.xmlFile)
-		if err != nil {
-			return err
-		}
-	case tokenizer.IsIdentifier(token):
-		err = ce.t.ProcessIdentifier(ce.xmlFile)
-		if err != nil {
-			return err
-		}
-	default:
-		return fmt.Errorf("expected int, char, boolean or className, got %s", token)
+	// process the type: int, char, boolean, className
+	err = ce.t.ProcessType(ce.xmlFile)
+	if err != nil {
+		return err
 	}
 
 	// process the var name
@@ -299,31 +229,10 @@ func (ce *CompilationEngine) CompileParameterList() error {
 		if err != nil {
 			return err
 		}
-
-		// process the type: int, char, boolean or className
-		switch token := ce.t.CurrentToken; {
-		case isInt(token):
-			err = ce.t.ProcessKeyWord(tokenizer.KT_INT, ce.xmlFile)
-			if err != nil {
-				return err
-			}
-		case isChar(token):
-			err = ce.t.ProcessKeyWord(tokenizer.KT_CHAR, ce.xmlFile)
-			if err != nil {
-				return err
-			}
-		case isBoolean(token):
-			err = ce.t.ProcessKeyWord(tokenizer.KT_BOOLEAN, ce.xmlFile)
-			if err != nil {
-				return err
-			}
-		case tokenizer.IsIdentifier(token):
-			err = ce.t.ProcessIdentifier(ce.xmlFile)
-			if err != nil {
-				return err
-			}
-		default:
-			return fmt.Errorf("expected int, char, boolean or className, got %s", token)
+		// process the type: int, char, boolean, className
+		err = ce.t.ProcessType(ce.xmlFile)
+		if err != nil {
+			return err
 		}
 		// process the var name
 		err = ce.t.ProcessIdentifier(ce.xmlFile)

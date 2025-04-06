@@ -79,6 +79,16 @@ var KeywordsMap = map[KeyWordType]string{
 	KT_THIS:        "this",
 }
 
+func IsInt(token string) bool {
+	return token == KeywordsMap[KT_INT]
+}
+func IsChar(token string) bool {
+	return token == KeywordsMap[KT_CHAR]
+}
+func IsBoolean(token string) bool {
+	return token == KeywordsMap[KT_BOOLEAN]
+}
+
 // Tokenizer is a struct that reads a file line by line and skips empty lines and comments. It provides a method to get the current line of the scanner without leading and trailing spaces and comments.
 type Tokenizer struct {
 	Scanner           vmtranslator.CodeScanner
@@ -196,6 +206,37 @@ func (t *Tokenizer) ProcessKeyWord(kwType KeyWordType, w io.Writer) error {
 	}
 
 	t.Advance()
+	return nil
+}
+
+func (t *Tokenizer) ProcessType(w io.Writer) error {
+	// process the type: int, char, boolean or className
+	var err error
+	token := t.CurrentToken
+	switch {
+	case IsInt(token):
+		err = t.ProcessKeyWord(KT_INT, w)
+		if err != nil {
+			return err
+		}
+	case IsChar(token):
+		err = t.ProcessKeyWord(KT_CHAR, w)
+		if err != nil {
+			return err
+		}
+	case IsBoolean(token):
+		err = t.ProcessKeyWord(KT_BOOLEAN, w)
+		if err != nil {
+			return err
+		}
+	case IsIdentifier(token):
+		err = t.ProcessIdentifier(w)
+		if err != nil {
+			return err
+		}
+	default:
+		return fmt.Errorf("expected int, char, boolean or className, got %s", token)
+	}
 	return nil
 }
 
