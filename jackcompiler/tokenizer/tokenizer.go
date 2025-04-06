@@ -277,6 +277,43 @@ func (t *Tokenizer) ProcessIdentifier(w io.Writer) error {
 	return nil
 }
 
+// ProcessStringConst checks if the current token is a string constant. If it is, it writes the string constant to the writer and advances to the next token. It returns an error if the current token is not a string constant.
+func (t *Tokenizer) ProcessStringConst(w io.Writer) error {
+	strConst , err := GetStringConst(t.CurrentToken)
+	if err != nil {
+		return err
+	}
+	// remove the quotes from the string constant
+	strConst = strConst[1 : len(strConst)-1]
+	// escape the string constant
+	if escaped, ok := XMLEscapes[strConst]; ok {
+		strConst = escaped
+	}
+	_, err = io.WriteString(w, "<stringConstant> "+strConst+" </stringConstant>\n")
+	if err != nil {
+		return err
+	}
+
+	t.Advance()
+	return nil
+}
+
+// ProcessIntConst checks if the current token is an integer constant. If it is, it writes the integer constant to the writer and advances to the next token. It returns an error if the current token is not an integer constant.
+func (t *Tokenizer) ProcessIntConst(w io.Writer) error {
+	intConst, err := GetIntConst(t.CurrentToken)
+	if err != nil {
+		return err
+	}
+
+	_, err = io.WriteString(w, "<integerConstant> "+fmt.Sprint(intConst)+" </integerConstant>\n")
+	if err != nil {
+		return err
+	}
+
+	t.Advance()
+	return nil
+}
+
 // GetTokenType returns the type of the token. It returns an error if the token is not a valid token.
 func GetTokenType(token string) (TokenType, error) {
 	switch {

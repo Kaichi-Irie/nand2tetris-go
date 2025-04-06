@@ -122,11 +122,24 @@ func (ce *CompilationEngine) CompileSubroutine() error {
 	}
 
 	// subroutine keyword: constructor, function, method
-	kwt, err := tokenizer.GetKeyWordType(ce.t.CurrentToken)
-	if err != nil {
-		return err
-	} else if kwt != tokenizer.KT_CONSTRUCTOR && kwt != tokenizer.KT_FUNCTION && kwt != tokenizer.KT_METHOD {
-		return fmt.Errorf("expected constructor, function or method, got %d", kwt)
+	switch token := ce.t.CurrentToken; {
+	case token == tokenizer.KeywordsMap[tokenizer.KT_CONSTRUCTOR]:
+		err = ce.t.ProcessKeyWord(tokenizer.KT_CONSTRUCTOR, ce.xmlFile)
+		if err != nil {
+			return err
+		}
+	case token == tokenizer.KeywordsMap[tokenizer.KT_FUNCTION]:
+		err = ce.t.ProcessKeyWord(tokenizer.KT_FUNCTION, ce.xmlFile)
+		if err != nil {
+			return err
+		}
+	case token == tokenizer.KeywordsMap[tokenizer.KT_METHOD]:
+		err = ce.t.ProcessKeyWord(tokenizer.KT_METHOD, ce.xmlFile)
+		if err != nil {
+			return err
+		}
+	default:
+		return fmt.Errorf("unexpected token %s", token)
 	}
 
 	// process the void or type: int, char, boolean, className
@@ -311,7 +324,7 @@ func (ce *CompilationEngine) CompileSubroutineBody() error {
 
 	// process the statements
 	// TODO: implement the statements
-	// err = ce.CompileStatements()
+	err = ce.CompileStatements()
 	if err != nil {
 		return err
 	}
@@ -329,7 +342,52 @@ func (ce *CompilationEngine) CompileSubroutineBody() error {
 	return nil
 }
 
-// func (ce *CompilationEngine) CompileStatements() error
+func (ce *CompilationEngine) CompileStatements() error {
+	_, err := io.WriteString(ce.xmlFile, "<statements>\n")
+	if err != nil {
+		return err
+	}
+
+	// process the statements
+LOOP:
+	for {
+		switch token := ce.t.CurrentToken; {
+		case token == tokenizer.KeywordsMap[tokenizer.KT_LET]:
+			err = ce.CompileLet()
+			if err != nil {
+				return err
+			}
+		case token == tokenizer.KeywordsMap[tokenizer.KT_IF]:
+			err = ce.CompileIf()
+			if err != nil {
+				return err
+			}
+		case token == tokenizer.KeywordsMap[tokenizer.KT_WHILE]:
+			err = ce.CompileWhile()
+			if err != nil {
+				return err
+			}
+		case token == tokenizer.KeywordsMap[tokenizer.KT_DO]:
+			err = ce.CompileDo()
+			if err != nil {
+				return err
+			}
+		case token == tokenizer.KeywordsMap[tokenizer.KT_RETURN]:
+			err = ce.CompileReturn()
+			if err != nil {
+				return err
+			}
+		default:
+			break LOOP
+		}
+	}
+
+	_, err = io.WriteString(ce.xmlFile, "</statements>\n")
+	if err != nil {
+		return err
+	}
+	return nil
+}
 
 func (ce *CompilationEngine) CompileLet() error {
 	_, err := io.WriteString(ce.xmlFile, "<letStatement>\n")
@@ -358,7 +416,7 @@ func (ce *CompilationEngine) CompileLet() error {
 	}
 
 	// process the expression
-	err = ce.CompileExpression()
+	err = ce.CompileExpression(false)
 	if err != nil {
 		return err
 	}
@@ -376,9 +434,162 @@ func (ce *CompilationEngine) CompileLet() error {
 	return nil
 }
 
-// func (ce *CompilationEngine) CompileIf() error
-// func (ce *CompilationEngine) CompileWhile() error
-// func (ce *CompilationEngine) CompileDo() error
+func (ce *CompilationEngine) CompileIf() error {
+	_, err := io.WriteString(ce.xmlFile, "<ifStatement>\n")
+	if err != nil {
+		return err
+	}
+	// process the if keyword
+	err = ce.t.ProcessKeyWord(tokenizer.KT_IF, ce.xmlFile)
+	if err != nil {
+		return err
+	}
+	// process the (
+	err = ce.t.ProcessSymbol("(", ce.xmlFile)
+	if err != nil {
+		return err
+	}
+	// process the expression
+	err = ce.CompileExpression(false)
+	if err != nil {
+		return err
+	}
+	// process the )
+	err = ce.t.ProcessSymbol(")", ce.xmlFile)
+	if err != nil {
+		return err
+	}
+	// process the {
+	err = ce.t.ProcessSymbol("{", ce.xmlFile)
+	if err != nil {
+		return err
+	}
+	// process the statements
+	err = ce.CompileStatements()
+	if err != nil {
+		return err
+	}
+	// process the }
+	err = ce.t.ProcessSymbol("}", ce.xmlFile)
+	if err != nil {
+		return err
+	}
+	// process the else keyword
+	if ce.t.CurrentToken == tokenizer.KeywordsMap[tokenizer.KT_ELSE] {
+		err = ce.t.ProcessKeyWord(tokenizer.KT_ELSE, ce.xmlFile)
+		if err != nil {
+			return err
+		}
+		// process the {
+		err = ce.t.ProcessSymbol("{", ce.xmlFile)
+		if err != nil {
+			return err
+		}
+		// process the statements
+		err = ce.CompileStatements()
+		if err != nil {
+			return err
+		}
+		// process the }
+		err = ce.t.ProcessSymbol("}", ce.xmlFile)
+		if err != nil {
+			return err
+		}
+	}
+	_, err = io.WriteString(ce.xmlFile, "</ifStatement>\n")
+	if err != nil {
+		return err
+	}
+	return nil
+
+}
+
+func (ce *CompilationEngine) CompileWhile() error {
+	_, err := io.WriteString(ce.xmlFile, "<whileStatement>\n")
+	if err != nil {
+		return err
+	}
+
+	// process the while keyword
+	err = ce.t.ProcessKeyWord(tokenizer.KT_WHILE, ce.xmlFile)
+	if err != nil {
+		return err
+	}
+
+	// process the (
+	err = ce.t.ProcessSymbol("(", ce.xmlFile)
+	if err != nil {
+		return err
+	}
+
+	// process the expression
+	err = ce.CompileExpression(false)
+	if err != nil {
+		return err
+	}
+
+	// process the )
+	err = ce.t.ProcessSymbol(")", ce.xmlFile)
+	if err != nil {
+		return err
+	}
+
+	// process the {
+	err = ce.t.ProcessSymbol("{", ce.xmlFile)
+	if err != nil {
+		return err
+	}
+
+	// process the statements
+	err = ce.CompileStatements()
+	if err != nil {
+		return err
+	}
+
+	// process the }
+	err = ce.t.ProcessSymbol("}", ce.xmlFile)
+	if err != nil {
+		return err
+	}
+
+	_, err = io.WriteString(ce.xmlFile, "</whileStatement>\n")
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (ce *CompilationEngine) CompileDo() error {
+	_, err := io.WriteString(ce.xmlFile, "<doStatement>\n")
+	if err != nil {
+		return err
+	}
+
+	// process the do keyword
+	err = ce.t.ProcessKeyWord(tokenizer.KT_DO, ce.xmlFile)
+	if err != nil {
+		return err
+	}
+
+	// process the subroutine call. Skip the <term> and <expression> tags
+	err = ce.CompileExpression(true)
+	if err != nil {
+		return err
+	}
+
+	// process the ;
+	err = ce.t.ProcessSymbol(";", ce.xmlFile)
+	if err != nil {
+		return err
+	}
+
+	_, err = io.WriteString(ce.xmlFile, "</doStatement>\n")
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (ce *CompilationEngine) CompileReturn() error {
 	_, err := io.WriteString(ce.xmlFile, "<returnStatement>\n")
 	if err != nil {
@@ -394,7 +605,7 @@ func (ce *CompilationEngine) CompileReturn() error {
 	// process the expression. Skip if the case is return;
 	if ce.t.CurrentToken != ";" {
 		// process the expression
-		err = ce.CompileExpression()
+		err = ce.CompileExpression(false)
 		if err != nil {
 			return err
 		}
@@ -411,8 +622,58 @@ func (ce *CompilationEngine) CompileReturn() error {
 	}
 	return nil
 }
-func (ce *CompilationEngine) CompileTerm() error {
-	_, err := io.WriteString(ce.xmlFile, "<term>\n")
+
+/*
+CompileTerm compiles a term and writes it to the XML file.
+Term: integerConstant | stringConstant | keywordConstant | varName | varName '[' expression ']' | subroutineCall | '(' expression ')' | unaryOp term
+skipTags: if true, do not write the <term> and </term> tags. This is used for subroutine calls.
+*/
+func (ce *CompilationEngine) CompileTerm(isSubroutineCall bool) error {
+	var err error
+
+	/* process the subroutine call:
+	subroutineCall: (className | varName) '.' subroutineName '(' expressionList ') or subroutineName '(' expressionList ')'
+	*/
+	if isSubroutineCall {
+		// process the subroutine name or class name or var name
+		err = ce.t.ProcessIdentifier(ce.xmlFile)
+		if err != nil {
+			return err
+		}
+		// process the . or (
+		if ce.t.CurrentToken == "." {
+			err = ce.t.ProcessSymbol(".", ce.xmlFile)
+			if err != nil {
+				return err
+			}
+			// process the subroutine name
+			err = ce.t.ProcessIdentifier(ce.xmlFile)
+			if err != nil {
+				return err
+			}
+		}
+
+		// process the (
+		err = ce.t.ProcessSymbol("(", ce.xmlFile)
+		if err != nil {
+			return err
+		}
+
+		// process the expression list
+		err = ce.CompileExpressionList()
+		if err != nil {
+			return err
+		}
+		// process the )
+		err = ce.t.ProcessSymbol(")", ce.xmlFile)
+		if err != nil {
+			return err
+		}
+		return nil
+	}
+
+	// process not a subroutine call
+	_, err = io.WriteString(ce.xmlFile, "<term>\n")
 	if err != nil {
 		return err
 	}
@@ -464,17 +725,30 @@ func (ce *CompilationEngine) CompileTerm() error {
 	if err != nil {
 		return err
 	}
+
 	return nil
 }
 
-func (ce *CompilationEngine) CompileExpression() error {
-	_, err := io.WriteString(ce.xmlFile, "<expression>\n")
+/*
+CompileExpression compiles an expression and writes it to the XML file.
+Expression: term (op term)*
+op: + - * / & | < > =
+skipTags: if true, do not write the <expression> and </expression> tags. This is used for subroutine calls.
+*/
+func (ce *CompilationEngine) CompileExpression(isSubroutineCall bool) error {
+	var err error
+	// skip the <expression> and <term> tags if this is a subroutine call
+	if isSubroutineCall {
+		return ce.CompileTerm(isSubroutineCall)
+	}
+
+	_, err = io.WriteString(ce.xmlFile, "<expression>\n")
 	if err != nil {
 		return err
 	}
 
 	// process the term
-	err = ce.CompileTerm()
+	err = ce.CompileTerm(false)
 	if err != nil {
 		return err
 	}
@@ -486,7 +760,45 @@ func (ce *CompilationEngine) CompileExpression() error {
 	if err != nil {
 		return err
 	}
+
 	return nil
 }
 
-// func (ce *CompilationEngine) CompileExpressionList() error
+func (ce *CompilationEngine) CompileExpressionList() error {
+	_, err := io.WriteString(ce.xmlFile, "<expressionList>\n")
+	if err != nil {
+		return err
+	}
+	// no expressions
+	if ce.t.CurrentToken == ")" {
+		_, err := io.WriteString(ce.xmlFile, "</expressionList>\n")
+		if err != nil {
+			return err
+		}
+		return nil
+	}
+
+	// process the expression
+	err = ce.CompileExpression(false)
+	if err != nil {
+		return err
+	}
+
+	// process the comma
+	for ce.t.CurrentToken == "," {
+		err = ce.t.ProcessSymbol(",", ce.xmlFile)
+		if err != nil {
+			return err
+		}
+		err = ce.CompileExpression(false)
+		if err != nil {
+			return err
+		}
+	}
+
+	_, err = io.WriteString(ce.xmlFile, "</expressionList>\n")
+	if err != nil {
+		return err
+	}
+	return nil
+}
