@@ -98,6 +98,149 @@ func TestCompileClass(t *testing.T) {
 </subroutineDec>
 <symbol> } </symbol>
 </class>
+`}, {
+			jackCode: `// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/10/ExpressionLessSquare/Main.jack
+
+
+class Main {
+    static boolean test;    // Added for testing -- there is no static keyword
+                            // in the Square files.
+
+    function void main() {
+        var SquareGame game;
+        let game = game;
+        do game.run();
+        do game.dispose();
+        return;
+    }
+
+    function void more() {  // Added to test Jack syntax that is not used in
+        var boolean b;      // the Square files.
+        if (b) {
+        }
+        else {              // There is no else keyword in the Square files.
+        }
+        return;
+    }
+}
+`,
+			expectedXML: `<class>
+<keyword> class </keyword>
+<identifier> Main </identifier>
+<symbol> { </symbol>
+<classVarDec>
+<keyword> static </keyword>
+<keyword> boolean </keyword>
+<identifier> test </identifier>
+<symbol> ; </symbol>
+</classVarDec>
+<subroutineDec>
+<keyword> function </keyword>
+<keyword> void </keyword>
+<identifier> main </identifier>
+<symbol> ( </symbol>
+<parameterList>
+</parameterList>
+<symbol> ) </symbol>
+<subroutineBody>
+<symbol> { </symbol>
+<varDec>
+<keyword> var </keyword>
+<identifier> SquareGame </identifier>
+<identifier> game </identifier>
+<symbol> ; </symbol>
+</varDec>
+<statements>
+<letStatement>
+<keyword> let </keyword>
+<identifier> game </identifier>
+<symbol> = </symbol>
+<expression>
+<term>
+<identifier> game </identifier>
+</term>
+</expression>
+<symbol> ; </symbol>
+</letStatement>
+<doStatement>
+<keyword> do </keyword>
+<identifier> game </identifier>
+<symbol> . </symbol>
+<identifier> run </identifier>
+<symbol> ( </symbol>
+<expressionList>
+</expressionList>
+<symbol> ) </symbol>
+<symbol> ; </symbol>
+</doStatement>
+<doStatement>
+<keyword> do </keyword>
+<identifier> game </identifier>
+<symbol> . </symbol>
+<identifier> dispose </identifier>
+<symbol> ( </symbol>
+<expressionList>
+</expressionList>
+<symbol> ) </symbol>
+<symbol> ; </symbol>
+</doStatement>
+<returnStatement>
+<keyword> return </keyword>
+<symbol> ; </symbol>
+</returnStatement>
+</statements>
+<symbol> } </symbol>
+</subroutineBody>
+</subroutineDec>
+<subroutineDec>
+<keyword> function </keyword>
+<keyword> void </keyword>
+<identifier> more </identifier>
+<symbol> ( </symbol>
+<parameterList>
+</parameterList>
+<symbol> ) </symbol>
+<subroutineBody>
+<symbol> { </symbol>
+<varDec>
+<keyword> var </keyword>
+<keyword> boolean </keyword>
+<identifier> b </identifier>
+<symbol> ; </symbol>
+</varDec>
+<statements>
+<ifStatement>
+<keyword> if </keyword>
+<symbol> ( </symbol>
+<expression>
+<term>
+<identifier> b </identifier>
+</term>
+</expression>
+<symbol> ) </symbol>
+<symbol> { </symbol>
+<statements>
+</statements>
+<symbol> } </symbol>
+<keyword> else </keyword>
+<symbol> { </symbol>
+<statements>
+</statements>
+<symbol> } </symbol>
+</ifStatement>
+<returnStatement>
+<keyword> return </keyword>
+<symbol> ; </symbol>
+</returnStatement>
+</statements>
+<symbol> } </symbol>
+</subroutineBody>
+</subroutineDec>
+<symbol> } </symbol>
+</class>
 `},
 	}
 	var err error
@@ -127,12 +270,12 @@ func TestCompileClassVarDec(t *testing.T) {
 
 	tests := []struct {
 		jackCode      string
-		fieldOrStatic tokenizer.KeyWordType
+		fieldOrStatic tokenizer.Token
 		expectedXML   string
 	}{
 		{
 			jackCode:      `static int i;`,
-			fieldOrStatic: tokenizer.KT_STATIC,
+			fieldOrStatic: tokenizer.STATIC,
 			expectedXML: `<classVarDec>
 <keyword> static </keyword>
 <keyword> int </keyword>
@@ -143,7 +286,7 @@ func TestCompileClassVarDec(t *testing.T) {
 		},
 		{
 			jackCode:      `field int i,j;`,
-			fieldOrStatic: tokenizer.KT_FIELD,
+			fieldOrStatic: tokenizer.FIELD,
 			expectedXML: `<classVarDec>
 <keyword> field </keyword>
 <keyword> int </keyword>
@@ -156,7 +299,7 @@ func TestCompileClassVarDec(t *testing.T) {
 		},
 		{
 			jackCode:      `static int i,j;`,
-			fieldOrStatic: tokenizer.KT_STATIC,
+			fieldOrStatic: tokenizer.STATIC,
 			expectedXML: `<classVarDec>
 <keyword> static </keyword>
 <keyword> int </keyword>
@@ -169,7 +312,7 @@ func TestCompileClassVarDec(t *testing.T) {
 		},
 		{
 			jackCode:      `field MyClass A,B,C;`,
-			fieldOrStatic: tokenizer.KT_FIELD,
+			fieldOrStatic: tokenizer.FIELD,
 			expectedXML: `<classVarDec>
 <keyword> field </keyword>
 <identifier> MyClass </identifier>
@@ -349,7 +492,96 @@ func TestCompileTerm(t *testing.T) {
 <keyword> null </keyword>
 </term>
 `,
-		}}
+		}, {
+			jackCode: `arr[1]`,
+			expectedXML: `<term>
+<identifier> arr </identifier>
+<symbol> [ </symbol>
+<expression>
+<term>
+<integerConstant> 1 </integerConstant>
+</term>
+</expression>
+<symbol> ] </symbol>
+</term>
+`},
+		{
+			jackCode: `arr[i]`,
+			expectedXML: `<term>
+<identifier> arr </identifier>
+<symbol> [ </symbol>
+<expression>
+<term>
+<identifier> i </identifier>
+</term>
+</expression>
+<symbol> ] </symbol>
+</term>
+`,
+		}, {
+			jackCode: `-i`,
+			expectedXML: `<term>
+<symbol> - </symbol>
+<term>
+<identifier> i </identifier>
+</term>
+</term>
+`,
+		}, {
+			jackCode: `~b`,
+			expectedXML: `<term>
+<symbol> ~ </symbol>
+<term>
+<identifier> b </identifier>
+</term>
+</term>
+`,
+		}, {
+			jackCode: `(1)`,
+			expectedXML: `<term>
+<symbol> ( </symbol>
+<expression>
+<term>
+<integerConstant> 1 </integerConstant>
+</term>
+</expression>
+<symbol> ) </symbol>
+</term>
+`,
+		}, {
+			jackCode: `sub(1)`,
+			expectedXML: `<term>
+<identifier> sub </identifier>
+<symbol> ( </symbol>
+<expressionList>
+<expression>
+<term>
+<integerConstant> 1 </integerConstant>
+</term>
+</expression>
+</expressionList>
+<symbol> ) </symbol>
+</term>
+`,
+		}, {
+			jackCode: `classVar.sub(1)`,
+			expectedXML: `<term>
+<identifier> classVar </identifier>
+<symbol> . </symbol>
+<identifier> sub </identifier>
+<symbol> ( </symbol>
+<expressionList>
+<expression>
+<term>
+<integerConstant> 1 </integerConstant>
+</term>
+</expression>
+</expressionList>
+<symbol> ) </symbol>
+</term>
+`,
+		},
+	}
 	for _, test := range tests {
 		ce.t, _ = tokenizer.CreateTokenizerWithFirstToken(strings.NewReader(test.jackCode))
 		err := ce.CompileTerm(false)

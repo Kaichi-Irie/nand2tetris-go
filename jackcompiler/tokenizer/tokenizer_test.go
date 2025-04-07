@@ -5,284 +5,78 @@ import (
 	"testing"
 )
 
-func TestGetTokenType(t *testing.T) {
+func TestParseStringConst(t *testing.T) {
 	tests := []struct {
-		token string
-		want  TokenType
+		s    string
+		want Token
 	}{
-		{"class", TT_KEYWORD},
-		{"method", TT_KEYWORD},
-		{"function", TT_KEYWORD},
-		{"constructor", TT_KEYWORD},
-		{"int", TT_KEYWORD},
-		{"boolean", TT_KEYWORD},
-		{"char", TT_KEYWORD},
-		{"void", TT_KEYWORD},
-		{"var", TT_KEYWORD},
-		{"static", TT_KEYWORD},
-		{"field", TT_KEYWORD},
-		{"let", TT_KEYWORD},
-		{"do", TT_KEYWORD},
-		{"if", TT_KEYWORD},
-		{"else", TT_KEYWORD},
-		{"while", TT_KEYWORD},
-		{"return", TT_KEYWORD},
-		{"true", TT_KEYWORD},
-		{"false", TT_KEYWORD},
-		{"null", TT_KEYWORD},
-		{"this", TT_KEYWORD},
-		{"123", TT_INT_CONST},
-		{"0", TT_INT_CONST},
-		{"999", TT_INT_CONST},
-		{"098", TT_INT_CONST},
-		{"hello0", TT_IDENTIFIER},
-		{"hello", TT_IDENTIFIER},
-		{"_hello", TT_IDENTIFIER},
-		{"hello_world", TT_IDENTIFIER},
-		{"\"hello\"", TT_STRING_CONST},
-		{"\"\"", TT_STRING_CONST},
-		{"\"123\"", TT_STRING_CONST},
-		{"\"hello world\"", TT_STRING_CONST},
-		{"(", TT_SYMBOL},
-		{")", TT_SYMBOL},
-		{"{", TT_SYMBOL},
-		{"}", TT_SYMBOL},
-		{"[", TT_SYMBOL},
-		{"]", TT_SYMBOL},
-		{";", TT_SYMBOL},
-		{",", TT_SYMBOL},
-		{".", TT_SYMBOL},
-		{"+", TT_SYMBOL},
-		{"-", TT_SYMBOL},
-		{"*", TT_SYMBOL},
-		{"/", TT_SYMBOL},
-		{"&", TT_SYMBOL},
-		{"|", TT_SYMBOL},
-		{"<", TT_SYMBOL},
-		{">", TT_SYMBOL},
-		{"=", TT_SYMBOL},
-		{"~", TT_SYMBOL},
+		{"\"hello\"", Token{t: TT_STRING_CONST, val: "\"hello\""}},
+		{"\"\"", Token{t: TT_STRING_CONST, val: "\"\""}},
+		{"\"123\"", Token{t: TT_STRING_CONST, val: "\"123\""}},
+		{"\"hello world\"", Token{t: TT_STRING_CONST, val: "\"hello world\""}},
+		{"\"hello\"aaa", Token{t: TT_STRING_CONST, val: "\"hello\""}},
+		{"\"hello\"123", Token{t: TT_STRING_CONST, val: "\"hello\""}},
+		{"\"hello\"+", Token{t: TT_STRING_CONST, val: "\"hello\""}},
 	}
 	for _, tt := range tests {
-		t.Run(tt.token, func(t *testing.T) {
-			if got, err := GetTokenType(tt.token); err != nil {
-				t.Errorf("getTokenType(%s) = %v, want %v", tt.token, err, tt.want)
-			} else if got != tt.want {
-				t.Errorf("getTokenType(%s) = %v, want %v", tt.token, got, tt.want)
+		t.Run(tt.s, func(t *testing.T) {
+			if got, err := ParseStringConst(tt.s); err != nil {
+				t.Errorf("ParseStringConst(%s) = %v, want %v", tt.s, err, tt.want)
+			} else if got.Type() != tt.want.Type() || got.Val() != tt.want.Val() {
+				t.Errorf("ParseStringConst(%s) = %v, want %v", tt.s, got.Val(), tt.want.Val())
 			}
 		})
 	}
 }
 
-func TestGetKeyWordType(t *testing.T) {
+func TestParseIdentifier(t *testing.T) {
 	tests := []struct {
-		token string
-		want  KeyWordType
+		s    string
+		want Token
 	}{
-		{"class", KT_CLASS},
-		{"method", KT_METHOD},
-		{"function", KT_FUNCTION},
-		{"constructor", KT_CONSTRUCTOR},
-		{"int", KT_INT},
-		{"boolean", KT_BOOLEAN},
-		{"char", KT_CHAR},
-		{"void", KT_VOID},
-		{"var", KT_VAR},
-		{"static", KT_STATIC},
-		{"field", KT_FIELD},
-		{"let", KT_LET},
-		{"do", KT_DO},
-		{"if", KT_IF},
-		{"else", KT_ELSE},
-		{"while", KT_WHILE},
-		{"return", KT_RETURN},
-		{"true", KT_TRUE},
-		{"false", KT_FALSE},
-		{"null", KT_NULL},
-		{"this", KT_THIS},
+		{"hello + 3", Token{t: TT_IDENTIFIER, val: "hello"}},
+		{"hello", Token{t: TT_IDENTIFIER, val: "hello"}},
+		{"_hello", Token{t: TT_IDENTIFIER, val: "_hello"}},
+		{"_hello(\"str\")", Token{t: TT_IDENTIFIER, val: "_hello"}},
+		{"hello_world", Token{t: TT_IDENTIFIER, val: "hello_world"}},
+		{"hello123", Token{t: TT_IDENTIFIER, val: "hello123"}},
+		{"hello123 + 3", Token{t: TT_IDENTIFIER, val: "hello123"}},
+		{"x)", Token{t: TT_IDENTIFIER, val: "x"}},
+		{"x.y", Token{t: TT_IDENTIFIER, val: "x"}},
+		{"boolx.y.z", Token{t: TT_IDENTIFIER, val: "boolx"}},
+		{"returnValue", Token{t: TT_IDENTIFIER, val: "returnValue"}},
 	}
 	for _, tt := range tests {
-		t.Run(tt.token, func(t *testing.T) {
-			if got, err := GetKeyWordType(tt.token); err != nil {
-				t.Errorf("getKeyWordType(%s) = %v, want %v", tt.token, err, tt.want)
-			} else if got != tt.want {
-				t.Errorf("getKeyWordType(%s) = %v, want %v", tt.token, got, tt.want)
+		t.Run(tt.s, func(t *testing.T) {
+			if got, err := ParseIdentifier(tt.s); err != nil {
+				t.Errorf("ParseIdentifier(%s) = %v, want %v", tt.s, err, tt.want)
+			} else if got.Type() != tt.want.Type() || got.Val() != tt.want.Val() {
+				t.Errorf("ParseIdentifier(%s) = %v, want %v", tt.s, got.Val(), tt.want.Val())
 			}
 		})
 	}
 }
 
-func TestIsIntConst(t *testing.T) {
+func TestParseIntConst(t *testing.T) {
 	tests := []struct {
-		token string
-		want  bool
+		s    string
+		want Token
 	}{
-		{"123", true},
-		{"0", true},
-		{"999", true},
-		{"098", true},
-		{"098hello", false},
-		{"3+5", false},
-		{"3   ", false},
+		{"123 + 3", Token{t: TT_INT_CONST, val: "123"}},
+		{"0", Token{t: TT_INT_CONST, val: "0"}},
+		{"999", Token{t: TT_INT_CONST, val: "999"}},
+		{"098", Token{t: TT_INT_CONST, val: "98"}},
+		{"098*3", Token{t: TT_INT_CONST, val: "98"}},
+		{"3+5", Token{t: TT_INT_CONST, val: "3"}},
+		{"3   ", Token{t: TT_INT_CONST, val: "3"}},
+		{"4(x+y)", Token{t: TT_INT_CONST, val: "4"}},
 	}
 	for _, tt := range tests {
-		t.Run(tt.token, func(t *testing.T) {
-			if got := IsIntConst(tt.token); got != tt.want {
-				t.Errorf("isIntConst(%s) = %v, want %v", tt.token, got, tt.want)
-			}
-		})
-	}
-}
-func TestExtractIntConst(t *testing.T) {
-	tests := []struct {
-		token string
-		want  int
-	}{
-		{"123", 123},
-		{"0", 0},
-		{"999", 999},
-		{"098", 98},
-		{"098hello", 98},
-		{"3+5", 3},
-		{"3   ", 3},
-		{"4*2", 4},
-	}
-	for _, tt := range tests {
-		t.Run(tt.token, func(t *testing.T) {
-			if got, err := ParseIntConst(tt.token); err != nil {
-				t.Errorf("extractIntConst(%s) = %v, want %v", tt.token, err, tt.want)
-			} else if got != tt.want {
-				t.Errorf("extractIntConst(%s) = %v, want %v", tt.token, got, tt.want)
-			}
-		})
-	}
-}
-
-func TestIsStringConst(t *testing.T) {
-	tests := []struct {
-		token string
-		want  bool
-	}{
-		{"\"hello\"", true},
-		{"\"\"", true},
-		{"\"123\"", true},
-		{"\"hello world\"", true},
-		{"hello", false},
-		{"123", false},
-	}
-	for _, tt := range tests {
-		t.Run(tt.token, func(t *testing.T) {
-			if got := IsStringConst(tt.token); got != tt.want {
-				t.Errorf("isStringConst(%s) = %v, want %v", tt.token, got, tt.want)
-			}
-		})
-	}
-}
-
-func TestExtractStringConst(t *testing.T) {
-	tests := []struct {
-		token string
-		want  string
-	}{
-		{"\"hello\"", "\"hello\""},
-		{"\"\"", "\"\""},
-		{"\"123\"aaa", "\"123\""},
-		{"\"hello world\"", "\"hello world\""},
-	}
-	for _, tt := range tests {
-		t.Run(tt.token, func(t *testing.T) {
-			if got, err := ParseStringConst(tt.token); err != nil {
-				t.Errorf("extractStringConst(%s) = %v, want %v", tt.token, err, tt.want)
-			} else if got != tt.want {
-				t.Errorf("extractStringConst(%s) = %v, want %v", tt.token, got, tt.want)
-			}
-		})
-	}
-}
-
-func TestIsIdentifier(t *testing.T) {
-	tests := []struct {
-		token string
-		want  bool
-	}{
-		{"hello", true},
-		{"_hello", true},
-		{"hello_world", true},
-		{"hello123", true},
-		{"3hello", false},
-		{" hello", false},
-		{"hello ", false},
-		{"hello+world", false},
-		{"hello-world", false},
-		{"hello.world", false},
-		{"hello,world", false},
-		{"hello;world", false},
-		{"hello:world", false},
-		{"hello?world", false},
-		{"hello!world", false},
-		{"hello@world", false},
-		{"hello#world", false},
-		{"hello$world", false},
-		{"hello%world", false},
-		{"hello^world", false},
-		{"hello&world", false},
-		{"hello*world", false},
-		{"hello(world", false},
-		{"hello)world", false},
-		{"class", false},
-		{"method", false},
-		{"function", false},
-		{"constructor", false},
-		{"int", false},
-		{"boolean", false},
-		{"char", false},
-		{"void", false},
-		{"var", false},
-		{"static", false},
-		{"field", false},
-		{"let", false},
-		{"do", false},
-		{"if", false},
-		{"else", false},
-		{"while", false},
-		{"return", false},
-		{"true", false},
-		{"false", false},
-		{"null", false},
-		{"this", false},
-		{"123", false},
-		{"\"hello\"", false},
-		{"\"hello world\"", false},
-		{"(", false},
-		{"classVar", true}}
-	for _, tt := range tests {
-		t.Run(tt.token, func(t *testing.T) {
-			if got := IsIdentifier(tt.token); got != tt.want {
-				t.Errorf("isIdentifier(%s) = %v, want %v", tt.token, got, tt.want)
-			}
-		})
-	}
-}
-
-func TestExtractIdentifier(t *testing.T) {
-	tests := []struct {
-		token string
-		want  string
-	}{
-		{"hello + 3", "hello"},
-		{"_hello(\"str\")", "_hello"},
-		{"hello_world", "hello_world"},
-		{"hello123", "hello123"},
-		{"x)", "x"},
-		{"x.y", "x"},
-		{"boolx.y.z", "boolx"},
-	}
-	for _, tt := range tests {
-		t.Run(tt.token, func(t *testing.T) {
-			if got, err := ParseIdentifier(tt.token); err != nil {
-				t.Errorf("extractIdentifier(%s) = %v, want %v", tt.token, err, tt.want)
-			} else if got != tt.want {
-				t.Errorf("extractIdentifier(%s) = %v, want %v", tt.token, got, tt.want)
+		t.Run(tt.s, func(t *testing.T) {
+			if got, err := ParseIntConst(tt.s); err != nil {
+				t.Errorf("ParseIntConst(%s) = %v, want %v", tt.s, err, tt.want)
+			} else if got.Type() != tt.want.Type() || got.Val() != tt.want.Val() {
+				t.Errorf("ParseIntConst(%s) = %v, want %v", tt.s, got.Val(), tt.want.Val())
 			}
 		})
 	}
@@ -297,45 +91,42 @@ func TestTokenizer(t *testing.T) {
         return;
     }
 }`))
-	tests := []struct {
-		wantToken string
-		wantType  TokenType
-	}{
-		{"class", TT_KEYWORD},
-		{"Main", TT_IDENTIFIER},
-		{"{", TT_SYMBOL},
-		{"function", TT_KEYWORD},
-		{"void", TT_KEYWORD},
-		{"main", TT_IDENTIFIER},
-		{"(", TT_SYMBOL},
-		{")", TT_SYMBOL},
-		{"{", TT_SYMBOL},
-		{"var", TT_KEYWORD},
-		{"int", TT_KEYWORD},
-		{"returnValue", TT_IDENTIFIER},
-		{";", TT_SYMBOL},
-		{"let", TT_KEYWORD},
-		{"returnValue", TT_IDENTIFIER},
-		{"=", TT_SYMBOL},
-		{"Keyboard", TT_IDENTIFIER},
-		{".", TT_SYMBOL},
-		{"readInt", TT_IDENTIFIER},
-		{"(", TT_SYMBOL},
-		{"\"enter the number\"", TT_STRING_CONST},
-		{")", TT_SYMBOL},
-		{";", TT_SYMBOL},
-		{"do", TT_KEYWORD},
-		{"Output", TT_IDENTIFIER},
-		{".", TT_SYMBOL},
-		{"printInt", TT_IDENTIFIER},
-		{"(", TT_SYMBOL},
-		{"returnValue", TT_IDENTIFIER},
-		{")", TT_SYMBOL},
-		{";", TT_SYMBOL},
-		{"return", TT_KEYWORD},
-		{";", TT_SYMBOL},
-		{"}", TT_SYMBOL},
-		{"}", TT_SYMBOL},
+	tests := []*Token{
+		{t: TT_KEYWORD, val: "class"},
+		{t: TT_IDENTIFIER, val: "Main"},
+		{t: TT_SYMBOL, val: "{"},
+		{t: TT_KEYWORD, val: "function"},
+		{t: TT_KEYWORD, val: "void"},
+		{t: TT_IDENTIFIER, val: "main"},
+		{t: TT_SYMBOL, val: "("},
+		{t: TT_SYMBOL, val: ")"},
+		{t: TT_SYMBOL, val: "{"},
+		{t: TT_KEYWORD, val: "var"},
+		{t: TT_KEYWORD, val: "int"},
+		{t: TT_IDENTIFIER, val: "returnValue"},
+		{t: TT_SYMBOL, val: ";"},
+		{t: TT_KEYWORD, val: "let"},
+		{t: TT_IDENTIFIER, val: "returnValue"},
+		{t: TT_SYMBOL, val: "="},
+		{t: TT_IDENTIFIER, val: "Keyboard"},
+		{t: TT_SYMBOL, val: "."},
+		{t: TT_IDENTIFIER, val: "readInt"},
+		{t: TT_SYMBOL, val: "("},
+		{t: TT_STRING_CONST, val: "\"enter the number\""},
+		{t: TT_SYMBOL, val: ")"},
+		{t: TT_SYMBOL, val: ";"},
+		{t: TT_KEYWORD, val: "do"},
+		{t: TT_IDENTIFIER, val: "Output"},
+		{t: TT_SYMBOL, val: "."},
+		{t: TT_IDENTIFIER, val: "printInt"},
+		{t: TT_SYMBOL, val: "("},
+		{t: TT_IDENTIFIER, val: "returnValue"},
+		{t: TT_SYMBOL, val: ")"},
+		{t: TT_SYMBOL, val: ";"},
+		{t: TT_KEYWORD, val: "return"},
+		{t: TT_SYMBOL, val: ";"},
+		{t: TT_SYMBOL, val: "}"},
+		{t: TT_SYMBOL, val: "}"},
 	}
 
 	for i := 0; tokenizer.Advance(); i++ {
@@ -344,59 +135,58 @@ func TestTokenizer(t *testing.T) {
 			t.Errorf("tokenizer returned more tokens than expected")
 			break
 		}
-		if tests[i].wantToken != token {
-			t.Errorf("tokenizer returned %s, expected %s", token, tests[i].wantToken)
+		if token.Type() != tests[i].Type() {
+			t.Errorf("tokenizer returned %d, expected %d", token.Type(), tests[i].Type())
 		}
-		if tokenType, err := GetTokenType(token); err != nil {
-			t.Errorf("getTokenType(%s) returned error: %v", token, err)
-		} else if tests[i].wantType != tokenType {
-			t.Errorf("tokenizer returned %d, expected %d", tokenType, tests[i].wantType)
+		if token.Val() != tests[i].Val() {
+			t.Errorf("tokenizer returned %s, expected %s", token.Val(), tests[i].Val())
 		}
 	}
 }
 
 func TestProcessKeyWord(t *testing.T) {
 	tests := []struct {
-		s    string
-		T    KeyWordType
-		want string
+		current Token
+		kwToken Token
+		want    string
 	}{
-		{"class", KT_CLASS, "<keyword> class </keyword>\n"},
-		{"method", KT_METHOD, "<keyword> method </keyword>\n"},
-		{"function", KT_FUNCTION, "<keyword> function </keyword>\n"},
-		{"constructor", KT_CONSTRUCTOR, "<keyword> constructor </keyword>\n"},
-		{"int", KT_INT, "<keyword> int </keyword>\n"},
-		{"boolean", KT_BOOLEAN, "<keyword> boolean </keyword>\n"},
-		{"char", KT_CHAR, "<keyword> char </keyword>\n"},
-		{"void", KT_VOID, "<keyword> void </keyword>\n"},
-		{"var", KT_VAR, "<keyword> var </keyword>\n"},
-		{"static", KT_STATIC, "<keyword> static </keyword>\n"},
-		{"field", KT_FIELD, "<keyword> field </keyword>\n"},
-		{"let", KT_LET, "<keyword> let </keyword>\n"},
-		{"do", KT_DO, "<keyword> do </keyword>\n"},
-		{"if", KT_IF, "<keyword> if </keyword>\n"},
-		{"else", KT_ELSE, "<keyword> else </keyword>\n"},
-		{"while", KT_WHILE, "<keyword> while </keyword>\n"},
-		{"return", KT_RETURN, "<keyword> return </keyword>\n"},
-		{"true", KT_TRUE, "<keyword> true </keyword>\n"},
-		{"false", KT_FALSE, "<keyword> false </keyword>\n"},
-		{"null", KT_NULL, "<keyword> null </keyword>\n"},
-		{"this", KT_THIS, "<keyword> this </keyword>\n"},
+
+		{Token{t: TT_KEYWORD, val: "class"}, CLASS, "<keyword> class </keyword>\n"},
+		{Token{t: TT_KEYWORD, val: "method"}, METHOD, "<keyword> method </keyword>\n"},
+		{Token{t: TT_KEYWORD, val: "function"}, FUNCTION, "<keyword> function </keyword>\n"},
+		{Token{t: TT_KEYWORD, val: "constructor"}, CONSTRUCTOR, "<keyword> constructor </keyword>\n"},
+		{Token{t: TT_KEYWORD, val: "int"}, INT, "<keyword> int </keyword>\n"},
+		{Token{t: TT_KEYWORD, val: "boolean"}, BOOLEAN, "<keyword> boolean </keyword>\n"},
+		{Token{t: TT_KEYWORD, val: "char"}, CHAR, "<keyword> char </keyword>\n"},
+		{Token{t: TT_KEYWORD, val: "void"}, VOID, "<keyword> void </keyword>\n"},
+		{Token{t: TT_KEYWORD, val: "var"}, VAR, "<keyword> var </keyword>\n"},
+		{Token{t: TT_KEYWORD, val: "static"}, STATIC, "<keyword> static </keyword>\n"},
+		{Token{t: TT_KEYWORD, val: "field"}, FIELD, "<keyword> field </keyword>\n"},
+		{Token{t: TT_KEYWORD, val: "let"}, LET, "<keyword> let </keyword>\n"},
+		{Token{t: TT_KEYWORD, val: "do"}, DO, "<keyword> do </keyword>\n"},
+		{Token{t: TT_KEYWORD, val: "if"}, IF, "<keyword> if </keyword>\n"},
+		{Token{t: TT_KEYWORD, val: "else"}, ELSE, "<keyword> else </keyword>\n"},
+		{Token{t: TT_KEYWORD, val: "while"}, WHILE, "<keyword> while </keyword>\n"},
+		{Token{t: TT_KEYWORD, val: "return"}, RETURN, "<keyword> return </keyword>\n"},
+		{Token{t: TT_KEYWORD, val: "true"}, TRUE, "<keyword> true </keyword>\n"},
+		{Token{t: TT_KEYWORD, val: "false"}, FALSE, "<keyword> false </keyword>\n"},
+		{Token{t: TT_KEYWORD, val: "null"}, NULL, "<keyword> null </keyword>\n"},
+		{Token{t: TT_KEYWORD, val: "this"}, THIS, "<keyword> this </keyword>\n"},
 	}
 	for _, tt := range tests {
-		t.Run(tt.s, func(t *testing.T) {
-			tknz, err := CreateTokenizerWithFirstToken(strings.NewReader(tt.s))
+		t.Run(tt.current.Val(), func(t *testing.T) {
+			tknz, err := CreateTokenizerWithFirstToken(strings.NewReader(tt.current.Val()))
 			if err != nil {
-				t.Errorf("createTokenizerWithFirstToken(%s) = %v", tt.s, err)
+				t.Errorf("createTokenizerWithFirstToken(%s) = %v", tt.current.Val(), err)
 				return
 			}
 			w := strings.Builder{}
-			if err := tknz.ProcessKeyWord(tt.T, &w); err != nil {
-				t.Errorf("processKeyWord(%s) = %v", tt.s, err)
+			if err := tknz.ProcessKeyWord(tt.kwToken, &w); err != nil {
+				t.Errorf("processKeyWord(%s) = %v", tt.current.Val(), err)
 				return
 			}
 			if w.String() != tt.want {
-				t.Errorf("processKeyWord(%s) = %s, want %s", tt.s, w.String(), tt.want)
+				t.Errorf("processKeyWord(%s) = %s, want %s", tt.current.Val(), w.String(), tt.want)
 			}
 		})
 	}
@@ -433,43 +223,44 @@ func TestProcessIdentifier(t *testing.T) {
 
 func TestProcessSymbol(t *testing.T) {
 	tests := []struct {
-		s    string
-		want string
+		symbol Token
+		want   string
 	}{
-		{"{", "<symbol> { </symbol>\n"},
-		{"}", "<symbol> } </symbol>\n"},
-		{"(", "<symbol> ( </symbol>\n"},
-		{")", "<symbol> ) </symbol>\n"},
-		{"[", "<symbol> [ </symbol>\n"},
-		{"]", "<symbol> ] </symbol>\n"},
-		{";", "<symbol> ; </symbol>\n"},
-		{",", "<symbol> , </symbol>\n"},
-		{".", "<symbol> . </symbol>\n"},
-		{"+", "<symbol> + </symbol>\n"},
-		{"-", "<symbol> - </symbol>\n"},
-		{"*", "<symbol> * </symbol>\n"},
-		{"/", "<symbol> / </symbol>\n"},
-		{"|", "<symbol> | </symbol>\n"},
-		{"<", "<symbol> &lt; </symbol>\n"},
-		{">", "<symbol> &gt; </symbol>\n"},
-		{"=", "<symbol> = </symbol>\n"},
-		{"~", "<symbol> ~ </symbol>\n"},
-		{"&", "<symbol> &amp; </symbol>\n"},
+		{LBRACE, "<symbol> { </symbol>\n"},
+		{RBRACE, "<symbol> } </symbol>\n"},
+		{LPAREN, "<symbol> ( </symbol>\n"},
+		{RPAREN, "<symbol> ) </symbol>\n"},
+		{LSQUARE, "<symbol> [ </symbol>\n"},
+		{RSQUARE, "<symbol> ] </symbol>\n"},
+		{SEMICOLON, "<symbol> ; </symbol>\n"},
+		{COMMA, "<symbol> , </symbol>\n"},
+		{DOT, "<symbol> . </symbol>\n"},
+		{PLUS, "<symbol> + </symbol>\n"},
+		{MINUS, "<symbol> - </symbol>\n"},
+		{ASTERISK, "<symbol> * </symbol>\n"},
+		{SLASH, "<symbol> / </symbol>\n"},
+		{OR, "<symbol> | </symbol>\n"},
+		{LESS, "<symbol> &lt; </symbol>\n"},
+		{GREATER, "<symbol> &gt; </symbol>\n"},
+		{EQUAL, "<symbol> = </symbol>\n"},
+		{NOT, "<symbol> ~ </symbol>\n"},
+		{AND, "<symbol> &amp; </symbol>\n"},
 	}
+
 	for _, tt := range tests {
-		t.Run(tt.s, func(t *testing.T) {
-			tknz, err := CreateTokenizerWithFirstToken(strings.NewReader(tt.s))
+		t.Run(tt.symbol.Val(), func(t *testing.T) {
+			tknz, err := CreateTokenizerWithFirstToken(strings.NewReader(tt.symbol.Val()))
 			if err != nil {
-				t.Errorf("createTokenizerWithFirstToken(%s) = %v", tt.s, err)
+				t.Errorf("createTokenizerWithFirstToken(%s) = %v", tt.symbol.Val(), err)
 				return
 			}
 			w := strings.Builder{}
-			if err := tknz.ProcessSymbol(tt.s, &w); err != nil {
-				t.Errorf("processSymbol(%s) = %v", tt.s, err)
+			if err := tknz.ProcessSymbol(tt.symbol, &w); err != nil {
+				t.Errorf("processSymbol(%s) = %v", tt.symbol.Val(), err)
 				return
 			}
 			if w.String() != tt.want {
-				t.Errorf("processSymbol(%s) = %s, want %s", tt.s, w.String(), tt.want)
+				t.Errorf("processSymbol(%s) = %s, want %s", tt.symbol.Val(), w.String(), tt.want)
 			}
 		})
 	}
