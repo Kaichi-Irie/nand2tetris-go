@@ -86,7 +86,7 @@ func (t *Tokenizer) ProcessIdentifier(w io.Writer) error {
 // ProcessStringConst checks if the current token is a string constant. If it is, it writes the string constant to the writer and advances to the next token. It returns an error if the current token is not a string constant.
 func (t *Tokenizer) ProcessStringConst(w io.Writer) error {
 	token := t.CurrentToken
-	if !token.IsStringConst() {
+	if !token.Is(TT_STRING_CONST) {
 		return fmt.Errorf("token is not a string constant")
 	}
 	// remove the quotes from the string constant
@@ -103,7 +103,7 @@ func (t *Tokenizer) ProcessStringConst(w io.Writer) error {
 // ProcessIntConst checks if the current token is an integer constant. If it is, it writes the integer constant to the writer and advances to the next token. It returns an error if the current token is not an integer constant.
 func (t *Tokenizer) ProcessIntConst(w io.Writer) error {
 	token := t.CurrentToken
-	if !token.IsIntConst() {
+	if !token.Is(TT_INT_CONST) {
 		return fmt.Errorf("token is not an integer constant")
 	}
 

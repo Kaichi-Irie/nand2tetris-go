@@ -71,44 +71,43 @@ func (t Token) Type() TokenType {
 	return t.t
 }
 
-// Is returns true if the token is of the given type
+// Is returns true if the token is of the given type. TokenType: TT_KEYWORD, TT_SYMBOL, TT_IDENTIFIER, TT_INT_CONST, TT_STRING_CONST
 func (t Token) Is(tType TokenType) bool {
 	return t.t == tType
 }
+
+// IsPrimitiveType returns true if the token is a primitive type: int, boolean, char or void
 func (t Token) IsPrimitiveType() bool {
-	switch t.val {
-	case INT.val, BOOLEAN.val, CHAR.val, VOID.val:
+	switch t.Val() {
+	case INT.Val(), BOOLEAN.Val(), CHAR.Val(), VOID.Val():
 		return true
 	}
 	return false
 }
-func (t Token) IsBoolean() bool {
-	return t.val == BOOLEAN.val
-}
-func (t Token) IsIntConst() bool {
-	return t.t == TT_INT_CONST
-}
-func (t Token) IsStringConst() bool {
-	return t.t == TT_STRING_CONST
-}
+
+// IsOp returns true if the token is an operator: +, -, *, /, &, |, <, >, =
 func (t Token) IsOp() bool {
-	switch t.val {
-	case PLUS.val, MINUS.val, ASTERISK.val, SLASH.val,
-		AND.val, OR.val, LESS.val, GREATER.val, EQUAL.val:
+	switch t.Val() {
+	case PLUS.Val(), MINUS.Val(), ASTERISK.Val(), SLASH.Val(),
+		AND.Val(), OR.Val(), LESS.Val(), GREATER.Val(), EQUAL.Val():
 		return true
 	}
 	return false
 }
+
+// IsUnaryOp returns true if the token is a unary operator: ~, -
 func (t Token) IsUnaryOp() bool {
-	switch t.val {
-	case NOT.val, MINUS.val:
+	switch t.Val() {
+	case NOT.Val(), MINUS.Val():
 		return true
 	}
 	return false
 }
-func (t Token) IsKeywordConstant() bool {
-	switch t.val {
-	case TRUE.val, FALSE.val, NULL.val, THIS.val:
+
+// IsKeywordConst returns true if the token is a keyword constant: true, false, null, this
+func (t Token) IsKeywordConst() bool {
+	switch t.Val() {
+	case TRUE.Val(), FALSE.Val(), NULL.Val(), THIS.Val():
 		return true
 	}
 	return false

@@ -52,19 +52,19 @@ func (ce *CompilationEngine) CompileTerm(isDoStatement bool) error {
 			return err
 		}
 	// process the string constant
-	case token.IsStringConst():
+	case token.Is(tokenizer.TT_STRING_CONST):
 		err = ce.t.ProcessStringConst(ce.xmlFile)
 		if err != nil {
 			return err
 		}
 	// process the integer constant
-	case token.IsIntConst():
+	case token.Is(tokenizer.TT_INT_CONST):
 		err = ce.t.ProcessIntConst(ce.xmlFile)
 		if err != nil {
 			return err
 		}
 	// process the keyword constant: true, false, null, this
-	case token.IsKeywordConstant():
+	case token.IsKeywordConst():
 		err = ce.t.ProcessKeyWord(token, ce.xmlFile)
 		if err != nil {
 			return err

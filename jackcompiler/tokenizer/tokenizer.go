@@ -36,6 +36,13 @@ func CreateTokenizerWithFirstToken(r io.Reader) (*Tokenizer, error) {
 	return t, nil
 }
 
+// isAlphanumeric checks if the given byte is an alphanumeric character (a-z, A-Z, 0-9).
+func isAlphanumeric(c byte) bool {
+	return 'a' <= c && c <= 'z' ||
+		'A' <= c && c <= 'Z' ||
+		'0' <= c && c <= '9'
+}
+
 // Advance advances the scanner to the next token. It returns true if there is a next token, false otherwise.
 func (t *Tokenizer) Advance() bool {
 	if t.CurrentPos >= t.CurrentLineLength {
@@ -60,41 +67,17 @@ func (t *Tokenizer) Advance() bool {
 	}
 
 	// check if the next token is a symbol
-	for _, s := range Symbols {
-		length := len(s.Val())
-		if pos+length > t.CurrentLineLength {
-			continue
-		}
-		if t.CurrentLine[pos:pos+length] == s.Val() {
-			t.CurrentPos += length
-			t.CurrentToken = s
-			return true
-		}
+	if s, ok := ParseSymbol(t.CurrentLine[pos:]); ok == nil {
+		t.CurrentPos += len(s.Val())
+		t.CurrentToken = s
+		return true
 	}
 
 	// check if the next token is a keyword
-	for _, kw := range Keywords {
-		length := len(kw.Val())
-		if pos+length > t.CurrentLineLength {
-			continue
-		}
-
-		kwCandidate := t.CurrentLine[pos : pos+length]
-		if pos+length < t.CurrentLineLength {
-			followingChar := t.CurrentLine[pos+length]
-			// if followingChar is alphanumeric, or underscore, then it is not a keyword. followingChar is the character just after the keyword
-			if 'a' <= followingChar && followingChar <= 'z' ||
-				'A' <= followingChar && followingChar <= 'Z' ||
-				'0' <= followingChar && followingChar <= '9' ||
-				followingChar == '_' {
-				continue
-			}
-		}
-		if kwCandidate == kw.Val() {
-			t.CurrentPos += length
-			t.CurrentToken = kw
-			return true
-		}
+	if kw, ok := ParseKeyword(t.CurrentLine[pos:]); ok == nil {
+		t.CurrentPos += len(kw.Val())
+		t.CurrentToken = kw
+		return true
 	}
 
 	// check if the next token is an integer constant

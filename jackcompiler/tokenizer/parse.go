@@ -7,6 +7,52 @@ import (
 )
 
 /*
+ParseSymbol parses the symbol from the string. A symbol is a string that is in the list of symbols.
+It returns the symbol and an error if the string does not start with a symbol.
+It also checks if the symbol is a valid symbol.
+*/
+func ParseSymbol(s string) (Token, error) {
+	for _, symbol := range Symbols {
+		length := len(symbol.Val())
+		if length > len(s) {
+			continue
+		}
+		if s[0:length] == symbol.Val() {
+			return symbol, nil
+		}
+	}
+	return Token{}, fmt.Errorf("not a symbol")
+}
+
+/*
+ParseKeyword parses the keyword from the string. A keyword is a string that is in the list of keywords.
+It returns the keyword and an error if the string does not start with a keyword.
+It also checks if the keyword is a valid keyword.
+*/
+func ParseKeyword(s string) (Token, error) {
+	for _, kw := range Keywords {
+		length := len(kw.Val())
+		if len(s) < length {
+			continue
+		}
+
+		kwCandidate := s[0:length]
+		if length < len(s) {
+
+			// if followingChar is alphanumeric, or underscore, then it is not a keyword. followingChar is the character just after the keyword
+			if followingChar := s[length]; isAlphanumeric(followingChar) ||
+				followingChar == '_' {
+				continue
+			}
+		}
+		if kwCandidate == kw.Val() {
+			return kw, nil
+		}
+	}
+	return Token{}, fmt.Errorf("not a keyword")
+}
+
+/*
 ParseIntConst parses the integer constant at the beginning of the string.
 It returns the integer constant and an error if the string does not start with an integer constant.
 It also checks if the integer constant is a valid integer constant.

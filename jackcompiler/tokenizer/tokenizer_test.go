@@ -5,6 +5,80 @@ import (
 	"testing"
 )
 
+func TestParseSymbol(t *testing.T) {
+	tests := []struct {
+		s    string
+		want Token
+	}{
+		{"{8", LBRACE},
+		{"};", RBRACE},
+		{"(func(", LPAREN},
+		{")*5", RPAREN},
+		{"[3", LSQUARE},
+		{"];", RSQUARE},
+		{";\n", SEMICOLON},
+		{",\n", COMMA},
+		{".hello()", DOT},
+		{"+3", PLUS},
+		{"-3", MINUS},
+		{"*func()", ASTERISK},
+		{"/func()", SLASH},
+		{"|3", OR},
+		{"&4", AND},
+		{"<5", LESS},
+		{">6", GREATER},
+		{"=7", EQUAL},
+		{"~8", NOT},
+		{"&9", AND}}
+
+	for _, tt := range tests {
+		t.Run(tt.s, func(t *testing.T) {
+			if got, err := ParseSymbol(tt.s); err != nil {
+				t.Errorf("ParseSymbol(%s) = %v, want %v", tt.s, err, tt.want)
+			} else if got.Type() != tt.want.Type() || got.Val() != tt.want.Val() {
+				t.Errorf("ParseSymbol(%s) = %v, want %v", tt.s, got.Val(), tt.want.Val())
+			}
+		})
+	}
+}
+
+func TestParseKeyword(t *testing.T) {
+	tests := []struct {
+		s    string
+		want Token
+	}{
+		{"class Main", CLASS},
+		{"method returnValue", METHOD},
+		{"function void", FUNCTION},
+		{"constructor", CONSTRUCTOR},
+		{"int i", INT},
+		{"boolean b", BOOLEAN},
+		{"char c", CHAR},
+		{"void", VOID},
+		{"var", VAR},
+		{"static", STATIC},
+		{"field", FIELD},
+		{"let", LET},
+		{"do Output()", DO},
+		{"if(){}", IF},
+		{"else{}", ELSE},
+		{"while()", WHILE},
+		{"return;", RETURN},
+		{"true|", TRUE},
+		{"false|", FALSE},
+		{"null", NULL},
+		{"this", THIS}}
+	for _, tt := range tests {
+		t.Run(tt.s, func(t *testing.T) {
+			if got, err := ParseKeyword(tt.s); err != nil {
+				t.Errorf("ParseKeyword(%s) = %v, want %v", tt.s, err, tt.want)
+			} else if got.Type() != tt.want.Type() || got.Val() != tt.want.Val() {
+				t.Errorf("ParseKeyword(%s) = %v, want %v", tt.s, got.Val(), tt.want.Val())
+			}
+		})
+	}
+}
+
 func TestParseStringConst(t *testing.T) {
 	tests := []struct {
 		s    string
