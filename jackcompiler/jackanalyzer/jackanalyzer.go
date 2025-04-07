@@ -44,7 +44,7 @@ func Analize(path string) error {
 		if err != nil {
 			return err
 		}
-
+		fmt.Println("compiled", jackFilePath, "to", xmlFilePath)
 	}
 	fmt.Println("done")
 	return nil
