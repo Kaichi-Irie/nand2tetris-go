@@ -14,7 +14,7 @@
 
 
 
-<script>var goVersion = "go1.24.1";</script>
+<script>var goVersion = "go1.24.2";</script>
 <script src="../../../../lib/godoc/godocs.js" defer></script>
 </head>
 <body>
@@ -110,12 +110,13 @@
 			<dl>
 			
 			
-				<dd><a href="index.html%3Fm=all.html#pkg-variables">Variables</a></dd>
-			
 			
 			
 				
 				<dd><a href="index.html%3Fm=all.html#CompilationEngine">type CompilationEngine</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html%3Fm=all.html#CreateCEwithFirstToken">func CreateCEwithFirstToken(xmlFile io.Writer, r io.Reader) *CompilationEngine</a></dd>
 				
 					
 					<dd>&nbsp; &nbsp; <a href="index.html%3Fm=all.html#New">func New(xmlFile io.Writer, r io.Reader) *CompilationEngine</a></dd>
@@ -125,10 +126,46 @@
 					<dd>&nbsp; &nbsp; <a href="index.html%3Fm=all.html#CompilationEngine.CompileClass">func (ce *CompilationEngine) CompileClass() error</a></dd>
 				
 					
-					<dd>&nbsp; &nbsp; <a href="index.html%3Fm=all.html#CompilationEngine.CompileClassVarDec">func (ce *CompilationEngine) CompileClassVarDec(staticOrField tokenizer.KeyWordType) error</a></dd>
+					<dd>&nbsp; &nbsp; <a href="index.html%3Fm=all.html#CompilationEngine.CompileClassVarDec">func (ce *CompilationEngine) CompileClassVarDec(staticOrField tokenizer.Token) error</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html%3Fm=all.html#CompilationEngine.CompileDo">func (ce *CompilationEngine) CompileDo() error</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html%3Fm=all.html#CompilationEngine.CompileExpression">func (ce *CompilationEngine) CompileExpression(isDoStatement bool) error</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html%3Fm=all.html#CompilationEngine.CompileExpressionList">func (ce *CompilationEngine) CompileExpressionList() error</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html%3Fm=all.html#CompilationEngine.CompileIf">func (ce *CompilationEngine) CompileIf() error</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html%3Fm=all.html#CompilationEngine.CompileLet">func (ce *CompilationEngine) CompileLet() error</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html%3Fm=all.html#CompilationEngine.CompileParameterList">func (ce *CompilationEngine) CompileParameterList() error</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html%3Fm=all.html#CompilationEngine.CompileReturn">func (ce *CompilationEngine) CompileReturn() error</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html%3Fm=all.html#CompilationEngine.CompileStatements">func (ce *CompilationEngine) CompileStatements() error</a></dd>
 				
 					
 					<dd>&nbsp; &nbsp; <a href="index.html%3Fm=all.html#CompilationEngine.CompileSubroutine">func (ce *CompilationEngine) CompileSubroutine() error</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html%3Fm=all.html#CompilationEngine.CompileSubroutineBody">func (ce *CompilationEngine) CompileSubroutineBody() error</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html%3Fm=all.html#CompilationEngine.CompileTerm">func (ce *CompilationEngine) CompileTerm(isDoStatement bool) error</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html%3Fm=all.html#CompilationEngine.CompileVarDec">func (ce *CompilationEngine) CompileVarDec() error</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html%3Fm=all.html#CompilationEngine.CompileWhile">func (ce *CompilationEngine) CompileWhile() error</a></dd>
 				
 			
 			
@@ -144,6 +181,12 @@
 			
 				<a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/compilationengine/compilationengine.go">compilationengine.go</a>
 			
+				<a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/compilationengine/compile_expression.go">compile_expression.go</a>
+			
+				<a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/compilationengine/compile_statements.go">compile_statements.go</a>
+			
+				<a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/compilationengine/compile_structure.go">compile_structure.go</a>
+			
 			</span>
 			</p>
 		
@@ -154,22 +197,11 @@
 
 		
 		
-			<h2 id="pkg-variables">Variables</h2>
-			
-				
-				<pre>var <span id="XMLEscapes">XMLEscapes</span> = map[<a href="http://localhost:6060/pkg/builtin/#string">string</a>]<a href="http://localhost:6060/pkg/builtin/#string">string</a>{
-    &#34;&lt;&#34;:  &#34;&amp;lt;&#34;,
-    &#34;&gt;&#34;:  &#34;&amp;gt;&#34;,
-    &#34;\&#34;&#34;: &#34;&amp;quot;&#34;,
-    &#34;&amp;&#34;:  &#34;&amp;amp;&#34;,
-}</pre>
-			
-		
 		
 		
 			
 			
-			<h2 id="CompilationEngine">type <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/compilationengine/compilationengine.go?s=195:277#L6">CompilationEngine</a>
+			<h2 id="CompilationEngine">type <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/compilationengine/compilationengine.go?s=86:168#L1">CompilationEngine</a>
 				<a class="permalink" href="index.html%3Fm=all.html#CompilationEngine">&#xb6;</a>
 				
 				
@@ -191,7 +223,18 @@
 
 			
 				
-				<h3 id="New">func <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/compilationengine/compilationengine.go?s=279:338#L11">New</a>
+				<h3 id="CreateCEwithFirstToken">func <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/compilationengine/compilationengine.go?s=315:393#L10">CreateCEwithFirstToken</a>
+					<a class="permalink" href="index.html%3Fm=all.html#CreateCEwithFirstToken">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func CreateCEwithFirstToken(xmlFile <a href="http://localhost:6060/pkg/io/">io</a>.<a href="http://localhost:6060/pkg/io/#Writer">Writer</a>, r <a href="http://localhost:6060/pkg/io/">io</a>.<a href="http://localhost:6060/pkg/io/#Reader">Reader</a>) *<a href="index.html%3Fm=all.html#CompilationEngine">CompilationEngine</a></pre>
+				
+				
+				
+			
+				
+				<h3 id="New">func <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/compilationengine/compilationengine.go?s=170:229#L3">New</a>
 					<a class="permalink" href="index.html%3Fm=all.html#New">&#xb6;</a>
 					
 					
@@ -204,37 +247,195 @@
 
 			
 				
-				<h3 id="CompilationEngine.CompileClass">func (*CompilationEngine) <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/compilationengine/compilationengine.go?s=487:536#L19">CompileClass</a>
+				<h3 id="CompilationEngine.CompileClass">func (*CompilationEngine) <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/compilationengine/compile_structure.go?s=221:270#L3">CompileClass</a>
 					<a class="permalink" href="index.html%3Fm=all.html#CompilationEngine.CompileClass">&#xb6;</a>
 					
 					
 				</h3>
 				<pre>func (ce *<a href="index.html%3Fm=all.html#CompilationEngine">CompilationEngine</a>) CompileClass() <a href="http://localhost:6060/pkg/builtin/#error">error</a></pre>
-				<p>CompileClass compiles a class and writes it to the XML file
+				<p>CompileClass compiles a class and writes it to the XML file.
+Class: &apos;class&apos; className &apos;{&apos; classVarDec* subroutineDec* &apos;}&apos;
 
 				
 				
 				
 			
 				
-				<h3 id="CompilationEngine.CompileClassVarDec">func (*CompilationEngine) <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/compilationengine/compilationengine.go?s=1323:1413#L71">CompileClassVarDec</a>
+				<h3 id="CompilationEngine.CompileClassVarDec">func (*CompilationEngine) <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/compilationengine/compile_structure.go?s=1568:1652#L73">CompileClassVarDec</a>
 					<a class="permalink" href="index.html%3Fm=all.html#CompilationEngine.CompileClassVarDec">&#xb6;</a>
 					
 					
 				</h3>
-				<pre>func (ce *<a href="index.html%3Fm=all.html#CompilationEngine">CompilationEngine</a>) CompileClassVarDec(staticOrField <a href="../tokenizer/index.html">tokenizer</a>.<a href="../tokenizer/index.html#KeyWordType">KeyWordType</a>) <a href="http://localhost:6060/pkg/builtin/#error">error</a></pre>
+				<pre>func (ce *<a href="index.html%3Fm=all.html#CompilationEngine">CompilationEngine</a>) CompileClassVarDec(staticOrField <a href="../tokenizer/index.html">tokenizer</a>.<a href="../tokenizer/index.html#Token">Token</a>) <a href="http://localhost:6060/pkg/builtin/#error">error</a></pre>
+				<p>CompileClassVarDec compiles a class variable declaration and writes it to the XML file.
+ClassVarDec: (static | field) type varName (&apos;,&apos; varName)* &apos;;&apos;
+
+				
+				
+				
+			
+				
+				<h3 id="CompilationEngine.CompileDo">func (*CompilationEngine) <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/compilationengine/compile_statements.go?s=4617:4663#L230">CompileDo</a>
+					<a class="permalink" href="index.html%3Fm=all.html#CompilationEngine.CompileDo">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (ce *<a href="index.html%3Fm=all.html#CompilationEngine">CompilationEngine</a>) CompileDo() <a href="http://localhost:6060/pkg/builtin/#error">error</a></pre>
 				
 				
 				
 				
 			
 				
-				<h3 id="CompilationEngine.CompileSubroutine">func (*CompilationEngine) <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/compilationengine/compilationengine.go?s=2576:2630#L128">CompileSubroutine</a>
+				<h3 id="CompilationEngine.CompileExpression">func (*CompilationEngine) <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/compilationengine/compile_expression.go?s=4267:4339#L157">CompileExpression</a>
+					<a class="permalink" href="index.html%3Fm=all.html#CompilationEngine.CompileExpression">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (ce *<a href="index.html%3Fm=all.html#CompilationEngine">CompilationEngine</a>) CompileExpression(isDoStatement <a href="http://localhost:6060/pkg/builtin/#bool">bool</a>) <a href="http://localhost:6060/pkg/builtin/#error">error</a></pre>
+				<p>/*
+CompileExpression compiles an expression and writes it to the XML file.
+Expression: term (op term)*
+op: + - * / &amp; | &lt; &gt; =
+skipTags: if true, do not write the &lt;expression&gt; and &lt;/expression&gt; tags. This is used for subroutine calls.
+*/
+
+				
+				
+				
+			
+				
+				<h3 id="CompilationEngine.CompileExpressionList">func (*CompilationEngine) <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/compilationengine/compile_expression.go?s=5041:5099#L194">CompileExpressionList</a>
+					<a class="permalink" href="index.html%3Fm=all.html#CompilationEngine.CompileExpressionList">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (ce *<a href="index.html%3Fm=all.html#CompilationEngine">CompilationEngine</a>) CompileExpressionList() <a href="http://localhost:6060/pkg/builtin/#error">error</a></pre>
+				
+				
+				
+				
+			
+				
+				<h3 id="CompilationEngine.CompileIf">func (*CompilationEngine) <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/compilationengine/compile_statements.go?s=2156:2202#L105">CompileIf</a>
+					<a class="permalink" href="index.html%3Fm=all.html#CompilationEngine.CompileIf">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (ce *<a href="index.html%3Fm=all.html#CompilationEngine">CompilationEngine</a>) CompileIf() <a href="http://localhost:6060/pkg/builtin/#error">error</a></pre>
+				
+				
+				
+				
+			
+				
+				<h3 id="CompilationEngine.CompileLet">func (*CompilationEngine) <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/compilationengine/compile_statements.go?s=990:1037#L45">CompileLet</a>
+					<a class="permalink" href="index.html%3Fm=all.html#CompilationEngine.CompileLet">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (ce *<a href="index.html%3Fm=all.html#CompilationEngine">CompilationEngine</a>) CompileLet() <a href="http://localhost:6060/pkg/builtin/#error">error</a></pre>
+				
+				
+				
+				
+			
+				
+				<h3 id="CompilationEngine.CompileParameterList">func (*CompilationEngine) <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/compilationengine/compile_structure.go?s=5451:5508#L253">CompileParameterList</a>
+					<a class="permalink" href="index.html%3Fm=all.html#CompilationEngine.CompileParameterList">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (ce *<a href="index.html%3Fm=all.html#CompilationEngine">CompilationEngine</a>) CompileParameterList() <a href="http://localhost:6060/pkg/builtin/#error">error</a></pre>
+				
+				
+				
+				
+			
+				
+				<h3 id="CompilationEngine.CompileReturn">func (*CompilationEngine) <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/compilationengine/compile_statements.go?s=5226:5276#L261">CompileReturn</a>
+					<a class="permalink" href="index.html%3Fm=all.html#CompilationEngine.CompileReturn">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (ce *<a href="index.html%3Fm=all.html#CompilationEngine">CompilationEngine</a>) CompileReturn() <a href="http://localhost:6060/pkg/builtin/#error">error</a></pre>
+				
+				
+				
+				
+			
+				
+				<h3 id="CompilationEngine.CompileStatements">func (*CompilationEngine) <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/compilationengine/compile_statements.go?s=86:140#L1">CompileStatements</a>
+					<a class="permalink" href="index.html%3Fm=all.html#CompilationEngine.CompileStatements">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (ce *<a href="index.html%3Fm=all.html#CompilationEngine">CompilationEngine</a>) CompileStatements() <a href="http://localhost:6060/pkg/builtin/#error">error</a></pre>
+				
+				
+				
+				
+			
+				
+				<h3 id="CompilationEngine.CompileSubroutine">func (*CompilationEngine) <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/compilationengine/compile_structure.go?s=2623:2677#L123">CompileSubroutine</a>
 					<a class="permalink" href="index.html%3Fm=all.html#CompilationEngine.CompileSubroutine">&#xb6;</a>
 					
 					
 				</h3>
 				<pre>func (ce *<a href="index.html%3Fm=all.html#CompilationEngine">CompilationEngine</a>) CompileSubroutine() <a href="http://localhost:6060/pkg/builtin/#error">error</a></pre>
+				
+				
+				
+				
+			
+				
+				<h3 id="CompilationEngine.CompileSubroutineBody">func (*CompilationEngine) <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/compilationengine/compile_structure.go?s=6602:6660#L311">CompileSubroutineBody</a>
+					<a class="permalink" href="index.html%3Fm=all.html#CompilationEngine.CompileSubroutineBody">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (ce *<a href="index.html%3Fm=all.html#CompilationEngine">CompilationEngine</a>) CompileSubroutineBody() <a href="http://localhost:6060/pkg/builtin/#error">error</a></pre>
+				
+				
+				
+				
+			
+				
+				<h3 id="CompilationEngine.CompileTerm">func (*CompilationEngine) <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/compilationengine/compile_expression.go?s=403:469#L4">CompileTerm</a>
+					<a class="permalink" href="index.html%3Fm=all.html#CompilationEngine.CompileTerm">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (ce *<a href="index.html%3Fm=all.html#CompilationEngine">CompilationEngine</a>) CompileTerm(isDoStatement <a href="http://localhost:6060/pkg/builtin/#bool">bool</a>) <a href="http://localhost:6060/pkg/builtin/#error">error</a></pre>
+				<p>CompileTerm compiles a term and writes it to the XML file.
+Term: integerConstant | stringConstant | keywordConstant | varName | varName &apos;[&apos; expression &apos;]&apos; | subroutineCall | &apos;(&apos; expression &apos;)&apos; | unaryOp term
+skipTags: if true, do not write the &lt;term&gt; and &lt;/term&gt; tags. This is used for subroutine calls.
+
+				
+				
+				
+			
+				
+				<h3 id="CompilationEngine.CompileVarDec">func (*CompilationEngine) <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/compilationengine/compile_structure.go?s=4454:4504#L205">CompileVarDec</a>
+					<a class="permalink" href="index.html%3Fm=all.html#CompilationEngine.CompileVarDec">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (ce *<a href="index.html%3Fm=all.html#CompilationEngine">CompilationEngine</a>) CompileVarDec() <a href="http://localhost:6060/pkg/builtin/#error">error</a></pre>
+				<p>CompileVarDec compiles a variable declaration and writes it to the XML file.
+VarDec: &apos;var&apos; type varName (&apos;,&apos; varName)* &apos;;&apos;
+
+				
+				
+				
+			
+				
+				<h3 id="CompilationEngine.CompileWhile">func (*CompilationEngine) <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/compilationengine/compile_statements.go?s=3624:3673#L175">CompileWhile</a>
+					<a class="permalink" href="index.html%3Fm=all.html#CompilationEngine.CompileWhile">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (ce *<a href="index.html%3Fm=all.html#CompilationEngine">CompilationEngine</a>) CompileWhile() <a href="http://localhost:6060/pkg/builtin/#error">error</a></pre>
 				
 				
 				
@@ -252,7 +453,7 @@
 
 
 <div id="footer">
-Build version go1.24.1.<br>
+Build version go1.24.2.<br>
 Except as <a href="https://developers.google.com/site-policies#restrictions">noted</a>,
 the content of this page is licensed under the
 Creative Commons Attribution 3.0 License,
