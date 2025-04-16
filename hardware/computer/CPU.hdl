@@ -1,0 +1,86 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/5/CPU.hdl
+/**
+ * The Hack Central Processing unit (CPU).
+ * Parses the binary code in the instruction input and executes it according to the
+ * Hack machine language specification. In the case of a C-instruction, computes the
+ * function specified by the instruction. If the instruction specifies to read a memory
+ * value, the inM input is expected to contain this value. If the instruction specifies
+ * to write a value to the memory, sets the outM output to this value, sets the addressM
+ * output to the target address, and asserts the writeM output (when writeM = 0, any
+ * value may appear in outM).
+ * If the reset input is 0, computes the address of the next instruction and sets the
+ * pc output to that value. If the reset input is 1, sets pc to 0.
+ * Note: The outM and writeM outputs are combinational: they are affected by the
+ * instruction's execution during the current cycle. The addressM and pc outputs are
+ * clocked: although they are affected by the instruction's execution, they commit to
+ * their new values only in the next cycle.
+ */
+
+CHIP CPU {
+
+    IN  inM[16],         // M value input  (M = contents of RAM[A])
+        instruction[16], // Instruction for execution
+        reset;           // Signals whether to re-start the current
+                         // program (reset==1) or continue executing
+                         // the current program (reset==0).
+
+    OUT outM[16],        // M value output
+        writeM,          // Write to M?
+        addressM[15],    // Address in data memory (of M)
+        pc[15];          // address of next instruction
+
+    PARTS:
+
+    // if instruction[15]==1, then C instruction, else A instruction
+    Not(in= instruction[15], out= isAInst);
+    // if A instruction or d1(C instruction and destination contains A) then, load ARegister.
+    Or(a= isAInst, b=instruction[5] , out=loadAReg );
+
+    // if A instruction, then set A register to instruction value, else ALU output.
+    Mux16(a=outALU,b=instruction, sel=isAInst , out=inAReg );
+    ARegister(in=inAReg, load=loadAReg, out=outAReg );
+
+    // if a (=instruction[12]), then use M else A.
+    Mux16(a= outAReg, b=inM, sel=instruction[12], out=inALUAM);
+
+    // process D register and its destination
+    // if C instruction(instruction[15] ==1) and d2(destination contains D) then, load DRegister.
+    And(a= instruction[15], b= instruction[4], out= loadDReg);
+    DRegister(in= outALU, load= loadDReg, out= inALUD);
+
+    ALU(x=inALUD , y=inALUAM ,
+    zx=instruction[11] , nx=instruction[10],
+    zy=instruction[9] , ny= instruction[8],
+    f=instruction[7], no=instruction[6],
+    out= outALU, zr=zr , ng=ng );
+
+    // Process jump instruction
+    // If ALU output is not negative and not zero, then ALU output is positive
+    Not(in=ng, out=notng);
+    Not(in=zr , out=notzr);
+    And(a= notng, b=notzr , out=pos);
+    // cond1 :ALU output is negative and j1 (=instruction[2])
+    And(a=ng , b=instruction[2] , out=cond1 );
+    // cond2 :ALU output is zero and j2 (=instruction[1])
+    And(a=zr , b=instruction[1] , out=cond2 );
+    // cond3 :ALU output is positive and j3 (=instruction[0])
+    And(a=pos , b=instruction[0] , out=cond3 );
+    // Check C instruction for each conditions
+    And16(a[0]=cond1,a[1]=cond2,a[2]=cond3,
+    b[0]= instruction[15],b[1]= instruction[15],b[2]= instruction[15],
+    out[0..2]=condCinst );
+    // If cond1 or cond2 or cond3, then jump
+    Or8Way(in[0..2]=condCinst, out=doJump );
+    PC(in= outAReg, load=doJump , inc= true, reset=reset , out[0..14]=pc );
+
+    // process writeM, outM and addressM
+    // If C instruction(=instruction[15]) and d3(=instruction[3]),
+    // then writeM is true, else false.
+    And(a= instruction[15], b=instruction[3] , out=writeM, out=writeMinternal);
+    Mux16( b= outALU, sel= writeMinternal, out= outM);
+    // addressM is 15bit
+    Or16(a=outAReg, out[0..14]=addressM);
+}
