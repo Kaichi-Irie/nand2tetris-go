@@ -2,11 +2,11 @@ package compilationengine
 
 import (
 	"io"
-	"nand2tetris-go/jackcompiler/tokenizer"
+	tk "nand2tetris-go/jackcompiler/tokenizer"
 )
 
 func (ce *CompilationEngine) CompileStatements() error {
-	_, err := io.WriteString(ce.xmlFile, "<statements>\n")
+	_, err := io.WriteString(ce.writer, "<statements>\n")
 	if err != nil {
 		return err
 	}
@@ -15,27 +15,27 @@ func (ce *CompilationEngine) CompileStatements() error {
 LOOP:
 	for {
 		switch token := ce.t.CurrentToken; {
-		case token.Val() == tokenizer.LET.Val():
+		case token.Val == tk.LET.Val:
 			err = ce.CompileLet()
 			if err != nil {
 				return err
 			}
-		case token.Val() == tokenizer.IF.Val():
+		case token.Val == tk.IF.Val:
 			err = ce.CompileIf()
 			if err != nil {
 				return err
 			}
-		case token.Val() == tokenizer.WHILE.Val():
+		case token.Val == tk.WHILE.Val:
 			err = ce.CompileWhile()
 			if err != nil {
 				return err
 			}
-		case token.Val() == tokenizer.DO.Val():
+		case token.Val == tk.DO.Val:
 			err = ce.CompileDo()
 			if err != nil {
 				return err
 			}
-		case token.Val() == tokenizer.RETURN.Val():
+		case token.Val == tk.RETURN.Val:
 			err = ce.CompileReturn()
 			if err != nil {
 				return err
@@ -45,7 +45,7 @@ LOOP:
 		}
 	}
 
-	_, err = io.WriteString(ce.xmlFile, "</statements>\n")
+	_, err = io.WriteString(ce.writer, "</statements>\n")
 	if err != nil {
 		return err
 	}
@@ -53,25 +53,25 @@ LOOP:
 }
 
 func (ce *CompilationEngine) CompileLet() error {
-	_, err := io.WriteString(ce.xmlFile, "<letStatement>\n")
+	_, err := io.WriteString(ce.writer, "<letStatement>\n")
 	if err != nil {
 		return err
 	}
 
 	// process the let keyword
-	err = ce.t.ProcessKeyWord(tokenizer.LET, ce.xmlFile)
+	err = ce.ProcessKeyWord(tk.LET)
 	if err != nil {
 		return err
 	}
 
 	// process the var name
-	err = ce.t.ProcessIdentifier(ce.xmlFile)
+	err = ce.ProcessIdentifier()
 	if err != nil {
 		return err
 	}
-	for ce.t.CurrentToken.Val() == tokenizer.LSQUARE.Val() {
+	for ce.t.CurrentToken.Val == tk.LSQUARE.Val {
 		// process the [
-		err = ce.t.ProcessSymbol(tokenizer.LSQUARE, ce.xmlFile)
+		err = ce.ProcessSymbol(tk.LSQUARE)
 		if err != nil {
 			return err
 		}
@@ -81,14 +81,14 @@ func (ce *CompilationEngine) CompileLet() error {
 			return err
 		}
 		// process the ]
-		err = ce.t.ProcessSymbol(tokenizer.RSQUARE, ce.xmlFile)
+		err = ce.ProcessSymbol(tk.RSQUARE)
 		if err != nil {
 			return err
 		}
 	}
 
 	// process the =
-	err = ce.t.ProcessSymbol(tokenizer.EQUAL, ce.xmlFile)
+	err = ce.ProcessSymbol(tk.EQUAL)
 	if err != nil {
 		return err
 	}
@@ -100,12 +100,12 @@ func (ce *CompilationEngine) CompileLet() error {
 	}
 
 	// process the ;
-	err = ce.t.ProcessSymbol(tokenizer.SEMICOLON, ce.xmlFile)
+	err = ce.ProcessSymbol(tk.SEMICOLON)
 	if err != nil {
 		return err
 	}
 
-	_, err = io.WriteString(ce.xmlFile, "</letStatement>\n")
+	_, err = io.WriteString(ce.writer, "</letStatement>\n")
 	if err != nil {
 		return err
 	}
@@ -113,17 +113,17 @@ func (ce *CompilationEngine) CompileLet() error {
 }
 
 func (ce *CompilationEngine) CompileIf() error {
-	_, err := io.WriteString(ce.xmlFile, "<ifStatement>\n")
+	_, err := io.WriteString(ce.writer, "<ifStatement>\n")
 	if err != nil {
 		return err
 	}
 	// process the if keyword
-	err = ce.t.ProcessKeyWord(tokenizer.IF, ce.xmlFile)
+	err = ce.ProcessKeyWord(tk.IF)
 	if err != nil {
 		return err
 	}
 	// process the (
-	err = ce.t.ProcessSymbol(tokenizer.LPAREN, ce.xmlFile)
+	err = ce.ProcessSymbol(tk.LPAREN)
 	if err != nil {
 		return err
 	}
@@ -133,12 +133,12 @@ func (ce *CompilationEngine) CompileIf() error {
 		return err
 	}
 	// process the )
-	err = ce.t.ProcessSymbol(tokenizer.RPAREN, ce.xmlFile)
+	err = ce.ProcessSymbol(tk.RPAREN)
 	if err != nil {
 		return err
 	}
 	// process the {
-	err = ce.t.ProcessSymbol(tokenizer.LBRACE, ce.xmlFile)
+	err = ce.ProcessSymbol(tk.LBRACE)
 	if err != nil {
 		return err
 	}
@@ -148,18 +148,18 @@ func (ce *CompilationEngine) CompileIf() error {
 		return err
 	}
 	// process the }
-	err = ce.t.ProcessSymbol(tokenizer.RBRACE, ce.xmlFile)
+	err = ce.ProcessSymbol(tk.RBRACE)
 	if err != nil {
 		return err
 	}
 	// process the else keyword
-	if ce.t.CurrentToken.Val() == tokenizer.ELSE.Val() {
-		err = ce.t.ProcessKeyWord(tokenizer.ELSE, ce.xmlFile)
+	if ce.t.CurrentToken.Val == tk.ELSE.Val {
+		err = ce.ProcessKeyWord(tk.ELSE)
 		if err != nil {
 			return err
 		}
 		// process the {
-		err = ce.t.ProcessSymbol(tokenizer.LBRACE, ce.xmlFile)
+		err = ce.ProcessSymbol(tk.LBRACE)
 		if err != nil {
 			return err
 		}
@@ -169,12 +169,12 @@ func (ce *CompilationEngine) CompileIf() error {
 			return err
 		}
 		// process the }
-		err = ce.t.ProcessSymbol(tokenizer.RBRACE, ce.xmlFile)
+		err = ce.ProcessSymbol(tk.RBRACE)
 		if err != nil {
 			return err
 		}
 	}
-	_, err = io.WriteString(ce.xmlFile, "</ifStatement>\n")
+	_, err = io.WriteString(ce.writer, "</ifStatement>\n")
 	if err != nil {
 		return err
 	}
@@ -183,19 +183,19 @@ func (ce *CompilationEngine) CompileIf() error {
 }
 
 func (ce *CompilationEngine) CompileWhile() error {
-	_, err := io.WriteString(ce.xmlFile, "<whileStatement>\n")
+	_, err := io.WriteString(ce.writer, "<whileStatement>\n")
 	if err != nil {
 		return err
 	}
 
 	// process the while keyword
-	err = ce.t.ProcessKeyWord(tokenizer.WHILE, ce.xmlFile)
+	err = ce.ProcessKeyWord(tk.WHILE)
 	if err != nil {
 		return err
 	}
 
 	// process the (
-	err = ce.t.ProcessSymbol(tokenizer.LPAREN, ce.xmlFile)
+	err = ce.ProcessSymbol(tk.LPAREN)
 	if err != nil {
 		return err
 	}
@@ -207,13 +207,13 @@ func (ce *CompilationEngine) CompileWhile() error {
 	}
 
 	// process the )
-	err = ce.t.ProcessSymbol(tokenizer.RPAREN, ce.xmlFile)
+	err = ce.ProcessSymbol(tk.RPAREN)
 	if err != nil {
 		return err
 	}
 
 	// process the {
-	err = ce.t.ProcessSymbol(tokenizer.LBRACE, ce.xmlFile)
+	err = ce.ProcessSymbol(tk.LBRACE)
 	if err != nil {
 		return err
 	}
@@ -225,12 +225,12 @@ func (ce *CompilationEngine) CompileWhile() error {
 	}
 
 	// process the }
-	err = ce.t.ProcessSymbol(tokenizer.RBRACE, ce.xmlFile)
+	err = ce.ProcessSymbol(tk.RBRACE)
 	if err != nil {
 		return err
 	}
 
-	_, err = io.WriteString(ce.xmlFile, "</whileStatement>\n")
+	_, err = io.WriteString(ce.writer, "</whileStatement>\n")
 	if err != nil {
 		return err
 	}
@@ -238,13 +238,13 @@ func (ce *CompilationEngine) CompileWhile() error {
 }
 
 func (ce *CompilationEngine) CompileDo() error {
-	_, err := io.WriteString(ce.xmlFile, "<doStatement>\n")
+	_, err := io.WriteString(ce.writer, "<doStatement>\n")
 	if err != nil {
 		return err
 	}
 
 	// process the do keyword
-	err = ce.t.ProcessKeyWord(tokenizer.DO, ce.xmlFile)
+	err = ce.ProcessKeyWord(tk.DO)
 	if err != nil {
 		return err
 	}
@@ -256,12 +256,12 @@ func (ce *CompilationEngine) CompileDo() error {
 	}
 
 	// process the ;
-	err = ce.t.ProcessSymbol(tokenizer.SEMICOLON, ce.xmlFile)
+	err = ce.ProcessSymbol(tk.SEMICOLON)
 	if err != nil {
 		return err
 	}
 
-	_, err = io.WriteString(ce.xmlFile, "</doStatement>\n")
+	_, err = io.WriteString(ce.writer, "</doStatement>\n")
 	if err != nil {
 		return err
 	}
@@ -269,19 +269,19 @@ func (ce *CompilationEngine) CompileDo() error {
 }
 
 func (ce *CompilationEngine) CompileReturn() error {
-	_, err := io.WriteString(ce.xmlFile, "<returnStatement>\n")
+	_, err := io.WriteString(ce.writer, "<returnStatement>\n")
 	if err != nil {
 		return err
 	}
 
 	// process the return keyword
-	err = ce.t.ProcessKeyWord(tokenizer.RETURN, ce.xmlFile)
+	err = ce.ProcessKeyWord(tk.RETURN)
 	if err != nil {
 		return err
 	}
 
 	// process the expression. Skip if the case is return;
-	if ce.t.CurrentToken.Val() != tokenizer.SEMICOLON.Val() {
+	if ce.t.CurrentToken.Val != tk.SEMICOLON.Val {
 		// process the expression
 		err = ce.CompileExpression(false)
 		if err != nil {
@@ -289,12 +289,12 @@ func (ce *CompilationEngine) CompileReturn() error {
 		}
 	}
 	// process the ;
-	err = ce.t.ProcessSymbol(tokenizer.SEMICOLON, ce.xmlFile)
+	err = ce.ProcessSymbol(tk.SEMICOLON)
 	if err != nil {
 		return err
 	}
 
-	_, err = io.WriteString(ce.xmlFile, "</returnStatement>\n")
+	_, err = io.WriteString(ce.writer, "</returnStatement>\n")
 	if err != nil {
 		return err
 	}

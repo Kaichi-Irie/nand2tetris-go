@@ -13,11 +13,11 @@ It also checks if the symbol is a valid symbol.
 */
 func ParseSymbol(s string) (Token, error) {
 	for _, symbol := range Symbols {
-		length := len(symbol.Val())
+		length := len(symbol.Val)
 		if length > len(s) {
 			continue
 		}
-		if s[0:length] == symbol.Val() {
+		if s[0:length] == symbol.Val {
 			return symbol, nil
 		}
 	}
@@ -31,7 +31,7 @@ It also checks if the keyword is a valid keyword.
 */
 func ParseKeyword(s string) (Token, error) {
 	for _, kw := range Keywords {
-		length := len(kw.Val())
+		length := len(kw.Val)
 		if len(s) < length {
 			continue
 		}
@@ -45,7 +45,7 @@ func ParseKeyword(s string) (Token, error) {
 				continue
 			}
 		}
-		if kwCandidate == kw.Val() {
+		if kwCandidate == kw.Val {
 			return kw, nil
 		}
 	}
@@ -67,7 +67,7 @@ func ParseIntConst(s string) (Token, error) {
 	if err != nil {
 		return Token{}, fmt.Errorf("not an integer constant")
 	}
-	return Token{t: TT_INT_CONST, val: strconv.Itoa(val)}, nil
+	return Token{T: TT_INT_CONST, Val: strconv.Itoa(val)}, nil
 
 }
 
@@ -89,7 +89,7 @@ func ParseStringConst(s string) (Token, error) {
 	if i := strings.IndexAny(s, "\n\r"); i != -1 {
 		return Token{}, fmt.Errorf("string constant contains quotes or newlines")
 	}
-	return Token{t: TT_STRING_CONST, val: s}, nil
+	return Token{T: TT_STRING_CONST, Val: s}, nil
 }
 
 // ParseIdentifier parses the identifier from the string. An identifier is a string that starts with a letter or an underscore
@@ -105,7 +105,7 @@ func ParseIdentifier(s string) (Token, error) {
 	}
 	// check if the name does not conflict with a keyword
 	for _, kw := range Keywords {
-		if s == kw.Val() {
+		if s == kw.Val {
 			return Token{}, fmt.Errorf("this is a keyword")
 		}
 	}
@@ -130,5 +130,5 @@ func ParseIdentifier(s string) (Token, error) {
 		return Token{}, fmt.Errorf("not an identifier. invalid character %c", c)
 	}
 
-	return Token{t: TT_IDENTIFIER, val: s}, nil
+	return Token{T: TT_IDENTIFIER, Val: s}, nil
 }

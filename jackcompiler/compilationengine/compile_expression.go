@@ -3,7 +3,7 @@ package compilationengine
 import (
 	"fmt"
 	"io"
-	"nand2tetris-go/jackcompiler/tokenizer"
+	tk "nand2tetris-go/jackcompiler/tokenizer"
 )
 
 /*
@@ -15,7 +15,7 @@ func (ce *CompilationEngine) CompileTerm(isDoStatement bool) error {
 	var err error
 	// process not a subroutine call
 	if !isDoStatement {
-		_, err = io.WriteString(ce.xmlFile, "<term>\n")
+		_, err = io.WriteString(ce.writer, "<term>\n")
 		if err != nil {
 			return err
 		}
@@ -25,8 +25,8 @@ func (ce *CompilationEngine) CompileTerm(isDoStatement bool) error {
 	switch token := ce.t.CurrentToken; {
 
 	// process the '(' expression ')'
-	case token == tokenizer.LPAREN:
-		err = ce.t.ProcessSymbol(tokenizer.LPAREN, ce.xmlFile)
+	case token == tk.LPAREN:
+		err = ce.ProcessSymbol(tk.LPAREN)
 		if err != nil {
 			return err
 		}
@@ -34,7 +34,7 @@ func (ce *CompilationEngine) CompileTerm(isDoStatement bool) error {
 		if err != nil {
 			return err
 		}
-		err = ce.t.ProcessSymbol(tokenizer.RPAREN, ce.xmlFile)
+		err = ce.ProcessSymbol(tk.RPAREN)
 		if err != nil {
 			return err
 		}
@@ -43,7 +43,7 @@ func (ce *CompilationEngine) CompileTerm(isDoStatement bool) error {
 		process the unary operator, unaryOp: - ~
 	*/
 	case token.IsUnaryOp():
-		err = ce.t.ProcessSymbol(token, ce.xmlFile)
+		err = ce.ProcessSymbol(token)
 		if err != nil {
 			return err
 		}
@@ -52,20 +52,20 @@ func (ce *CompilationEngine) CompileTerm(isDoStatement bool) error {
 			return err
 		}
 	// process the string constant
-	case token.Is(tokenizer.TT_STRING_CONST):
-		err = ce.t.ProcessStringConst(ce.xmlFile)
+	case token.Is(tk.TT_STRING_CONST):
+		err = ce.ProcessStringConst()
 		if err != nil {
 			return err
 		}
 	// process the integer constant
-	case token.Is(tokenizer.TT_INT_CONST):
-		err = ce.t.ProcessIntConst(ce.xmlFile)
+	case token.Is(tk.TT_INT_CONST):
+		err = ce.ProcessIntConst()
 		if err != nil {
 			return err
 		}
 	// process the keyword constant: true, false, null, this
 	case token.IsKeywordConst():
-		err = ce.t.ProcessKeyWord(token, ce.xmlFile)
+		err = ce.ProcessKeyWord(token)
 		if err != nil {
 			return err
 		}
@@ -78,25 +78,25 @@ func (ce *CompilationEngine) CompileTerm(isDoStatement bool) error {
 		As for subroutineCall, we have to remove XML tags, <term> ,</term> , <expression> , and </expression>.
 		We have to process the identifier first, then check if it is a subroutine call or a varName. To do this, we use the strings.Builder as a temporary buffer.
 	*/
-	case token.Is(tokenizer.TT_IDENTIFIER):
-		err = ce.t.ProcessIdentifier(ce.xmlFile)
+	case token.Is(tk.TT_IDENTIFIER):
+		err = ce.ProcessIdentifier()
 		if err != nil {
 			return err
 		}
 		// process the . or ( or [
-		switch ce.t.CurrentToken.Val() {
-		case tokenizer.DOT.Val():
-			err = ce.t.ProcessSymbol(tokenizer.DOT, ce.xmlFile)
+		switch ce.t.CurrentToken.Val {
+		case tk.DOT.Val:
+			err = ce.ProcessSymbol(tk.DOT)
 			if err != nil {
 				return err
 			}
 			// process the subroutine name
-			err = ce.t.ProcessIdentifier(ce.xmlFile)
+			err = ce.ProcessIdentifier()
 			if err != nil {
 				return err
 			}
 			// process the (
-			err = ce.t.ProcessSymbol(tokenizer.LPAREN, ce.xmlFile)
+			err = ce.ProcessSymbol(tk.LPAREN)
 			if err != nil {
 				return err
 			}
@@ -106,12 +106,12 @@ func (ce *CompilationEngine) CompileTerm(isDoStatement bool) error {
 				return err
 			}
 			// process the )
-			err = ce.t.ProcessSymbol(tokenizer.RPAREN, ce.xmlFile)
+			err = ce.ProcessSymbol(tk.RPAREN)
 			if err != nil {
 				return err
 			}
-		case tokenizer.LPAREN.Val():
-			err = ce.t.ProcessSymbol(tokenizer.LPAREN, ce.xmlFile)
+		case tk.LPAREN.Val:
+			err = ce.ProcessSymbol(tk.LPAREN)
 			if err != nil {
 				return err
 			}
@@ -121,12 +121,12 @@ func (ce *CompilationEngine) CompileTerm(isDoStatement bool) error {
 				return err
 			}
 			// process the )
-			err = ce.t.ProcessSymbol(tokenizer.RPAREN, ce.xmlFile)
+			err = ce.ProcessSymbol(tk.RPAREN)
 			if err != nil {
 				return err
 			}
-		case tokenizer.LSQUARE.Val():
-			err = ce.t.ProcessSymbol(tokenizer.LSQUARE, ce.xmlFile)
+		case tk.LSQUARE.Val:
+			err = ce.ProcessSymbol(tk.LSQUARE)
 			if err != nil {
 				return err
 			}
@@ -136,7 +136,7 @@ func (ce *CompilationEngine) CompileTerm(isDoStatement bool) error {
 				return err
 			}
 			// process the ]
-			err = ce.t.ProcessSymbol(tokenizer.RSQUARE, ce.xmlFile)
+			err = ce.ProcessSymbol(tk.RSQUARE)
 			if err != nil {
 				return err
 			}
@@ -145,13 +145,13 @@ func (ce *CompilationEngine) CompileTerm(isDoStatement bool) error {
 		// write the identifier to the xml file
 
 	default:
-		return fmt.Errorf("unexpected token %s", token.Val())
+		return fmt.Errorf("unexpected token %s", token.Val)
 	}
 	// Do Statement: skip the </term> tag
 	if isDoStatement {
 		return nil
 	}
-	_, err = io.WriteString(ce.xmlFile, "</term>\n")
+	_, err = io.WriteString(ce.writer, "</term>\n")
 	if err != nil {
 		return err
 	}
@@ -171,7 +171,7 @@ func (ce *CompilationEngine) CompileExpression(isDoStatement bool) error {
 		return ce.CompileTerm(isDoStatement)
 	}
 
-	_, err = io.WriteString(ce.xmlFile, "<expression>\n")
+	_, err = io.WriteString(ce.writer, "<expression>\n")
 	if err != nil {
 		return err
 	}
@@ -184,7 +184,7 @@ func (ce *CompilationEngine) CompileExpression(isDoStatement bool) error {
 
 	// process the operator
 	for token := ce.t.CurrentToken; token.IsOp(); token = ce.t.CurrentToken {
-		err = ce.t.ProcessSymbol(token, ce.xmlFile)
+		err = ce.ProcessSymbol(token)
 		if err != nil {
 			return err
 		}
@@ -194,7 +194,7 @@ func (ce *CompilationEngine) CompileExpression(isDoStatement bool) error {
 			return err
 		}
 	}
-	_, err = io.WriteString(ce.xmlFile, "</expression>\n")
+	_, err = io.WriteString(ce.writer, "</expression>\n")
 	if err != nil {
 		return err
 	}
@@ -202,13 +202,13 @@ func (ce *CompilationEngine) CompileExpression(isDoStatement bool) error {
 }
 
 func (ce *CompilationEngine) CompileExpressionList() error {
-	_, err := io.WriteString(ce.xmlFile, "<expressionList>\n")
+	_, err := io.WriteString(ce.writer, "<expressionList>\n")
 	if err != nil {
 		return err
 	}
 	// no expressions
-	if ce.t.CurrentToken.Val() == tokenizer.RPAREN.Val() {
-		_, err := io.WriteString(ce.xmlFile, "</expressionList>\n")
+	if ce.t.CurrentToken.Val == tk.RPAREN.Val {
+		_, err := io.WriteString(ce.writer, "</expressionList>\n")
 		if err != nil {
 			return err
 		}
@@ -222,8 +222,8 @@ func (ce *CompilationEngine) CompileExpressionList() error {
 	}
 
 	// process the comma
-	for ce.t.CurrentToken.Val() == tokenizer.COMMA.Val() {
-		err = ce.t.ProcessSymbol(tokenizer.COMMA, ce.xmlFile)
+	for ce.t.CurrentToken.Val == tk.COMMA.Val {
+		err = ce.ProcessSymbol(tk.COMMA)
 		if err != nil {
 			return err
 		}
@@ -233,7 +233,7 @@ func (ce *CompilationEngine) CompileExpressionList() error {
 		}
 	}
 
-	_, err = io.WriteString(ce.xmlFile, "</expressionList>\n")
+	_, err = io.WriteString(ce.writer, "</expressionList>\n")
 	if err != nil {
 		return err
 	}

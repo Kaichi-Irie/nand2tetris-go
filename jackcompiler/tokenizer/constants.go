@@ -11,75 +11,65 @@ const (
 )
 
 type Token struct {
-	t   TokenType
-	val string
+	T   TokenType
+	Val string
 }
 
 var (
 	// keywords
-	CLASS       Token = Token{t: TT_KEYWORD, val: "class"}
-	METHOD      Token = Token{t: TT_KEYWORD, val: "method"}
-	FUNCTION    Token = Token{t: TT_KEYWORD, val: "function"}
-	CONSTRUCTOR Token = Token{t: TT_KEYWORD, val: "constructor"}
-	INT         Token = Token{t: TT_KEYWORD, val: "int"}
-	BOOLEAN     Token = Token{t: TT_KEYWORD, val: "boolean"}
-	CHAR        Token = Token{t: TT_KEYWORD, val: "char"}
-	VOID        Token = Token{t: TT_KEYWORD, val: "void"}
-	VAR         Token = Token{t: TT_KEYWORD, val: "var"}
-	STATIC      Token = Token{t: TT_KEYWORD, val: "static"}
-	FIELD       Token = Token{t: TT_KEYWORD, val: "field"}
-	LET         Token = Token{t: TT_KEYWORD, val: "let"}
-	DO          Token = Token{t: TT_KEYWORD, val: "do"}
-	IF          Token = Token{t: TT_KEYWORD, val: "if"}
-	ELSE        Token = Token{t: TT_KEYWORD, val: "else"}
-	WHILE       Token = Token{t: TT_KEYWORD, val: "while"}
-	RETURN      Token = Token{t: TT_KEYWORD, val: "return"}
-	TRUE        Token = Token{t: TT_KEYWORD, val: "true"}
-	FALSE       Token = Token{t: TT_KEYWORD, val: "false"}
-	NULL        Token = Token{t: TT_KEYWORD, val: "null"}
-	THIS        Token = Token{t: TT_KEYWORD, val: "this"}
+	CLASS       Token = Token{T: TT_KEYWORD, Val: "class"}
+	METHOD      Token = Token{T: TT_KEYWORD, Val: "method"}
+	FUNCTION    Token = Token{T: TT_KEYWORD, Val: "function"}
+	CONSTRUCTOR Token = Token{T: TT_KEYWORD, Val: "constructor"}
+	INT         Token = Token{T: TT_KEYWORD, Val: "int"}
+	BOOLEAN     Token = Token{T: TT_KEYWORD, Val: "boolean"}
+	CHAR        Token = Token{T: TT_KEYWORD, Val: "char"}
+	VOID        Token = Token{T: TT_KEYWORD, Val: "void"}
+	VAR         Token = Token{T: TT_KEYWORD, Val: "var"}
+	STATIC      Token = Token{T: TT_KEYWORD, Val: "static"}
+	FIELD       Token = Token{T: TT_KEYWORD, Val: "field"}
+	LET         Token = Token{T: TT_KEYWORD, Val: "let"}
+	DO          Token = Token{T: TT_KEYWORD, Val: "do"}
+	IF          Token = Token{T: TT_KEYWORD, Val: "if"}
+	ELSE        Token = Token{T: TT_KEYWORD, Val: "else"}
+	WHILE       Token = Token{T: TT_KEYWORD, Val: "while"}
+	RETURN      Token = Token{T: TT_KEYWORD, Val: "return"}
+	TRUE        Token = Token{T: TT_KEYWORD, Val: "true"}
+	FALSE       Token = Token{T: TT_KEYWORD, Val: "false"}
+	NULL        Token = Token{T: TT_KEYWORD, Val: "null"}
+	THIS        Token = Token{T: TT_KEYWORD, Val: "this"}
 	// symbols
-	DOT        Token = Token{t: TT_SYMBOL, val: "."}
-	COMMA      Token = Token{t: TT_SYMBOL, val: ","}
-	SEMICOLON  Token = Token{t: TT_SYMBOL, val: ";"}
-	UNDERSCORE Token = Token{t: TT_SYMBOL, val: "_"}
-	NOT        Token = Token{t: TT_SYMBOL, val: "~"}
-	LPAREN     Token = Token{t: TT_SYMBOL, val: "("}
-	RPAREN     Token = Token{t: TT_SYMBOL, val: ")"}
-	LBRACE     Token = Token{t: TT_SYMBOL, val: "{"}
-	RBRACE     Token = Token{t: TT_SYMBOL, val: "}"}
-	LSQUARE    Token = Token{t: TT_SYMBOL, val: "["}
-	RSQUARE    Token = Token{t: TT_SYMBOL, val: "]"}
-	PLUS       Token = Token{t: TT_SYMBOL, val: "+"}
-	MINUS      Token = Token{t: TT_SYMBOL, val: "-"}
-	ASTERISK   Token = Token{t: TT_SYMBOL, val: "*"}
-	SLASH      Token = Token{t: TT_SYMBOL, val: "/"}
-	AND        Token = Token{t: TT_SYMBOL, val: "&"}
-	OR         Token = Token{t: TT_SYMBOL, val: "|"}
-	LESS       Token = Token{t: TT_SYMBOL, val: "<"}
-	GREATER    Token = Token{t: TT_SYMBOL, val: ">"}
-	EQUAL      Token = Token{t: TT_SYMBOL, val: "="}
+	DOT        Token = Token{T: TT_SYMBOL, Val: "."}
+	COMMA      Token = Token{T: TT_SYMBOL, Val: ","}
+	SEMICOLON  Token = Token{T: TT_SYMBOL, Val: ";"}
+	UNDERSCORE Token = Token{T: TT_SYMBOL, Val: "_"}
+	NOT        Token = Token{T: TT_SYMBOL, Val: "~"}
+	LPAREN     Token = Token{T: TT_SYMBOL, Val: "("}
+	RPAREN     Token = Token{T: TT_SYMBOL, Val: ")"}
+	LBRACE     Token = Token{T: TT_SYMBOL, Val: "{"}
+	RBRACE     Token = Token{T: TT_SYMBOL, Val: "}"}
+	LSQUARE    Token = Token{T: TT_SYMBOL, Val: "["}
+	RSQUARE    Token = Token{T: TT_SYMBOL, Val: "]"}
+	PLUS       Token = Token{T: TT_SYMBOL, Val: "+"}
+	MINUS      Token = Token{T: TT_SYMBOL, Val: "-"}
+	ASTERISK   Token = Token{T: TT_SYMBOL, Val: "*"}
+	SLASH      Token = Token{T: TT_SYMBOL, Val: "/"}
+	AND        Token = Token{T: TT_SYMBOL, Val: "&"}
+	OR         Token = Token{T: TT_SYMBOL, Val: "|"}
+	LESS       Token = Token{T: TT_SYMBOL, Val: "<"}
+	GREATER    Token = Token{T: TT_SYMBOL, Val: ">"}
+	EQUAL      Token = Token{T: TT_SYMBOL, Val: "="}
 )
-
-// Val returns the value of the token
-func (t Token) Val() string {
-	return t.val
-}
-
-// Type returns the type of the token
-func (t Token) Type() TokenType {
-	return t.t
-}
 
 // Is returns true if the token is of the given type. TokenType: TT_KEYWORD, TT_SYMBOL, TT_IDENTIFIER, TT_INT_CONST, TT_STRING_CONST
 func (t Token) Is(tType TokenType) bool {
-	return t.t == tType
+	return t.T == tType
 }
 
 // IsPrimitiveType returns true if the token is a primitive type: int, boolean, char or void
 func (t Token) IsPrimitiveType() bool {
-	switch t.Val() {
-	case INT.Val(), BOOLEAN.Val(), CHAR.Val(), VOID.Val():
+	switch t.Val {
+	case INT.Val, BOOLEAN.Val, CHAR.Val, VOID.Val:
 		return true
 	}
 	return false
@@ -87,9 +77,9 @@ func (t Token) IsPrimitiveType() bool {
 
 // IsOp returns true if the token is an operator: +, -, *, /, &, |, <, >, =
 func (t Token) IsOp() bool {
-	switch t.Val() {
-	case PLUS.Val(), MINUS.Val(), ASTERISK.Val(), SLASH.Val(),
-		AND.Val(), OR.Val(), LESS.Val(), GREATER.Val(), EQUAL.Val():
+	switch t.Val {
+	case PLUS.Val, MINUS.Val, ASTERISK.Val, SLASH.Val,
+		AND.Val, OR.Val, LESS.Val, GREATER.Val, EQUAL.Val:
 		return true
 	}
 	return false
@@ -97,8 +87,8 @@ func (t Token) IsOp() bool {
 
 // IsUnaryOp returns true if the token is a unary operator: ~, -
 func (t Token) IsUnaryOp() bool {
-	switch t.Val() {
-	case NOT.Val(), MINUS.Val():
+	switch t.Val {
+	case NOT.Val, MINUS.Val:
 		return true
 	}
 	return false
@@ -106,8 +96,8 @@ func (t Token) IsUnaryOp() bool {
 
 // IsKeywordConst returns true if the token is a keyword constant: true, false, null, this
 func (t Token) IsKeywordConst() bool {
-	switch t.Val() {
-	case TRUE.Val(), FALSE.Val(), NULL.Val(), THIS.Val():
+	switch t.Val {
+	case TRUE.Val, FALSE.Val, NULL.Val, THIS.Val:
 		return true
 	}
 	return false

@@ -39,7 +39,7 @@ func Analize(path string) error {
 			return err
 		}
 		defer xmlFile.Close()
-		ce := compilationengine.CreateCEwithFirstToken(xmlFile, jackFile)
+		ce := compilationengine.NewWithFirstToken(xmlFile, jackFile)
 		err = ce.CompileClass()
 		if err != nil {
 			return err

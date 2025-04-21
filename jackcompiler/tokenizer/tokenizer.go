@@ -27,8 +27,8 @@ func New(r io.Reader) *Tokenizer {
 	return t
 }
 
-// CreateTokenizerWithFirstToken creates a new Tokenizer with the given reader and advances to the first token. It returns an error if there are no tokens in the file.
-func CreateTokenizerWithFirstToken(r io.Reader) (*Tokenizer, error) {
+// NewWithFirstToken creates a new Tokenizer with the given reader and advances to the first token. It returns an error if there are no tokens in the file.
+func NewWithFirstToken(r io.Reader) (*Tokenizer, error) {
 	t := New(r)
 	if !t.Advance() {
 		return nil, fmt.Errorf("create tokenizer with first token: no tokens in the file")
@@ -68,35 +68,35 @@ func (t *Tokenizer) Advance() bool {
 
 	// check if the next token is a symbol
 	if s, ok := ParseSymbol(t.CurrentLine[pos:]); ok == nil {
-		t.CurrentPos += len(s.Val())
+		t.CurrentPos += len(s.Val)
 		t.CurrentToken = s
 		return true
 	}
 
 	// check if the next token is a keyword
 	if kw, ok := ParseKeyword(t.CurrentLine[pos:]); ok == nil {
-		t.CurrentPos += len(kw.Val())
+		t.CurrentPos += len(kw.Val)
 		t.CurrentToken = kw
 		return true
 	}
 
 	// check if the next token is an integer constant
 	if i, ok := ParseIntConst(t.CurrentLine[pos:]); ok == nil {
-		t.CurrentPos += len(i.Val())
+		t.CurrentPos += len(i.Val)
 		t.CurrentToken = i
 		return true
 	}
 
 	// check if the next token is a string constant. A string constant is a string that starts and ends with a double quote, so s contains the double quotes.
 	if s, ok := ParseStringConst(t.CurrentLine[pos:]); ok == nil {
-		t.CurrentPos += len(s.Val())
+		t.CurrentPos += len(s.Val)
 		t.CurrentToken = s
 		return true
 	}
 
 	// check if the next token is an identifier
 	if id, ok := ParseIdentifier(t.CurrentLine[pos:]); ok == nil {
-		t.CurrentPos += len(id.Val())
+		t.CurrentPos += len(id.Val)
 		t.CurrentToken = id
 		return true
 	}
