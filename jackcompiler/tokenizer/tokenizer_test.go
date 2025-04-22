@@ -157,7 +157,7 @@ func TestParseIntConst(t *testing.T) {
 }
 
 func TestTokenizer(t *testing.T) {
-	var tokenizer = New(strings.NewReader(`class Main {
+	var tknz = New(strings.NewReader(`class Main {
     function void main() {
         var int returnValue;
         let returnValue = Keyboard.readInt("enter the number");
@@ -203,8 +203,8 @@ func TestTokenizer(t *testing.T) {
 		{T: TT_SYMBOL, Val: "}"},
 	}
 
-	for i := 0; tokenizer.Advance(); i++ {
-		token := tokenizer.CurrentToken
+	for i := 0; tknz.Advance(); i++ {
+		token := tknz.CurrentToken
 		if i >= len(tests) {
 			t.Errorf("tokenizer returned more tokens than expected")
 			break

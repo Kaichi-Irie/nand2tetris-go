@@ -2,7 +2,6 @@ package compilationengine
 
 import (
 	"bytes"
-	tk "nand2tetris-go/jackcompiler/tokenizer"
 	"strings"
 	"testing"
 
@@ -10,8 +9,6 @@ import (
 )
 
 func TestCompileLet(t *testing.T) {
-	xmlFile := &bytes.Buffer{}
-	ce := New(xmlFile, strings.NewReader(""))
 
 	tests := []struct {
 		jackCode    string
@@ -34,7 +31,8 @@ func TestCompileLet(t *testing.T) {
 		},
 	}
 	for _, test := range tests {
-		ce.t, _ = tk.NewWithFirstToken(strings.NewReader(test.jackCode))
+		xmlFile := &bytes.Buffer{}
+		ce := NewWithFirstToken(xmlFile, strings.NewReader(test.jackCode))
 		err := ce.CompileLet()
 		if err != nil {
 			t.Errorf("CompileClass() error: %v", err)
@@ -45,14 +43,10 @@ func TestCompileLet(t *testing.T) {
 			diff := cmp.Diff(xmlFile.String(), test.expectedXML)
 			t.Errorf("Diff: %s", diff)
 		}
-		xmlFile.Reset()
 	}
 }
 
 func TestCompileIf(t *testing.T) {
-	xmlFile := &bytes.Buffer{}
-	ce := New(xmlFile, strings.NewReader(""))
-
 	tests := []struct {
 		jackCode    string
 		expectedXML string
@@ -97,7 +91,8 @@ func TestCompileIf(t *testing.T) {
 </ifStatement>
 `}}
 	for _, test := range tests {
-		ce.t, _ = tk.NewWithFirstToken(strings.NewReader(test.jackCode))
+		xmlFile := &bytes.Buffer{}
+		ce := NewWithFirstToken(xmlFile, strings.NewReader(test.jackCode))
 		err := ce.CompileIf()
 		if err != nil {
 			t.Errorf("CompileClass() error: %v", err)
@@ -108,14 +103,10 @@ func TestCompileIf(t *testing.T) {
 			diff := cmp.Diff(xmlFile.String(), test.expectedXML)
 			t.Errorf("Diff: %s", diff)
 		}
-		xmlFile.Reset()
 	}
 }
 
 func TestCompileWhile(t *testing.T) {
-	xmlFile := &bytes.Buffer{}
-	ce := New(xmlFile, strings.NewReader(""))
-
 	tests := []struct {
 		jackCode    string
 		expectedXML string
@@ -166,7 +157,8 @@ func TestCompileWhile(t *testing.T) {
 `},
 	}
 	for _, test := range tests {
-		ce.t, _ = tk.NewWithFirstToken(strings.NewReader(test.jackCode))
+		xmlFile := &bytes.Buffer{}
+		ce := NewWithFirstToken(xmlFile, strings.NewReader(test.jackCode))
 		err := ce.CompileWhile()
 		if err != nil {
 			t.Errorf("CompileClass() error: %v", err)
@@ -177,14 +169,10 @@ func TestCompileWhile(t *testing.T) {
 			diff := cmp.Diff(xmlFile.String(), test.expectedXML)
 			t.Errorf("Diff: %s", diff)
 		}
-		xmlFile.Reset()
 	}
 }
 
 func TestCompileDo(t *testing.T) {
-	xmlFile := &bytes.Buffer{}
-	ce := New(xmlFile, strings.NewReader(""))
-
 	tests := []struct {
 		jackCode    string
 		expectedXML string
@@ -216,7 +204,8 @@ func TestCompileDo(t *testing.T) {
 `},
 	}
 	for _, test := range tests {
-		ce.t, _ = tk.NewWithFirstToken(strings.NewReader(test.jackCode))
+		xmlFile := &bytes.Buffer{}
+		ce := NewWithFirstToken(xmlFile, strings.NewReader(test.jackCode))
 		err := ce.CompileDo()
 		if err != nil {
 			t.Errorf("CompileClass() error: %v", err)
@@ -227,14 +216,10 @@ func TestCompileDo(t *testing.T) {
 			diff := cmp.Diff(xmlFile.String(), test.expectedXML)
 			t.Errorf("Diff: %s", diff)
 		}
-		xmlFile.Reset()
 	}
 }
 
 func TestCompileReturn(t *testing.T) {
-	xmlFile := &bytes.Buffer{}
-	ce := New(xmlFile, strings.NewReader(""))
-
 	tests := []struct {
 		jackCode    string
 		expectedXML string
@@ -261,7 +246,8 @@ func TestCompileReturn(t *testing.T) {
 `},
 	}
 	for _, test := range tests {
-		ce.t, _ = tk.NewWithFirstToken(strings.NewReader(test.jackCode))
+		xmlFile := &bytes.Buffer{}
+		ce := NewWithFirstToken(xmlFile, strings.NewReader(test.jackCode))
 		err := ce.CompileReturn()
 		if err != nil {
 			t.Errorf("CompileClass() error: %v", err)
@@ -272,6 +258,5 @@ func TestCompileReturn(t *testing.T) {
 			diff := cmp.Diff(xmlFile.String(), test.expectedXML)
 			t.Errorf("Diff: %s", diff)
 		}
-		xmlFile.Reset()
 	}
 }

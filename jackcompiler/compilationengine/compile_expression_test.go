@@ -10,8 +10,6 @@ import (
 )
 
 func TestCompileTerm(t *testing.T) {
-	xmlFile := &bytes.Buffer{}
-	ce := New(xmlFile, strings.NewReader(""))
 
 	tests := []struct {
 		jackCode    string
@@ -150,7 +148,8 @@ func TestCompileTerm(t *testing.T) {
 		},
 	}
 	for _, test := range tests {
-		ce.t, _ = tk.NewWithFirstToken(strings.NewReader(test.jackCode))
+		xmlFile := &bytes.Buffer{}
+		ce := NewWithFirstToken(xmlFile, strings.NewReader(test.jackCode))
 		err := ce.CompileTerm(false)
 		if err != nil {
 			t.Errorf("CompileClass() error: %v", err)
@@ -161,13 +160,10 @@ func TestCompileTerm(t *testing.T) {
 			diff := cmp.Diff(xmlFile.String(), test.expectedXML)
 			t.Errorf("Diff: %s", diff)
 		}
-		xmlFile.Reset()
 	}
 }
 
 func TestCompileExpression(t *testing.T) {
-	xmlFile := &bytes.Buffer{}
-	ce := New(xmlFile, strings.NewReader(""))
 
 	tests := []struct {
 		jackCode    string
@@ -191,7 +187,8 @@ func TestCompileExpression(t *testing.T) {
 `,
 		}}
 	for _, test := range tests {
-		ce.t, _ = tk.NewWithFirstToken(strings.NewReader(test.jackCode))
+		xmlFile := &bytes.Buffer{}
+		ce := NewWithFirstToken(xmlFile, strings.NewReader(test.jackCode))
 		err := ce.CompileExpression(false)
 		if err != nil {
 			t.Errorf("CompileClass() error: %v", err)
@@ -202,14 +199,10 @@ func TestCompileExpression(t *testing.T) {
 			diff := cmp.Diff(xmlFile.String(), test.expectedXML)
 			t.Errorf("Diff: %s", diff)
 		}
-		xmlFile.Reset()
 	}
 }
 
 func TestCompileExpressionList(t *testing.T) {
-	xmlFile := &bytes.Buffer{}
-	ce := New(xmlFile, strings.NewReader(""))
-
 	tests := []struct {
 		jackCode    string
 		expectedXML string
@@ -237,6 +230,8 @@ func TestCompileExpressionList(t *testing.T) {
 </expressionList>
 `}}
 	for _, test := range tests {
+		xmlFile := &bytes.Buffer{}
+		ce := New(xmlFile, strings.NewReader(""))
 		ce.t, _ = tk.NewWithFirstToken(strings.NewReader(test.jackCode))
 		err := ce.CompileExpressionList()
 		if err != nil {
@@ -248,6 +243,6 @@ func TestCompileExpressionList(t *testing.T) {
 			diff := cmp.Diff(xmlFile.String(), test.expectedXML)
 			t.Errorf("Diff: %s", diff)
 		}
-		xmlFile.Reset()
+
 	}
 }

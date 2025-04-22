@@ -73,16 +73,8 @@ func TestProcessIdentifier(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.s, func(t *testing.T) {
-			tknz, err := tk.NewWithFirstToken(strings.NewReader(tt.s))
-			if err != nil {
-				t.Errorf("createTokenizerWithFirstToken(%s) = %v", tt.s, err)
-				return
-			}
 			w := strings.Builder{}
-			ce := CompilationEngine{
-				t:      tknz,
-				writer: &w,
-			}
+			ce := *NewWithFirstToken(&w, strings.NewReader(tt.s))
 			if err := ce.ProcessIdentifier(); err != nil {
 				t.Errorf("processIdentifier(%s) = %v", tt.s, err)
 				return
