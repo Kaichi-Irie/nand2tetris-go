@@ -2,6 +2,7 @@ package compilationengine
 
 import (
 	"bytes"
+	st "nand2tetris-go/jackcompiler/symboltable"
 	tk "nand2tetris-go/jackcompiler/tokenizer"
 	"strings"
 	"testing"
@@ -10,15 +11,11 @@ import (
 )
 
 func TestCompileClass(t *testing.T) {
-	xmlFile := &bytes.Buffer{}
-	ce := CompilationEngine{
-		writer: xmlFile,
-		t:      tk.New(strings.NewReader("")),
-	}
-
 	tests := []struct {
-		jackCode    string
-		expectedXML string
+		jackCode             string
+		expectedXML          string
+		expectedClassST      st.SymbolTable
+		expectedSubroutineST st.SymbolTable
 	}{
 		{
 			jackCode: `class Main {static int i;static int j;}`,
@@ -41,6 +38,29 @@ func TestCompileClass(t *testing.T) {
 <symbol> } </symbol>
 </class>
 `,
+			expectedClassST: st.SymbolTable{
+				VarCnt:    0,
+				FieldCnt:  0,
+				StaticCnt: 2,
+				ArgCnt:    0,
+				VariableMap: map[string]st.Identifier{
+					"Main": {
+						Name:  "Main",
+						Kind:  st.NONE,
+						T:     "Main",
+						Index: 0},
+					"i": {
+						Name:  "i",
+						Kind:  tk.STATIC.Val,
+						T:     tk.INT.Val,
+						Index: 0},
+					"j": {
+						Name:  "j",
+						Kind:  tk.STATIC.Val,
+						T:     tk.INT.Val,
+						Index: 1},
+				},
+			},
 		}, {
 			jackCode: `class Main {
 			field MyClass i,j;
@@ -60,6 +80,29 @@ func TestCompileClass(t *testing.T) {
 <symbol> } </symbol>
 </class>
 `,
+			expectedClassST: st.SymbolTable{
+				VarCnt:    0,
+				FieldCnt:  2,
+				StaticCnt: 0,
+				ArgCnt:    0,
+				VariableMap: map[string]st.Identifier{
+					"Main": {
+						Name:  "Main",
+						Kind:  st.NONE,
+						T:     "Main",
+						Index: 0},
+					"i": {
+						Name:  "i",
+						Kind:  tk.FIELD.Val,
+						T:     "MyClass",
+						Index: 0},
+					"j": {
+						Name:  "j",
+						Kind:  tk.FIELD.Val,
+						T:     "MyClass",
+						Index: 1},
+				},
+			},
 		}, {
 			jackCode: `class Main {
 			field MyClass i,j;
@@ -98,33 +141,129 @@ func TestCompileClass(t *testing.T) {
 </subroutineDec>
 <symbol> } </symbol>
 </class>
-`}, {
+`,
+			expectedClassST: st.SymbolTable{
+				VarCnt:    0,
+				FieldCnt:  2,
+				StaticCnt: 0,
+				ArgCnt:    0,
+				VariableMap: map[string]st.Identifier{
+					"Main": {
+						Name:  "Main",
+						Kind:  st.NONE,
+						T:     "Main",
+						Index: 0},
+					"i": {
+						Name:  "i",
+						Kind:  tk.FIELD.Val,
+						T:     "MyClass",
+						Index: 0},
+					"j": {
+						Name:  "j",
+						Kind:  tk.FIELD.Val,
+						T:     "MyClass",
+						Index: 1},
+					"main": {
+						Name:  "main",
+						Kind:  st.NONE,
+						T:     "subroutine",
+						Index: 0},
+				},
+			}},
+		{
+			jackCode: `class Main {
+			field MyClass i,j;
+			function void main(int a, boolean b) {
+			var int c;
+			var boolean d,e;
+			return;}`,
+			expectedClassST: st.SymbolTable{
+				VarCnt:    0,
+				FieldCnt:  2,
+				StaticCnt: 0,
+				ArgCnt:    0,
+				VariableMap: map[string]st.Identifier{
+					"Main": {
+						Name:  "Main",
+						Kind:  st.NONE,
+						T:     "Main",
+						Index: 0},
+					"i": {
+						Name:  "i",
+						Kind:  tk.FIELD.Val,
+						T:     "MyClass",
+						Index: 0},
+					"j": {
+						Name:  "j",
+						Kind:  tk.FIELD.Val,
+						T:     "MyClass",
+						Index: 1},
+					"main": {
+						Name:  "main",
+						Kind:  st.NONE,
+						T:     "subroutine",
+						Index: 0},
+				}}, expectedSubroutineST: st.SymbolTable{
+				VarCnt:    3,
+				FieldCnt:  0,
+				StaticCnt: 0,
+				ArgCnt:    2,
+				VariableMap: map[string]st.Identifier{
+					"a": {
+						Name:  "a",
+						Kind:  st.ARG,
+						T:     "int",
+						Index: 0},
+					"b": {
+						Name:  "b",
+						Kind:  st.ARG,
+						T:     "boolean",
+						Index: 1},
+					"c": {
+						Name:  "c",
+						Kind:  st.VAR,
+						T:     "int",
+						Index: 0},
+					"d": {
+						Name:  "d",
+						Kind:  st.VAR,
+						T:     "boolean",
+						Index: 1},
+					"e": {
+						Name:  "e",
+						Kind:  st.VAR,
+						T:     "boolean",
+						Index: 2},
+				},
+			},
+		},
+
+		{
 			jackCode: `// This file is part of www.nand2tetris.org
 // and the book "The Elements of Computing Systems"
 // by Nisan and Schocken, MIT Press.
 // File name: projects/10/ExpressionLessSquare/Main.jack
 
-
 class Main {
-    static boolean test;    // Added for testing -- there is no static keyword
-                            // in the Square files.
+	static boolean test;    // Added for testing -- there is no static keyword
+							// in the Square files.
 
-    function void main() {
-        var SquareGame game;
-        let game = game;
-        do game.run();
-        do game.dispose();
-        return;
-    }
+	function void main() {
+		var SquareGame game;
+		let game = game;
+		do game.run();
+		do game.dispose();
+		return;
+	}
 
-    function void more() {  // Added to test Jack syntax that is not used in
-        var boolean b;      // the Square files.
-        if (b) {
-        }
-        else {              // There is no else keyword in the Square files.
-        }
-        return;
-    }
+	function void more() {  // Added to test Jack syntax that is not used in
+		var boolean b;      // the Square files.
+		if (b) {
+		}
+		else {              // There is no else keyword in the Square files.
+		}
+		return;
+	}
 }
 `,
 			expectedXML: `<class>
@@ -245,33 +384,42 @@ class Main {
 	}
 	var err error
 	for _, test := range tests {
-		ce.t, err = tk.NewWithFirstToken(strings.NewReader(test.jackCode))
-		if err != nil {
-			t.Errorf("CreateTokenizerWithFirstToken() error: %v", err)
-		}
+		xmlFile := &bytes.Buffer{}
+		ce := NewWithFirstToken(xmlFile, strings.NewReader(test.jackCode))
 		err = ce.CompileClass()
 		if err != nil {
 			t.Errorf("CompileClass() error: %v", err)
 		}
 		// remove leading and trailing whitespace from the actual XML
-		if xmlFile.String() != test.expectedXML {
-			t.Errorf("CompileClass() = %v, want %v", xmlFile.String(), test.expectedXML)
-			diff := cmp.Diff(xmlFile.String(), test.expectedXML)
+		if want := test.expectedXML; want != "" && xmlFile.String() != want {
+			t.Errorf("CompileClass() = %v, want %v", xmlFile.String(), want)
+			diff := cmp.Diff(xmlFile.String(), want)
 			t.Errorf("Diff: %s", diff)
 		}
-		xmlFile.Reset()
+
+		// compare the symbol table with go-cmp
+		if want := test.expectedClassST; !cmp.Equal(want, st.SymbolTable{}) && !cmp.Equal(*ce.classST, want) {
+			t.Errorf("CompileClass() = %v, want %v", ce.classST, want)
+			diff := cmp.Diff(ce.classST, want)
+			t.Errorf("Diff: %s", diff)
+		}
+		if want := test.expectedSubroutineST; !cmp.Equal(want, st.SymbolTable{}) && !cmp.Equal(*ce.subroutineST, want) {
+			t.Errorf("CompileClass() = %v, want %v", ce.subroutineST, want)
+			diff := cmp.Diff(ce.subroutineST, want)
+			t.Errorf("Diff: %s", diff)
+		}
+		// reset the xmlFile and symbol table for the next test
 	}
 
 }
 
 func TestCompileClassVarDec(t *testing.T) {
-	xmlFile := &bytes.Buffer{}
-	ce := New(xmlFile, strings.NewReader(""))
 
 	tests := []struct {
-		jackCode      string
-		fieldOrStatic tk.Token
-		expectedXML   string
+		jackCode            string
+		fieldOrStatic       tk.Token
+		expectedXML         string
+		expectedSymbolTable st.SymbolTable
 	}{
 		{
 			jackCode:      `static int i;`,
@@ -283,6 +431,19 @@ func TestCompileClassVarDec(t *testing.T) {
 <symbol> ; </symbol>
 </classVarDec>
 `,
+			expectedSymbolTable: st.SymbolTable{
+				VarCnt:    0,
+				FieldCnt:  0,
+				StaticCnt: 1,
+				ArgCnt:    0,
+				VariableMap: map[string]st.Identifier{
+					"i": {
+						Name:  "i",
+						Kind:  tk.STATIC.Val,
+						T:     tk.INT.Val,
+						Index: 0},
+				},
+			},
 		},
 		{
 			jackCode:      `field int i,j;`,
@@ -296,6 +457,24 @@ func TestCompileClassVarDec(t *testing.T) {
 <symbol> ; </symbol>
 </classVarDec>
 `,
+			expectedSymbolTable: st.SymbolTable{
+				VarCnt:    0,
+				FieldCnt:  2,
+				StaticCnt: 0,
+				ArgCnt:    0,
+				VariableMap: map[string]st.Identifier{
+					"i": {
+						Name:  "i",
+						Kind:  tk.FIELD.Val,
+						T:     tk.INT.Val,
+						Index: 0},
+					"j": {
+						Name:  "j",
+						Kind:  tk.FIELD.Val,
+						T:     tk.INT.Val,
+						Index: 1},
+				},
+			},
 		},
 		{
 			jackCode:      `static int i,j;`,
@@ -309,7 +488,23 @@ func TestCompileClassVarDec(t *testing.T) {
 <symbol> ; </symbol>
 </classVarDec>
 `,
-		},
+			expectedSymbolTable: st.SymbolTable{
+				VarCnt:    0,
+				FieldCnt:  0,
+				StaticCnt: 2,
+				ArgCnt:    0,
+				VariableMap: map[string]st.Identifier{
+					"i": {
+						Name:  "i",
+						Kind:  tk.STATIC.Val,
+						T:     tk.INT.Val,
+						Index: 0},
+					"j": {
+						Name:  "j",
+						Kind:  tk.STATIC.Val,
+						T:     tk.INT.Val,
+						Index: 1},
+				}}},
 		{
 			jackCode:      `field MyClass A,B,C;`,
 			fieldOrStatic: tk.FIELD,
@@ -324,11 +519,35 @@ func TestCompileClassVarDec(t *testing.T) {
 <symbol> ; </symbol>
 </classVarDec>
 `,
-		},
+			expectedSymbolTable: st.SymbolTable{
+				VarCnt:    0,
+				FieldCnt:  3,
+				StaticCnt: 0,
+				ArgCnt:    0,
+				VariableMap: map[string]st.Identifier{
+					"A": {
+						Name:  "A",
+						Kind:  tk.FIELD.Val,
+						T:     "MyClass",
+						Index: 0},
+					"B": {
+						Name:  "B",
+						Kind:  tk.FIELD.Val,
+						T:     "MyClass",
+						Index: 1},
+					"C": {
+						Name:  "C",
+						Kind:  tk.FIELD.Val,
+						T:     "MyClass",
+						Index: 2},
+				},
+			}},
 	}
 	var err error
 	// show diff using cmp package
 	for _, test := range tests {
+		xmlFile := &bytes.Buffer{}
+		ce := New(xmlFile, strings.NewReader(""))
 		ce.t, err = tk.NewWithFirstToken(strings.NewReader(test.jackCode))
 		if err != nil {
 			t.Errorf("CreateTokenizerWithFirstToken() error: %v", err)
@@ -344,14 +563,19 @@ func TestCompileClassVarDec(t *testing.T) {
 			t.Errorf("Diff: %s", diff)
 		}
 
+		// compare the symbol table with go-cmp
+		if !cmp.Equal(*ce.classST, test.expectedSymbolTable) {
+			t.Errorf("CompileClass() = %v, want %v", ce.classST, test.expectedSymbolTable)
+			diff := cmp.Diff(ce.classST, test.expectedSymbolTable)
+			t.Errorf("Diff: %s", diff)
+		}
+
 		xmlFile.Reset()
 	}
 
 }
 
 func TestSubroutine(t *testing.T) {
-	xmlFile := &bytes.Buffer{}
-	ce := New(xmlFile, strings.NewReader(""))
 
 	tests := []struct {
 		jackCode    string
@@ -391,7 +615,8 @@ func TestSubroutine(t *testing.T) {
 		}}
 
 	for _, test := range tests {
-		ce.t, _ = tk.NewWithFirstToken(strings.NewReader(test.jackCode))
+		xmlFile := &bytes.Buffer{}
+		ce := NewWithFirstToken(xmlFile, strings.NewReader(test.jackCode))
 		err := ce.CompileSubroutine()
 		if err != nil {
 			t.Errorf("CompileClass() error: %v", err)
@@ -402,14 +627,10 @@ func TestSubroutine(t *testing.T) {
 			diff := cmp.Diff(xmlFile.String(), test.expectedXML)
 			t.Errorf("Diff: %s", diff)
 		}
-		xmlFile.Reset()
 	}
 }
 
 func TestCompileVarDec(t *testing.T) {
-	xmlFile := &bytes.Buffer{}
-	ce := New(xmlFile, strings.NewReader(""))
-
 	tests := []struct {
 		jackCode    string
 		expectedXML string
@@ -437,7 +658,8 @@ func TestCompileVarDec(t *testing.T) {
 `,
 		}}
 	for _, test := range tests {
-		ce.t, _ = tk.NewWithFirstToken(strings.NewReader(test.jackCode))
+		xmlFile := &bytes.Buffer{}
+		ce := NewWithFirstToken(xmlFile, strings.NewReader(test.jackCode))
 		err := ce.CompileVarDec()
 		if err != nil {
 			t.Errorf("CompileClass() error: %v", err)
@@ -448,13 +670,10 @@ func TestCompileVarDec(t *testing.T) {
 			diff := cmp.Diff(xmlFile.String(), test.expectedXML)
 			t.Errorf("Diff: %s", diff)
 		}
-		xmlFile.Reset()
 	}
 }
 
 func TestCompileParameterList(t *testing.T) {
-	xmlFile := &bytes.Buffer{}
-	ce := New(xmlFile, strings.NewReader(""))
 
 	tests := []struct {
 		jackCode    string
@@ -484,7 +703,8 @@ func TestCompileParameterList(t *testing.T) {
 		},
 	}
 	for _, test := range tests {
-		ce.t, _ = tk.NewWithFirstToken(strings.NewReader(test.jackCode))
+		xmlFile := &bytes.Buffer{}
+		ce := NewWithFirstToken(xmlFile, strings.NewReader(test.jackCode))
 		err := ce.CompileParameterList()
 		if err != nil {
 			t.Errorf("CompileClass() error: %v", err)
@@ -495,14 +715,10 @@ func TestCompileParameterList(t *testing.T) {
 			diff := cmp.Diff(xmlFile.String(), test.expectedXML)
 			t.Errorf("Diff: %s", diff)
 		}
-		xmlFile.Reset()
 	}
 }
 
 func TestCompileSubroutineBody(t *testing.T) {
-	xmlFile := &bytes.Buffer{}
-	ce := New(xmlFile, strings.NewReader(""))
-
 	tests := []struct {
 		jackCode    string
 		expectedXML string
@@ -589,7 +805,8 @@ return; }`,
 `,
 		}}
 	for _, test := range tests {
-		ce.t, _ = tk.NewWithFirstToken(strings.NewReader(test.jackCode))
+		xmlFile := &bytes.Buffer{}
+		ce := NewWithFirstToken(xmlFile, strings.NewReader(test.jackCode))
 		err := ce.CompileSubroutineBody()
 		if err != nil {
 			t.Errorf("CompileClass() error: %v", err)
@@ -600,6 +817,5 @@ return; }`,
 			diff := cmp.Diff(xmlFile.String(), test.expectedXML)
 			t.Errorf("Diff: %s", diff)
 		}
-		xmlFile.Reset()
 	}
 }

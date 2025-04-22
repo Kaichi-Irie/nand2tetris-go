@@ -3,6 +3,7 @@ package compilationengine
 import (
 	"fmt"
 	"io"
+	st "nand2tetris-go/jackcompiler/symboltable"
 	tk "nand2tetris-go/jackcompiler/tokenizer"
 )
 
@@ -11,6 +12,9 @@ CompileClass compiles a class and writes it to the XML file.
 Class: 'class' className '{' classVarDec* subroutineDec* '}'
 */
 func (ce *CompilationEngine) CompileClass() error {
+	// reserve the class symbol table
+	ce.classST.Reset()
+
 	io.WriteString(ce.writer, "<class>\n")
 
 	// class keyword
@@ -21,7 +25,14 @@ func (ce *CompilationEngine) CompileClass() error {
 	}
 
 	// class name
+	className := ce.t.CurrentToken.Val // className
 	err = ce.ProcessIdentifier()
+	if err != nil {
+		return err
+	}
+
+	// Add the class name to the symbol table
+	err = ce.classST.Define(className, className, st.NONE)
 	if err != nil {
 		return err
 	}
@@ -87,19 +98,28 @@ func (ce *CompilationEngine) CompileClassVarDec(staticOrField tk.Token) error {
 	}
 
 	// static or field keyword
+	kind := ce.t.CurrentToken.Val // static or field
 	err = ce.ProcessKeyWord(staticOrField)
 	if err != nil {
 		return err
 	}
 
 	// process the type: int, char, boolean, className
+	T := ce.t.CurrentToken.Val // int, char, boolean, className
 	err = ce.ProcessType()
 	if err != nil {
 		return err
 	}
 
 	// process the var name
+	varName := ce.t.CurrentToken.Val // varName
 	err = ce.ProcessIdentifier()
+	if err != nil {
+		return err
+	}
+
+	// Add the class var to the symbol table
+	err = ce.classST.Define(varName, T, kind)
 	if err != nil {
 		return err
 	}
@@ -112,7 +132,13 @@ func (ce *CompilationEngine) CompileClassVarDec(staticOrField tk.Token) error {
 			return err
 		}
 		// process the var name
+		varName = ce.t.CurrentToken.Val // varName
 		err = ce.ProcessIdentifier()
+		if err != nil {
+			return err
+		}
+		// Add the class var to the symbol table
+		err = ce.classST.Define(varName, T, kind)
 		if err != nil {
 			return err
 		}
@@ -130,6 +156,7 @@ func (ce *CompilationEngine) CompileClassVarDec(staticOrField tk.Token) error {
 
 }
 
+// TODO: add the subroutine name and argument name to the symbol table
 func (ce *CompilationEngine) CompileSubroutine() error {
 	_, err := io.WriteString(ce.writer, "<subroutineDec>\n")
 	if err != nil {
@@ -172,7 +199,14 @@ func (ce *CompilationEngine) CompileSubroutine() error {
 	}
 
 	// process the subroutine name
+	subroutineName := ce.t.CurrentToken.Val // subroutineName
 	err = ce.ProcessIdentifier()
+	if err != nil {
+		return err
+	}
+
+	// Add the subroutine name to the symbol table
+	err = ce.classST.Define(subroutineName, "subroutine", st.NONE)
 	if err != nil {
 		return err
 	}
@@ -184,6 +218,7 @@ func (ce *CompilationEngine) CompileSubroutine() error {
 	}
 
 	// process the parameter list
+	// TODO: implement symbol table for method
 	err = ce.CompileParameterList()
 	if err != nil {
 		return err
@@ -219,22 +254,32 @@ func (ce *CompilationEngine) CompileVarDec() error {
 	}
 
 	// var keyword
+	kind := ce.t.CurrentToken.Val // var
 	err = ce.ProcessKeyWord(tk.VAR)
 	if err != nil {
 		return err
 	}
 
 	// process the type: int, char, boolean, className
+	T := ce.t.CurrentToken.Val // int, char, boolean, className
 	err = ce.ProcessType()
 	if err != nil {
 		return err
 	}
 
 	// process the var name
+	varName := ce.t.CurrentToken.Val // varName
 	err = ce.ProcessIdentifier()
 	if err != nil {
 		return err
 	}
+
+	// Add the var to the symbol table
+	err = ce.subroutineST.Define(varName, T, kind)
+	if err != nil {
+		return err
+	}
+
 	// process the comma or semicolon
 	for ce.t.CurrentToken.Val == tk.COMMA.Val {
 		// process the comma
@@ -243,7 +288,13 @@ func (ce *CompilationEngine) CompileVarDec() error {
 			return err
 		}
 		// process the var name
+		varName = ce.t.CurrentToken.Val // varName
 		err = ce.ProcessIdentifier()
+		if err != nil {
+			return err
+		}
+		// Add the var to the symbol table
+		err = ce.subroutineST.Define(varName, T, kind)
 		if err != nil {
 			return err
 		}
@@ -277,33 +328,48 @@ func (ce *CompilationEngine) CompileParameterList() error {
 		return err
 	}
 
+	// TODO: Refactor this code as function ProcessTypeAndIdentifier. These processes are repeated in CompileVarDec, CompileParameterList and CompileClassVarDec
 	// process the type: int, char, boolean, className
+	T := ce.t.CurrentToken.Val // int, char, boolean, className
 	err = ce.ProcessType()
 	if err != nil {
 		return err
 	}
 
 	// process the var name
+	varName := ce.t.CurrentToken.Val // varName
 	err = ce.ProcessIdentifier()
+	if err != nil {
+		return err
+	}
+
+	// Add the parameter to the symbol table
+	err = ce.subroutineST.Define(varName, T, st.ARG)
 	if err != nil {
 		return err
 	}
 
 	// process the comma or semicolon
 	// process the comma
-
 	for ce.t.CurrentToken.Val == tk.COMMA.Val {
 		err = ce.ProcessSymbol(tk.COMMA)
 		if err != nil {
 			return err
 		}
 		// process the type: int, char, boolean, className
+		T = ce.t.CurrentToken.Val // int, char, boolean, className
 		err = ce.ProcessType()
 		if err != nil {
 			return err
 		}
 		// process the var name
+		varName = ce.t.CurrentToken.Val // varName
 		err = ce.ProcessIdentifier()
+		if err != nil {
+			return err
+		}
+		// Add the parameter to the symbol table
+		err = ce.subroutineST.Define(varName, T, st.ARG)
 		if err != nil {
 			return err
 		}

@@ -6,8 +6,7 @@ import (
 	tk "nand2tetris-go/jackcompiler/tokenizer"
 )
 
-// ProcessKeyWord checks if the current token is a keyword ()
-// of the given type. If it is, it writes the keyword to the writer and advances to the next token. It returns an error if the current token is not a keyword of the given type.
+// ProcessKeyWord checks if the current token is a keyword (class, method, function, constructor, int, char, boolean, void, var, static, field, let, do, if, else, while, return, true, false, null, this) and if it matches the expected keyword. If it does, it writes the keyword to the writer and advances to the next token. It returns an error if the current token is not a keyword or does not match the expected keyword.
 func (ce *CompilationEngine) ProcessKeyWord(kw tk.Token) error {
 	token := ce.t.CurrentToken
 	if !token.Is(tk.TT_KEYWORD) {
@@ -79,6 +78,17 @@ func (ce *CompilationEngine) ProcessIdentifier() error {
 	_, err := io.WriteString(ce.writer, "<identifier> "+token.Val+" </identifier>\n")
 	if err != nil {
 		return err
+	}
+
+	// check if the identifier is registered in the symbol table
+	if ce.classST == nil || ce.subroutineST == nil {
+		return fmt.Errorf("symbol table is not initialized")
+	} else if _, ok := ce.subroutineST.Lookup(token.Val); ok {
+		fmt.Println("identifier is already registered in the subroutine symbol table")
+	} else if _, ok := ce.classST.Lookup(token.Val); ok {
+		fmt.Println("identifier is already registered in the class symbol table.")
+	} else {
+		fmt.Println("identifier is not registered in the symbol table. This is expected for a new identifier.")
 	}
 
 	ce.t.Advance()
