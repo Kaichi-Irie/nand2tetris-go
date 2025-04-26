@@ -12,10 +12,8 @@ import (
 
 func TestCompileClass(t *testing.T) {
 	tests := []struct {
-		jackCode             string
-		expectedXML          string
-		expectedClassST      st.SymbolTable
-		expectedSubroutineST st.SymbolTable
+		jackCode    string
+		expectedXML string
 	}{
 		{
 			jackCode: `class Main {static int i;static int j;}`,
@@ -38,34 +36,6 @@ func TestCompileClass(t *testing.T) {
 <symbol> } </symbol>
 </class>
 `,
-			expectedClassST: st.SymbolTable{
-				CurrentScope: st.Identifier{
-					Name:  "Main",
-					Kind:  st.KINDCLASS,
-					T:     st.NOTVOIDFUNC,
-					Index: -1},
-				VarCnt:    0,
-				FieldCnt:  0,
-				StaticCnt: 2,
-				ArgCnt:    0,
-				VariableMap: map[string]st.Identifier{
-					"Main": {
-						Name:  "Main",
-						Kind:  st.NONE,
-						T:     "Main",
-						Index: 0},
-					"i": {
-						Name:  "i",
-						Kind:  tk.STATIC.Val,
-						T:     tk.INT.Val,
-						Index: 0},
-					"j": {
-						Name:  "j",
-						Kind:  tk.STATIC.Val,
-						T:     tk.INT.Val,
-						Index: 1},
-				},
-			},
 		}, {
 			jackCode: `class Main {
 			field MyClass i,j;
@@ -84,36 +54,7 @@ func TestCompileClass(t *testing.T) {
 </classVarDec>
 <symbol> } </symbol>
 </class>
-`,
-			expectedClassST: st.SymbolTable{
-				CurrentScope: st.Identifier{
-					Name:  "Main",
-					Kind:  st.KINDCLASS,
-					T:     st.NOTVOIDFUNC,
-					Index: -1},
-				VarCnt:    0,
-				FieldCnt:  2,
-				StaticCnt: 0,
-				ArgCnt:    0,
-				VariableMap: map[string]st.Identifier{
-					"Main": {
-						Name:  "Main",
-						Kind:  st.NONE,
-						T:     "Main",
-						Index: 0},
-					"i": {
-						Name:  "i",
-						Kind:  tk.FIELD.Val,
-						T:     "MyClass",
-						Index: 0},
-					"j": {
-						Name:  "j",
-						Kind:  tk.FIELD.Val,
-						T:     "MyClass",
-						Index: 1},
-				},
-			},
-		}, {
+`}, {
 			jackCode: `class Main {
 			field MyClass i,j;
 			function void main() {return;}
@@ -151,108 +92,7 @@ func TestCompileClass(t *testing.T) {
 </subroutineDec>
 <symbol> } </symbol>
 </class>
-`,
-			expectedClassST: st.SymbolTable{
-				CurrentScope: st.Identifier{
-					Name:  "Main",
-					Kind:  st.KINDCLASS,
-					T:     st.NOTVOIDFUNC,
-					Index: -1},
-				VarCnt:    0,
-				FieldCnt:  2,
-				StaticCnt: 0,
-				ArgCnt:    0,
-				VariableMap: map[string]st.Identifier{
-					"Main": {
-						Name:  "Main",
-						Kind:  st.NONE,
-						T:     "Main",
-						Index: 0},
-					"i": {
-						Name:  "i",
-						Kind:  tk.FIELD.Val,
-						T:     "MyClass",
-						Index: 0},
-					"j": {
-						Name:  "j",
-						Kind:  tk.FIELD.Val,
-						T:     "MyClass",
-						Index: 1},
-				},
-			}},
-		{
-			jackCode: `class Main {
-			field MyClass i,j;
-			function void main(int a, boolean b) {
-			var int c;
-			var boolean d,e;
-			return;}`,
-			expectedClassST: st.SymbolTable{
-				CurrentScope: st.Identifier{
-					Name:  "Main",
-					Kind:  st.KINDCLASS,
-					T:     st.NOTVOIDFUNC,
-					Index: -1},
-				VarCnt:    0,
-				FieldCnt:  2,
-				StaticCnt: 0,
-				ArgCnt:    0,
-				VariableMap: map[string]st.Identifier{
-					"Main": {
-						Name:  "Main",
-						Kind:  st.NONE,
-						T:     "Main",
-						Index: 0},
-					"i": {
-						Name:  "i",
-						Kind:  tk.FIELD.Val,
-						T:     "MyClass",
-						Index: 0},
-					"j": {
-						Name:  "j",
-						Kind:  tk.FIELD.Val,
-						T:     "MyClass",
-						Index: 1},
-				}}, expectedSubroutineST: st.SymbolTable{
-				CurrentScope: st.Identifier{
-					Name:  "Main.main",
-					Kind:  st.KINDFUNCTION,
-					T:     st.VOIDFUNC,
-					Index: -1},
-				VarCnt:    3,
-				FieldCnt:  0,
-				StaticCnt: 0,
-				ArgCnt:    2,
-				VariableMap: map[string]st.Identifier{
-					"a": {
-						Name:  "a",
-						Kind:  st.ARG,
-						T:     "int",
-						Index: 0},
-					"b": {
-						Name:  "b",
-						Kind:  st.ARG,
-						T:     "boolean",
-						Index: 1},
-					"c": {
-						Name:  "c",
-						Kind:  st.VAR,
-						T:     "int",
-						Index: 0},
-					"d": {
-						Name:  "d",
-						Kind:  st.VAR,
-						T:     "boolean",
-						Index: 1},
-					"e": {
-						Name:  "e",
-						Kind:  st.VAR,
-						T:     "boolean",
-						Index: 2},
-				},
-			},
-		},
-
+`},
 		{
 			jackCode: `// This file is part of www.nand2tetris.org
 // and the book "The Elements of Computing Systems"
@@ -411,7 +251,193 @@ class Main {
 			diff := cmp.Diff(xmlFile.String(), want)
 			t.Errorf("Diff: %s", diff)
 		}
+	}
 
+}
+func TestCompileClass2(t *testing.T) {
+
+	tests := []struct {
+		jackCode             string
+		expectedClassST      st.SymbolTable
+		expectedSubroutineST st.SymbolTable
+	}{
+		{
+			jackCode: `class Main {static int i;static int j;}`,
+			expectedClassST: st.SymbolTable{
+				CurrentScope: st.Identifier{
+					Name:  "Main",
+					Kind:  st.KINDCLASS,
+					T:     st.NOTVOIDFUNC,
+					Index: -1},
+				VarCnt:    0,
+				FieldCnt:  0,
+				StaticCnt: 2,
+				ArgCnt:    0,
+				VariableMap: map[string]st.Identifier{
+					"Main": {
+						Name:  "Main",
+						Kind:  st.NONE,
+						T:     "Main",
+						Index: 0},
+					"i": {
+						Name:  "i",
+						Kind:  tk.STATIC.Val,
+						T:     tk.INT.Val,
+						Index: 0},
+					"j": {
+						Name:  "j",
+						Kind:  tk.STATIC.Val,
+						T:     tk.INT.Val,
+						Index: 1},
+				},
+			},
+		}, {
+			jackCode: `class Main {
+			field MyClass i,j;
+			}`,
+			expectedClassST: st.SymbolTable{
+				CurrentScope: st.Identifier{
+					Name:  "Main",
+					Kind:  st.KINDCLASS,
+					T:     st.NOTVOIDFUNC,
+					Index: -1},
+				VarCnt:    0,
+				FieldCnt:  2,
+				StaticCnt: 0,
+				ArgCnt:    0,
+				VariableMap: map[string]st.Identifier{
+					"Main": {
+						Name:  "Main",
+						Kind:  st.NONE,
+						T:     "Main",
+						Index: 0},
+					"i": {
+						Name:  "i",
+						Kind:  tk.FIELD.Val,
+						T:     "MyClass",
+						Index: 0},
+					"j": {
+						Name:  "j",
+						Kind:  tk.FIELD.Val,
+						T:     "MyClass",
+						Index: 1},
+				},
+			},
+		}, {
+			jackCode: `class Main {
+			field MyClass i,j;
+			function void main() {return;}
+			}`,
+			expectedClassST: st.SymbolTable{
+				CurrentScope: st.Identifier{
+					Name:  "Main",
+					Kind:  st.KINDCLASS,
+					T:     st.NOTVOIDFUNC,
+					Index: -1},
+				VarCnt:    0,
+				FieldCnt:  2,
+				StaticCnt: 0,
+				ArgCnt:    0,
+				VariableMap: map[string]st.Identifier{
+					"Main": {
+						Name:  "Main",
+						Kind:  st.NONE,
+						T:     "Main",
+						Index: 0},
+					"i": {
+						Name:  "i",
+						Kind:  tk.FIELD.Val,
+						T:     "MyClass",
+						Index: 0},
+					"j": {
+						Name:  "j",
+						Kind:  tk.FIELD.Val,
+						T:     "MyClass",
+						Index: 1},
+				},
+			}},
+		{
+			jackCode: `class Main {
+			field MyClass i,j;
+			function void main(int a, boolean b) {
+			var int c;
+			var boolean d,e;
+			return;}`,
+			expectedClassST: st.SymbolTable{
+				CurrentScope: st.Identifier{
+					Name:  "Main",
+					Kind:  st.KINDCLASS,
+					T:     st.NOTVOIDFUNC,
+					Index: -1},
+				VarCnt:    0,
+				FieldCnt:  2,
+				StaticCnt: 0,
+				ArgCnt:    0,
+				VariableMap: map[string]st.Identifier{
+					"Main": {
+						Name:  "Main",
+						Kind:  st.NONE,
+						T:     "Main",
+						Index: 0},
+					"i": {
+						Name:  "i",
+						Kind:  tk.FIELD.Val,
+						T:     "MyClass",
+						Index: 0},
+					"j": {
+						Name:  "j",
+						Kind:  tk.FIELD.Val,
+						T:     "MyClass",
+						Index: 1},
+				}}, expectedSubroutineST: st.SymbolTable{
+				CurrentScope: st.Identifier{
+					Name:  "Main.main",
+					Kind:  st.KINDFUNCTION,
+					T:     st.VOIDFUNC,
+					Index: -1},
+				VarCnt:    3,
+				FieldCnt:  0,
+				StaticCnt: 0,
+				ArgCnt:    2,
+				VariableMap: map[string]st.Identifier{
+					"a": {
+						Name:  "a",
+						Kind:  st.ARG,
+						T:     "int",
+						Index: 0},
+					"b": {
+						Name:  "b",
+						Kind:  st.ARG,
+						T:     "boolean",
+						Index: 1},
+					"c": {
+						Name:  "c",
+						Kind:  st.VAR,
+						T:     "int",
+						Index: 0},
+					"d": {
+						Name:  "d",
+						Kind:  st.VAR,
+						T:     "boolean",
+						Index: 1},
+					"e": {
+						Name:  "e",
+						Kind:  st.VAR,
+						T:     "boolean",
+						Index: 2},
+				},
+			},
+		},
+	}
+
+	var err error
+	for _, test := range tests {
+		xmlFile := &bytes.Buffer{}
+		ce := NewWithFirstToken(xmlFile, strings.NewReader(test.jackCode), "")
+		err = ce.CompileClass()
+		if err != nil {
+			t.Errorf("CompileClass() error: %v", err)
+		}
 		// compare the symbol table with go-cmp
 		if want := test.expectedClassST; !cmp.Equal(want, st.SymbolTable{}) && !cmp.Equal(*ce.classST, want) {
 			t.Errorf("CompileClass() = %v, want %v", ce.classST, want)
@@ -425,7 +451,6 @@ class Main {
 		}
 		// reset the xmlFile and symbol table for the next test
 	}
-
 }
 
 func TestCompileClassVarDec(t *testing.T) {
