@@ -4,6 +4,7 @@ import (
 	"io"
 	tk "nand2tetris-go/jackcompiler/tokenizer"
 	vw "nand2tetris-go/jackcompiler/vmwriter"
+	"strconv"
 )
 
 func (ce *CompilationEngine) CompileStatements() error {
@@ -147,6 +148,21 @@ func (ce *CompilationEngine) CompileIf() error {
 	if err != nil {
 		return err
 	}
+
+	// not
+	err = ce.vmwriter.WriteArithmetic(vw.NOT)
+	if err != nil {
+		return err
+	}
+
+	// if-goto labelElse
+	labelElse := "label" + strconv.Itoa(ce.labelCount)
+	err = ce.vmwriter.WriteIf(labelElse)
+	if err != nil {
+		return err
+	}
+	ce.labelCount++
+
 	// process the )
 	err = ce.ProcessSymbol(tk.RPAREN)
 	if err != nil {
@@ -162,17 +178,34 @@ func (ce *CompilationEngine) CompileIf() error {
 	if err != nil {
 		return err
 	}
+
+	// goto labelFinally
+	labelFinally := "label" + strconv.Itoa(ce.labelCount)
+	err = ce.vmwriter.WriteGoto(labelFinally)
+	if err != nil {
+		return err
+	}
+	ce.labelCount++
+
 	// process the }
 	err = ce.ProcessSymbol(tk.RBRACE)
 	if err != nil {
 		return err
 	}
+
+	// labelElse
+	err = ce.vmwriter.WriteLabel(labelElse)
+	if err != nil {
+		return err
+	}
+
 	// process the else keyword
 	if ce.t.CurrentToken.Val == tk.ELSE.Val {
 		err = ce.ProcessKeyWord(tk.ELSE)
 		if err != nil {
 			return err
 		}
+
 		// process the {
 		err = ce.ProcessSymbol(tk.LBRACE)
 		if err != nil {
@@ -189,6 +222,13 @@ func (ce *CompilationEngine) CompileIf() error {
 			return err
 		}
 	}
+
+	// labelFinally
+	err = ce.vmwriter.WriteLabel(labelFinally)
+	if err != nil {
+		return err
+	}
+
 	_, err = io.WriteString(ce.writer, "</ifStatement>\n")
 	if err != nil {
 		return err

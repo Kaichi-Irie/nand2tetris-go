@@ -192,6 +192,64 @@ func TestCompileIf(t *testing.T) {
 		}
 	}
 }
+func TestCompileIf2(t *testing.T) {
+	Variables := []st.Identifier{
+		{Name: "x", Kind: st.VAR, T: tk.INT.Val, Index: 0}}
+	tests := []struct {
+		jackCode          string
+		expectedVMCommand string
+	}{
+		{
+			jackCode: `if (x) { }`,
+			expectedVMCommand: `push local 0
+not
+if-goto label0
+goto label1
+label label0
+label label1`},
+		{
+			jackCode: `if (x) {  } else {  }`,
+			expectedVMCommand: `push local 0
+not
+if-goto label0
+goto label1
+label label0
+label label1`},
+		{
+			jackCode: `if (x) {let x=false;} else {let x=false;}`,
+			expectedVMCommand: `push local 0
+not
+if-goto label0
+push constant 0
+pop local 0
+goto label1
+label label0
+push constant 0
+pop local 0
+label label1`,
+		},
+	}
+	for _, test := range tests {
+		vmFile := &bytes.Buffer{}
+		ce := NewWithVMWriter(vmFile, &bytes.Buffer{}, strings.NewReader(test.jackCode), "")
+
+		// Define the variables in the symbol table
+		for _, id := range Variables {
+			ce.classST.Define(id.Name, id.T, id.Kind)
+		}
+		err := ce.CompileIf()
+		if err != nil {
+			t.Errorf("CompileLet() error: %v", err)
+		}
+
+		// trim leading and trailing whitespace
+		vmOutput := strings.TrimSpace(vmFile.String())
+		want := strings.TrimSpace(test.expectedVMCommand)
+		if diff := cmp.Diff(vmOutput, want); diff != "" {
+			t.Errorf("CompileLet() = %v, want %v", vmOutput, want)
+		}
+	}
+}
 
 func TestCompileWhile(t *testing.T) {
 	tests := []struct {

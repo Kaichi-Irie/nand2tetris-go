@@ -14,6 +14,7 @@ type CompilationEngine struct {
 	t            *tk.Tokenizer
 	classST      *st.SymbolTable
 	subroutineST *st.SymbolTable
+	labelCount   int // for generating unique labels
 }
 
 func New(xmlFile io.Writer, r io.Reader, className string) *CompilationEngine {
@@ -23,6 +24,7 @@ func New(xmlFile io.Writer, r io.Reader, className string) *CompilationEngine {
 		t:            tk.New(r),
 		classST:      st.NewSymbolTable(),
 		subroutineST: st.NewSymbolTable(),
+		labelCount:   0,
 	}
 }
 
