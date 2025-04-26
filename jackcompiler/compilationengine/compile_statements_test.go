@@ -10,6 +10,14 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
+var codeComparer = cmp.Comparer(func(x string, y string) bool {
+	x = strings.TrimSpace(x)
+	y = strings.TrimSpace(y)
+	x = strings.Join(strings.Fields(x), " ")
+	y = strings.Join(strings.Fields(y), " ")
+	return x == y
+})
+
 func TestCompileLet(t *testing.T) {
 	tests := []struct {
 		jackCode    string
@@ -125,9 +133,9 @@ pop local 0`,
 		}
 
 		// trim leading and trailing whitespace
-		vmOutput := strings.TrimSpace(vmFile.String())
-		want := strings.TrimSpace(test.expectedVMCommands)
-		if diff := cmp.Diff(vmOutput, want); diff != "" {
+		vmOutput := vmFile.String()
+		want := test.expectedVMCommands
+		if diff := cmp.Diff(vmOutput, want, codeComparer); diff != "" {
 			t.Errorf("CompileLet() = %v, want %v", vmOutput, want)
 		}
 	}
@@ -243,9 +251,9 @@ label label1`,
 		}
 
 		// trim leading and trailing whitespace
-		vmOutput := strings.TrimSpace(vmFile.String())
-		want := strings.TrimSpace(test.expectedVMCommand)
-		if diff := cmp.Diff(vmOutput, want); diff != "" {
+		vmOutput := vmFile.String()
+		want := test.expectedVMCommand
+		if diff := cmp.Diff(vmOutput, want, codeComparer); diff != "" {
 			t.Errorf("CompileLet() = %v, want %v", vmOutput, want)
 		}
 	}
@@ -313,6 +321,53 @@ func TestCompileWhile(t *testing.T) {
 			t.Errorf("CompileClass() = %v, want %v", xmlFile.String(), test.expectedXML)
 			diff := cmp.Diff(xmlFile.String(), test.expectedXML)
 			t.Errorf("Diff: %s", diff)
+		}
+	}
+}
+func TestCompileWhile2(t *testing.T) {
+	variables := []st.Identifier{
+		{Name: "i", Kind: st.VAR, T: tk.INT.Val, Index: 0}}
+	tests := []struct {
+		jackCode          string
+		expectedVMCommand string
+	}{
+		{
+			jackCode: `while (i) { }`,
+			expectedVMCommand: `label label0
+			push local 0
+			not
+			if-goto label1
+			goto label0
+			label label1`},
+		{
+			jackCode: `while (i) { let i = i; }`,
+			expectedVMCommand: `label label0
+			push local 0
+			not
+			if-goto label1
+			push local 0
+			pop local 0
+			goto label0
+			label label1`},
+	}
+	for _, test := range tests {
+		vmFile := &bytes.Buffer{}
+		ce := NewWithVMWriter(vmFile, &bytes.Buffer{}, strings.NewReader(test.jackCode), "")
+
+		// Define the variables in the symbol table
+		for _, id := range variables {
+			ce.classST.Define(id.Name, id.T, id.Kind)
+		}
+		err := ce.CompileWhile()
+		if err != nil {
+			t.Errorf("CompileWhile() error: %v", err)
+		}
+
+		// trim leading and trailing whitespace
+		vmOutput := vmFile.String()
+		want := test.expectedVMCommand
+		if diff := cmp.Diff(vmOutput, want, codeComparer); diff != "" {
+			t.Errorf("CompileWhile() mismatch (-got +want):\n%s\n%s", vmOutput, want)
 		}
 	}
 }

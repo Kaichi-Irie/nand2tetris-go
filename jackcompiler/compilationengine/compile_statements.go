@@ -243,6 +243,14 @@ func (ce *CompilationEngine) CompileWhile() error {
 		return err
 	}
 
+	// labelWhile
+	labelWhile := "label" + strconv.Itoa(ce.labelCount)
+	err = ce.vmwriter.WriteLabel(labelWhile)
+	if err != nil {
+		return err
+	}
+	ce.labelCount++
+
 	// process the while keyword
 	err = ce.ProcessKeyWord(tk.WHILE)
 	if err != nil {
@@ -260,6 +268,19 @@ func (ce *CompilationEngine) CompileWhile() error {
 	if err != nil {
 		return err
 	}
+
+	// not
+	err = ce.vmwriter.WriteArithmetic(vw.NOT)
+	if err != nil {
+		return err
+	}
+	// if-goto labelFinally
+	labelFinally := "label" + strconv.Itoa(ce.labelCount)
+	err = ce.vmwriter.WriteIf(labelFinally)
+	if err != nil {
+		return err
+	}
+	ce.labelCount++
 
 	// process the )
 	err = ce.ProcessSymbol(tk.RPAREN)
@@ -281,6 +302,17 @@ func (ce *CompilationEngine) CompileWhile() error {
 
 	// process the }
 	err = ce.ProcessSymbol(tk.RBRACE)
+	if err != nil {
+		return err
+	}
+
+	// goto labelWhile
+	err = ce.vmwriter.WriteGoto(labelWhile)
+	if err != nil {
+		return err
+	}
+	// labelFinally
+	err = ce.vmwriter.WriteLabel(labelFinally)
 	if err != nil {
 		return err
 	}
