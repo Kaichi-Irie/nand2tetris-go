@@ -38,6 +38,8 @@ const (
 	AND string = "and"
 	OR  string = "or"
 	NOT string = "not"
+	MUL string = "call Math.multiply 2"
+	DIV string = "call Math.divide 2"
 )
 
 var Commands = []string{
@@ -50,16 +52,18 @@ var Commands = []string{
 	AND,
 	OR,
 	NOT,
+	MUL,
+	DIV,
 }
 
 type VMWriter struct {
-	w io.WriteCloser
+	w io.Writer
 }
 
-func NewVMWriter() *VMWriter {
-	return &VMWriter{}
+func New(w io.Writer) *VMWriter {
+	return &VMWriter{w: w}
 }
-func (vmw *VMWriter) writePush(segment string, index int) error {
+func (vmw *VMWriter) WritePush(segment string, index int) error {
 	if !slices.Contains(Segments, segment) {
 		return fmt.Errorf("invalid segment: %s", segment)
 	}
@@ -73,7 +77,7 @@ func (vmw *VMWriter) writePush(segment string, index int) error {
 	return nil
 }
 
-func (vmw *VMWriter) writePop(segment string, index int) error {
+func (vmw *VMWriter) WritePop(segment string, index int) error {
 	if !slices.Contains(Segments, segment) {
 		return fmt.Errorf("invalid segment: %s", segment)
 	}
@@ -87,7 +91,7 @@ func (vmw *VMWriter) writePop(segment string, index int) error {
 	return nil
 }
 
-func (vmw *VMWriter) writeArithmetic(command string) error {
+func (vmw *VMWriter) WriteArithmetic(command string) error {
 	if !slices.Contains(Commands, command) {
 		return fmt.Errorf("invalid command: %s", command)
 	}
@@ -98,7 +102,7 @@ func (vmw *VMWriter) writeArithmetic(command string) error {
 	return nil
 }
 
-func (vmw *VMWriter) writeLabel(label string) error {
+func (vmw *VMWriter) WriteLabel(label string) error {
 	_, err := fmt.Fprintf(vmw.w, "label %s\n", label)
 	if err != nil {
 		return fmt.Errorf("error writing label: %w", err)
@@ -106,21 +110,21 @@ func (vmw *VMWriter) writeLabel(label string) error {
 	return nil
 }
 
-func (vmw *VMWriter) writeGoto(label string) error {
+func (vmw *VMWriter) WriteGoto(label string) error {
 	_, err := fmt.Fprintf(vmw.w, "goto %s\n", label)
 	if err != nil {
 		return fmt.Errorf("error writing goto: %w", err)
 	}
 	return nil
 }
-func (vmw *VMWriter) writeIf(label string) error {
+func (vmw *VMWriter) WriteIf(label string) error {
 	_, err := fmt.Fprintf(vmw.w, "if-goto %s\n", label)
 	if err != nil {
 		return fmt.Errorf("error writing if-goto: %w", err)
 	}
 	return nil
 }
-func (vmw *VMWriter) writeCall(name string, nArgs int) error {
+func (vmw *VMWriter) WriteCall(name string, nArgs int) error {
 	if nArgs < 0 {
 		return fmt.Errorf("invalid number of arguments: %d", nArgs)
 	}
@@ -131,27 +135,34 @@ func (vmw *VMWriter) writeCall(name string, nArgs int) error {
 	return nil
 }
 
-func (vmw *VMWriter) writeFunction(name string, nArgs int) error {
-	if nArgs < 0 {
-		return fmt.Errorf("invalid number of arguments: %d", nArgs)
+func (vmw *VMWriter) WriteFunction(name string, nVars int) error {
+	if nVars < 0 {
+		return fmt.Errorf("invalid number of arguments: %d", nVars)
 	}
-	_, err := fmt.Fprintf(vmw.w, "function %s %d\n", name, nArgs)
+	_, err := fmt.Fprintf(vmw.w, "function %s %d\n", name, nVars)
 	if err != nil {
 		return fmt.Errorf("error writing function: %w", err)
 	}
 	return nil
 }
 
-func (vmw *VMWriter) writeReturn() error {
-	_, err := fmt.Fprintf(vmw.w, "return\n")
+func (vmw *VMWriter) WriteReturn(isVoid bool) error {
+	if isVoid {
+		err := vmw.WritePush(CONSTANT, 0)
+		if err != nil {
+			return err
+		}
+	}
+	_, err := io.WriteString(vmw.w, "return\n")
 	if err != nil {
 		return fmt.Errorf("error writing return: %w", err)
 	}
 	return nil
 }
-func (vmw *VMWriter) close() error {
-	if err := vmw.w.Close(); err != nil {
-		return fmt.Errorf("error closing writer: %w", err)
-	}
-	return nil
-}
+
+// func (vmw *VMWriter) Close() error {
+// 	if err := vmw.w.Close(); err != nil {
+// 		return fmt.Errorf("error closing writer: %w", err)
+// 	}
+// 	return nil
+// }

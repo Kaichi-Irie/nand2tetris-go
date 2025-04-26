@@ -2,8 +2,10 @@ package symboltable
 
 import (
 	"fmt"
+	tk "nand2tetris-go/jackcompiler/tokenizer"
 )
 
+// kind
 const (
 	STATIC = "static"
 	FIELD  = "field"
@@ -12,13 +14,31 @@ const (
 	NONE   = "none"
 )
 
+var (
+	KINDCLASS       = tk.CLASS.Val
+	KINDCONSTRUCTOR = tk.CONSTRUCTOR.Val
+	KINDMETHOD      = tk.METHOD.Val
+	KINDFUNCTION    = tk.FUNCTION.Val
+)
+
 var Kinds = []string{
 	STATIC,
 	FIELD,
 	ARG,
 	VAR,
 	NONE,
+	KINDCLASS,
+	KINDCONSTRUCTOR,
+	KINDMETHOD,
+	KINDFUNCTION,
 }
+
+// constants for current scope
+const (
+	CURRENTSCOPE = "currentScope"
+	VOIDFUNC     = "void"
+	NOTVOIDFUNC  = "notvoid"
+)
 
 type Identifier struct {
 	Name  string
@@ -28,20 +48,22 @@ type Identifier struct {
 }
 
 type SymbolTable struct {
-	StaticCnt   int
-	FieldCnt    int
-	ArgCnt      int
-	VarCnt      int
-	VariableMap map[string]Identifier
+	StaticCnt    int
+	FieldCnt     int
+	ArgCnt       int
+	VarCnt       int
+	CurrentScope Identifier
+	VariableMap  map[string]Identifier
 }
 
 func NewSymbolTable() *SymbolTable {
 	return &SymbolTable{
-		StaticCnt:   0,
-		FieldCnt:    0,
-		ArgCnt:      0,
-		VarCnt:      0,
-		VariableMap: make(map[string]Identifier),
+		StaticCnt:    0,
+		FieldCnt:     0,
+		ArgCnt:       0,
+		VarCnt:       0,
+		CurrentScope: Identifier{},
+		VariableMap:  make(map[string]Identifier),
 	}
 }
 
@@ -51,6 +73,7 @@ func (s *SymbolTable) Reset() error {
 	s.FieldCnt = 0
 	s.ArgCnt = 0
 	s.VarCnt = 0
+	s.CurrentScope = Identifier{}
 	s.VariableMap = make(map[string]Identifier)
 	return nil
 }
@@ -110,4 +133,28 @@ func (s *SymbolTable) Define(name string, T string, kind string) error {
 	}
 	fmt.Printf("Added identifier: %s, kind: %s, type: %s, index: %d\n", name, kind, T, index)
 	return nil
+}
+
+func (s *SymbolTable) SetCurrentScope(name string, kind string, T string) error {
+	if name == "" {
+		return fmt.Errorf("name cannot be empty")
+	}
+	if T != VOIDFUNC && T != NOTVOIDFUNC {
+		return fmt.Errorf("invalid type: %s", T)
+	}
+	if kind != KINDCLASS && kind != KINDCONSTRUCTOR && kind != KINDMETHOD && kind != KINDFUNCTION {
+		return fmt.Errorf("invalid kind: %s", kind)
+	}
+	s.CurrentScope = Identifier{
+		Name:  name,
+		Kind:  kind,
+		T:     T,
+		Index: -1,
+	}
+	fmt.Printf("Set current scope: %s, kind: %s, type: %s\n", name, kind, T)
+	return nil
+}
+
+func (s *SymbolTable) IsCurrentVoidFunc() bool {
+	return s.CurrentScope.T == VOIDFUNC
 }

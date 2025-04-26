@@ -32,7 +32,7 @@ func TestCompileLet(t *testing.T) {
 	}
 	for _, test := range tests {
 		xmlFile := &bytes.Buffer{}
-		ce := NewWithFirstToken(xmlFile, strings.NewReader(test.jackCode))
+		ce := NewWithFirstToken(xmlFile, strings.NewReader(test.jackCode), "")
 		err := ce.CompileLet()
 		if err != nil {
 			t.Errorf("CompileClass() error: %v", err)
@@ -92,7 +92,7 @@ func TestCompileIf(t *testing.T) {
 `}}
 	for _, test := range tests {
 		xmlFile := &bytes.Buffer{}
-		ce := NewWithFirstToken(xmlFile, strings.NewReader(test.jackCode))
+		ce := NewWithFirstToken(xmlFile, strings.NewReader(test.jackCode), "")
 		err := ce.CompileIf()
 		if err != nil {
 			t.Errorf("CompileClass() error: %v", err)
@@ -158,7 +158,7 @@ func TestCompileWhile(t *testing.T) {
 	}
 	for _, test := range tests {
 		xmlFile := &bytes.Buffer{}
-		ce := NewWithFirstToken(xmlFile, strings.NewReader(test.jackCode))
+		ce := NewWithFirstToken(xmlFile, strings.NewReader(test.jackCode), "")
 		err := ce.CompileWhile()
 		if err != nil {
 			t.Errorf("CompileClass() error: %v", err)
@@ -205,7 +205,7 @@ func TestCompileDo(t *testing.T) {
 	}
 	for _, test := range tests {
 		xmlFile := &bytes.Buffer{}
-		ce := NewWithFirstToken(xmlFile, strings.NewReader(test.jackCode))
+		ce := NewWithFirstToken(xmlFile, strings.NewReader(test.jackCode), "")
 		err := ce.CompileDo()
 		if err != nil {
 			t.Errorf("CompileClass() error: %v", err)
@@ -247,7 +247,7 @@ func TestCompileReturn(t *testing.T) {
 	}
 	for _, test := range tests {
 		xmlFile := &bytes.Buffer{}
-		ce := NewWithFirstToken(xmlFile, strings.NewReader(test.jackCode))
+		ce := NewWithFirstToken(xmlFile, strings.NewReader(test.jackCode), "")
 		err := ce.CompileReturn()
 		if err != nil {
 			t.Errorf("CompileClass() error: %v", err)

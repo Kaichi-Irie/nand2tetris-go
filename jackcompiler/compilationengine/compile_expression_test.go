@@ -2,7 +2,7 @@ package compilationengine
 
 import (
 	"bytes"
-	tk "nand2tetris-go/jackcompiler/tokenizer"
+	"nand2tetris-go/jackcompiler/symboltable"
 	"strings"
 	"testing"
 
@@ -149,7 +149,9 @@ func TestCompileTerm(t *testing.T) {
 	}
 	for _, test := range tests {
 		xmlFile := &bytes.Buffer{}
-		ce := NewWithFirstToken(xmlFile, strings.NewReader(test.jackCode))
+		ce := NewWithFirstToken(xmlFile, strings.NewReader(test.jackCode), "")
+		ce.classST = &symboltable.SymbolTable{}
+		ce.subroutineST = &symboltable.SymbolTable{}
 		err := ce.CompileTerm(false)
 		if err != nil {
 			t.Errorf("CompileClass() error: %v", err)
@@ -188,7 +190,7 @@ func TestCompileExpression(t *testing.T) {
 		}}
 	for _, test := range tests {
 		xmlFile := &bytes.Buffer{}
-		ce := NewWithFirstToken(xmlFile, strings.NewReader(test.jackCode))
+		ce := NewWithFirstToken(xmlFile, strings.NewReader(test.jackCode), "")
 		err := ce.CompileExpression(false)
 		if err != nil {
 			t.Errorf("CompileClass() error: %v", err)
@@ -202,47 +204,62 @@ func TestCompileExpression(t *testing.T) {
 	}
 }
 
-func TestCompileExpressionList(t *testing.T) {
+func TestCompileIntConst(t *testing.T) {
+
 	tests := []struct {
-		jackCode    string
-		expectedXML string
+		jackCode string
+		vmCode   string
 	}{
 		{
-			jackCode: `i, j, k`,
-			expectedXML: `<expressionList>
-<expression>
-<term>
-<identifier> i </identifier>
-</term>
-</expression>
-<symbol> , </symbol>
-<expression>
-<term>
-<identifier> j </identifier>
-</term>
-</expression>
-<symbol> , </symbol>
-<expression>
-<term>
-<identifier> k </identifier>
-</term>
-</expression>
-</expressionList>
-`}}
+			jackCode: `1+2`,
+			vmCode: `push constant 1
+push constant 2
+add
+`},
+		{
+			jackCode: `1-2`,
+			vmCode: `push constant 1
+push constant 2
+sub
+`},
+		{
+			jackCode: `1*2`,
+			vmCode: `push constant 1
+push constant 2
+call Math.multiply 2
+`},
+		{jackCode: `1/2`,
+			vmCode: `push constant 1
+push constant 2
+call Math.divide 2
+`},
+		{
+			jackCode: `1&2`,
+			vmCode: `push constant 1
+push constant 2
+and
+`},
+		{jackCode: `-1`,
+			vmCode: `push constant 1
+neg
+`},
+		{
+			jackCode: `~1`,
+			vmCode: `push constant 1
+not
+`},
+	}
 	for _, test := range tests {
-		xmlFile := &bytes.Buffer{}
-		ce := New(xmlFile, strings.NewReader(""))
-		ce.t, _ = tk.NewWithFirstToken(strings.NewReader(test.jackCode))
-		err := ce.CompileExpressionList()
+		vmFile := &bytes.Buffer{}
+		ce := NewWithVMWriter(vmFile, &bytes.Buffer{}, strings.NewReader(test.jackCode), "")
+		err := ce.CompileExpression(false)
 		if err != nil {
-			t.Errorf("CompileClass() error: %v", err)
+			t.Errorf("CompileExpression() error: %v", err)
 		}
-		// remove leading and trailing whitespace from the actual XML
-		if xmlFile.String() != test.expectedXML {
-			t.Errorf("CompileClass() = %v, want %v", xmlFile.String(), test.expectedXML)
-			diff := cmp.Diff(xmlFile.String(), test.expectedXML)
+		if vmFile.String() != test.vmCode {
+			t.Errorf("CompileExpression() = %v, want %v", vmFile.String(), test.vmCode)
+			diff := cmp.Diff(vmFile.String(), test.vmCode)
 			t.Errorf("Diff: %s", diff)
 		}
-
 	}
 }

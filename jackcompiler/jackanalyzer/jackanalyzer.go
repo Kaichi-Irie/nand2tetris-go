@@ -27,7 +27,8 @@ func Analize(path string) error {
 		return fmt.Errorf("input path must be a .jack file or a directory")
 	}
 	for _, jackFilePath := range jackFilePaths {
-		xmlFilePath := jackFilePath[:len(jackFilePath)-5] + ".xml"
+		className := jackFilePath[:len(jackFilePath)-5]
+		xmlFilePath := className + ".xml"
 		jackFile, err := os.Open(jackFilePath)
 		if err != nil {
 			return err
@@ -39,7 +40,12 @@ func Analize(path string) error {
 			return err
 		}
 		defer xmlFile.Close()
-		ce := compilationengine.NewWithFirstToken(xmlFile, jackFile)
+		vmFile, err := os.Create(className + ".vm")
+		if err != nil {
+			return err
+		}
+
+		ce := compilationengine.NewWithVMWriter(vmFile, xmlFile, jackFile, className)
 		err = ce.CompileClass()
 		if err != nil {
 			return err

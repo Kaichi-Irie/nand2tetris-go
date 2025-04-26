@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"io"
 	tk "nand2tetris-go/jackcompiler/tokenizer"
+	vw "nand2tetris-go/jackcompiler/vmwriter"
+	"strconv"
 )
 
 /*
@@ -51,6 +53,12 @@ func (ce *CompilationEngine) CompileTerm(isDoStatement bool) error {
 		if err != nil {
 			return err
 		}
+		vmCommand := map[string]string{tk.MINUS.Val: vw.NEG, tk.NOT.Val: vw.NOT}[token.Val]
+		err = ce.vmwriter.WriteArithmetic(vmCommand)
+		if err != nil {
+			return err
+		}
+
 	// process the string constant
 	case token.Is(tk.TT_STRING_CONST):
 		err = ce.ProcessStringConst()
@@ -59,6 +67,14 @@ func (ce *CompilationEngine) CompileTerm(isDoStatement bool) error {
 		}
 	// process the integer constant
 	case token.Is(tk.TT_INT_CONST):
+		n, err := strconv.Atoi(token.Val)
+		if err != nil {
+			return err
+		}
+		err = ce.vmwriter.WritePush(vw.CONSTANT, n)
+		if err != nil {
+			return err
+		}
 		err = ce.ProcessIntConst()
 		if err != nil {
 			return err
@@ -79,18 +95,23 @@ func (ce *CompilationEngine) CompileTerm(isDoStatement bool) error {
 		We have to process the identifier first, then check if it is a subroutine call or a varName. To do this, we use the strings.Builder as a temporary buffer.
 	*/
 	case token.Is(tk.TT_IDENTIFIER):
+		subroutineName := token.Val // used only for the subroutine call
 		err = ce.ProcessIdentifier()
 		if err != nil {
 			return err
 		}
 		// process the . or ( or [
-		switch ce.t.CurrentToken.Val {
+		switch token := ce.t.CurrentToken; token.Val {
+		// process
 		case tk.DOT.Val:
+			subroutineName += "."
 			err = ce.ProcessSymbol(tk.DOT)
 			if err != nil {
 				return err
 			}
+
 			// process the subroutine name
+			subroutineName += ce.t.CurrentToken.Val
 			err = ce.ProcessIdentifier()
 			if err != nil {
 				return err
@@ -101,12 +122,17 @@ func (ce *CompilationEngine) CompileTerm(isDoStatement bool) error {
 				return err
 			}
 			// process the expression list
-			err = ce.CompileExpressionList()
+			nArgs, err := ce.CompileExpressionList()
 			if err != nil {
 				return err
 			}
 			// process the )
 			err = ce.ProcessSymbol(tk.RPAREN)
+			if err != nil {
+				return err
+			}
+			// write vmcommand
+			err = ce.vmwriter.WriteCall(subroutineName, nArgs)
 			if err != nil {
 				return err
 			}
@@ -116,7 +142,7 @@ func (ce *CompilationEngine) CompileTerm(isDoStatement bool) error {
 				return err
 			}
 			// process the expression list
-			err = ce.CompileExpressionList()
+			nArgs, err := ce.CompileExpressionList()
 			if err != nil {
 				return err
 			}
@@ -125,6 +151,13 @@ func (ce *CompilationEngine) CompileTerm(isDoStatement bool) error {
 			if err != nil {
 				return err
 			}
+			// write vmcommand
+			err = ce.vmwriter.WriteCall(subroutineName, nArgs)
+			if err != nil {
+				return err
+			}
+
+		// process the varName '[' expression ']' | varName
 		case tk.LSQUARE.Val:
 			err = ce.ProcessSymbol(tk.LSQUARE)
 			if err != nil {
@@ -142,7 +175,6 @@ func (ce *CompilationEngine) CompileTerm(isDoStatement bool) error {
 			}
 
 		}
-		// write the identifier to the xml file
 
 	default:
 		return fmt.Errorf("unexpected token %s", token.Val)
@@ -184,6 +216,17 @@ func (ce *CompilationEngine) CompileExpression(isDoStatement bool) error {
 
 	// process the operator
 	for token := ce.t.CurrentToken; token.IsOp(); token = ce.t.CurrentToken {
+		vmCommand := map[string]string{
+			tk.PLUS.Val:     vw.ADD,
+			tk.MINUS.Val:    vw.SUB,
+			tk.ASTERISK.Val: vw.MUL,
+			tk.SLASH.Val:    vw.DIV,
+			tk.AND.Val:      vw.AND,
+			tk.OR.Val:       vw.OR,
+			tk.LESS.Val:     vw.LT,
+			tk.GREATER.Val:  vw.GT,
+			tk.EQUAL.Val:    vw.EQ,
+		}[token.Val]
 		err = ce.ProcessSymbol(token)
 		if err != nil {
 			return err
@@ -193,6 +236,11 @@ func (ce *CompilationEngine) CompileExpression(isDoStatement bool) error {
 		if err != nil {
 			return err
 		}
+		err = ce.vmwriter.WriteArithmetic(vmCommand)
+		if err != nil {
+			return err
+		}
+
 	}
 	_, err = io.WriteString(ce.writer, "</expression>\n")
 	if err != nil {
@@ -201,41 +249,46 @@ func (ce *CompilationEngine) CompileExpression(isDoStatement bool) error {
 	return nil
 }
 
-func (ce *CompilationEngine) CompileExpressionList() error {
+func (ce *CompilationEngine) CompileExpressionList() (int, error) {
+	nArgs := 0
 	_, err := io.WriteString(ce.writer, "<expressionList>\n")
 	if err != nil {
-		return err
+		return 0, err
 	}
 	// no expressions
 	if ce.t.CurrentToken.Val == tk.RPAREN.Val {
 		_, err := io.WriteString(ce.writer, "</expressionList>\n")
 		if err != nil {
-			return err
+			return 0, err
 		}
-		return nil
+		return nArgs, nil
 	}
 
 	// process the expression
 	err = ce.CompileExpression(false)
 	if err != nil {
-		return err
+		return 0, err
 	}
+	nArgs++
 
 	// process the comma
 	for ce.t.CurrentToken.Val == tk.COMMA.Val {
 		err = ce.ProcessSymbol(tk.COMMA)
 		if err != nil {
-			return err
+			return 0, err
 		}
 		err = ce.CompileExpression(false)
 		if err != nil {
-			return err
+			return 0, err
 		}
+
+		nArgs++
 	}
 
 	_, err = io.WriteString(ce.writer, "</expressionList>\n")
 	if err != nil {
-		return err
+		return 0, err
 	}
-	return nil
+	return nArgs, nil
+
 }

@@ -74,7 +74,7 @@ func TestProcessIdentifier(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.s, func(t *testing.T) {
 			w := strings.Builder{}
-			ce := *NewWithFirstToken(&w, strings.NewReader(tt.s))
+			ce := *NewWithFirstToken(&w, strings.NewReader(tt.s), "")
 			if err := ce.ProcessIdentifier(); err != nil {
 				t.Errorf("processIdentifier(%s) = %v", tt.s, err)
 				return

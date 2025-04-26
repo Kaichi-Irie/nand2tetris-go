@@ -39,6 +39,11 @@ func TestCompileClass(t *testing.T) {
 </class>
 `,
 			expectedClassST: st.SymbolTable{
+				CurrentScope: st.Identifier{
+					Name:  "Main",
+					Kind:  st.KINDCLASS,
+					T:     st.NOTVOIDFUNC,
+					Index: -1},
 				VarCnt:    0,
 				FieldCnt:  0,
 				StaticCnt: 2,
@@ -81,6 +86,11 @@ func TestCompileClass(t *testing.T) {
 </class>
 `,
 			expectedClassST: st.SymbolTable{
+				CurrentScope: st.Identifier{
+					Name:  "Main",
+					Kind:  st.KINDCLASS,
+					T:     st.NOTVOIDFUNC,
+					Index: -1},
 				VarCnt:    0,
 				FieldCnt:  2,
 				StaticCnt: 0,
@@ -143,6 +153,11 @@ func TestCompileClass(t *testing.T) {
 </class>
 `,
 			expectedClassST: st.SymbolTable{
+				CurrentScope: st.Identifier{
+					Name:  "Main",
+					Kind:  st.KINDCLASS,
+					T:     st.NOTVOIDFUNC,
+					Index: -1},
 				VarCnt:    0,
 				FieldCnt:  2,
 				StaticCnt: 0,
@@ -163,11 +178,6 @@ func TestCompileClass(t *testing.T) {
 						Kind:  tk.FIELD.Val,
 						T:     "MyClass",
 						Index: 1},
-					"main": {
-						Name:  "main",
-						Kind:  st.NONE,
-						T:     "subroutine",
-						Index: 0},
 				},
 			}},
 		{
@@ -178,6 +188,11 @@ func TestCompileClass(t *testing.T) {
 			var boolean d,e;
 			return;}`,
 			expectedClassST: st.SymbolTable{
+				CurrentScope: st.Identifier{
+					Name:  "Main",
+					Kind:  st.KINDCLASS,
+					T:     st.NOTVOIDFUNC,
+					Index: -1},
 				VarCnt:    0,
 				FieldCnt:  2,
 				StaticCnt: 0,
@@ -198,12 +213,12 @@ func TestCompileClass(t *testing.T) {
 						Kind:  tk.FIELD.Val,
 						T:     "MyClass",
 						Index: 1},
-					"main": {
-						Name:  "main",
-						Kind:  st.NONE,
-						T:     "subroutine",
-						Index: 0},
 				}}, expectedSubroutineST: st.SymbolTable{
+				CurrentScope: st.Identifier{
+					Name:  "Main.main",
+					Kind:  st.KINDFUNCTION,
+					T:     st.VOIDFUNC,
+					Index: -1},
 				VarCnt:    3,
 				FieldCnt:  0,
 				StaticCnt: 0,
@@ -385,7 +400,7 @@ class Main {
 	var err error
 	for _, test := range tests {
 		xmlFile := &bytes.Buffer{}
-		ce := NewWithFirstToken(xmlFile, strings.NewReader(test.jackCode))
+		ce := NewWithFirstToken(xmlFile, strings.NewReader(test.jackCode), "")
 		err = ce.CompileClass()
 		if err != nil {
 			t.Errorf("CompileClass() error: %v", err)
@@ -547,7 +562,7 @@ func TestCompileClassVarDec(t *testing.T) {
 	// show diff using cmp package
 	for _, test := range tests {
 		xmlFile := &bytes.Buffer{}
-		ce := New(xmlFile, strings.NewReader(""))
+		ce := New(xmlFile, strings.NewReader(""), "")
 		ce.t, err = tk.NewWithFirstToken(strings.NewReader(test.jackCode))
 		if err != nil {
 			t.Errorf("CreateTokenizerWithFirstToken() error: %v", err)
@@ -616,7 +631,7 @@ func TestSubroutine(t *testing.T) {
 
 	for _, test := range tests {
 		xmlFile := &bytes.Buffer{}
-		ce := NewWithFirstToken(xmlFile, strings.NewReader(test.jackCode))
+		ce := NewWithFirstToken(xmlFile, strings.NewReader(test.jackCode), "")
 		err := ce.CompileSubroutine()
 		if err != nil {
 			t.Errorf("CompileClass() error: %v", err)
@@ -659,7 +674,7 @@ func TestCompileVarDec(t *testing.T) {
 		}}
 	for _, test := range tests {
 		xmlFile := &bytes.Buffer{}
-		ce := NewWithFirstToken(xmlFile, strings.NewReader(test.jackCode))
+		ce := NewWithFirstToken(xmlFile, strings.NewReader(test.jackCode), "")
 		err := ce.CompileVarDec()
 		if err != nil {
 			t.Errorf("CompileClass() error: %v", err)
@@ -704,7 +719,7 @@ func TestCompileParameterList(t *testing.T) {
 	}
 	for _, test := range tests {
 		xmlFile := &bytes.Buffer{}
-		ce := NewWithFirstToken(xmlFile, strings.NewReader(test.jackCode))
+		ce := NewWithFirstToken(xmlFile, strings.NewReader(test.jackCode), "")
 		err := ce.CompileParameterList()
 		if err != nil {
 			t.Errorf("CompileClass() error: %v", err)
@@ -806,7 +821,7 @@ return; }`,
 		}}
 	for _, test := range tests {
 		xmlFile := &bytes.Buffer{}
-		ce := NewWithFirstToken(xmlFile, strings.NewReader(test.jackCode))
+		ce := NewWithFirstToken(xmlFile, strings.NewReader(test.jackCode), "")
 		err := ce.CompileSubroutineBody()
 		if err != nil {
 			t.Errorf("CompileClass() error: %v", err)

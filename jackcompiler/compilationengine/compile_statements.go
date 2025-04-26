@@ -3,6 +3,7 @@ package compilationengine
 import (
 	"io"
 	tk "nand2tetris-go/jackcompiler/tokenizer"
+	vw "nand2tetris-go/jackcompiler/vmwriter"
 )
 
 func (ce *CompilationEngine) CompileStatements() error {
@@ -265,6 +266,8 @@ func (ce *CompilationEngine) CompileDo() error {
 	if err != nil {
 		return err
 	}
+	// remove the return value from the stack
+	ce.vmwriter.WritePop(vw.TEMP, 0)
 	return nil
 }
 
@@ -295,6 +298,12 @@ func (ce *CompilationEngine) CompileReturn() error {
 	}
 
 	_, err = io.WriteString(ce.writer, "</returnStatement>\n")
+	if err != nil {
+		return err
+	}
+
+	// write the return command to the VM writer
+	err = ce.vmwriter.WriteReturn(ce.subroutineST.IsCurrentVoidFunc())
 	if err != nil {
 		return err
 	}

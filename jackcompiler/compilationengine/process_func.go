@@ -84,11 +84,11 @@ func (ce *CompilationEngine) ProcessIdentifier() error {
 	if ce.classST == nil || ce.subroutineST == nil {
 		return fmt.Errorf("symbol table is not initialized")
 	} else if _, ok := ce.subroutineST.Lookup(token.Val); ok {
-		fmt.Println("identifier is already registered in the subroutine symbol table")
+		fmt.Printf("identifier %s already registered in the subroutine symbol table.\n", token.Val)
 	} else if _, ok := ce.classST.Lookup(token.Val); ok {
-		fmt.Println("identifier is already registered in the class symbol table.")
+		fmt.Printf("identifier %s already registered in the subroutine symbol table.\n", token.Val)
 	} else {
-		fmt.Println("identifier is not registered in the symbol table. This is expected for a new identifier.")
+		fmt.Printf("identifier %s not registered in the symbol table. This is expected for a new identifier.\n", token.Val)
 	}
 
 	ce.t.Advance()

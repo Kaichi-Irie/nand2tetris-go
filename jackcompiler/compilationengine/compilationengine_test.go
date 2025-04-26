@@ -14,7 +14,7 @@ func TestNew(t *testing.T) {
 	input := strings.NewReader("class Test { }")
 	output := &bytes.Buffer{}
 
-	engine := New(output, input)
+	engine := New(output, input, "")
 
 	// Verify engine is properly initialized
 	if engine == nil {
@@ -36,7 +36,7 @@ func TestNewWithFirstToken(t *testing.T) {
 	input := strings.NewReader("class Test { }")
 	output := &bytes.Buffer{}
 
-	engine := NewWithFirstToken(output, input)
+	engine := NewWithFirstToken(output, input, "")
 
 	// Verify engine is properly initialized
 	if engine == nil {
@@ -71,7 +71,7 @@ func TestNewWithFirstToken_EmptyInput(t *testing.T) {
 		}
 	}()
 
-	_ = NewWithFirstToken(output, input)
+	_ = NewWithFirstToken(output, input, "")
 }
 
 // Mock reader that returns an error
@@ -93,7 +93,7 @@ func TestNewWithFirstToken_ReaderError(t *testing.T) {
 		}
 	}()
 
-	_ = NewWithFirstToken(output, input)
+	_ = NewWithFirstToken(output, input, "")
 }
 
 // Test to ensure the CompilationEngine struct has expected fields and types

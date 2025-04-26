@@ -26,6 +26,7 @@ func (ce *CompilationEngine) CompileClass() error {
 
 	// class name
 	className := ce.t.CurrentToken.Val // className
+	ce.classST.SetCurrentScope(className, st.KINDCLASS, st.NOTVOIDFUNC)
 	err = ce.ProcessIdentifier()
 	if err != nil {
 		return err
@@ -112,7 +113,7 @@ func (ce *CompilationEngine) CompileClassVarDec(staticOrField tk.Token) error {
 	}
 
 	// process the var name
-	varName := ce.t.CurrentToken.Val // varName
+	varName := ce.t.CurrentToken.Val
 	err = ce.ProcessIdentifier()
 	if err != nil {
 		return err
@@ -156,26 +157,30 @@ func (ce *CompilationEngine) CompileClassVarDec(staticOrField tk.Token) error {
 
 }
 
-// TODO: add the subroutine name and argument name to the symbol table
 func (ce *CompilationEngine) CompileSubroutine() error {
+	ce.subroutineST.Reset() // reset the subroutine symbol table
 	_, err := io.WriteString(ce.writer, "<subroutineDec>\n")
 	if err != nil {
 		return err
 	}
 
 	// subroutine keyword: constructor, function, method
+	var currentScopeKind string
 	switch token := ce.t.CurrentToken; {
 	case token.Val == tk.CONSTRUCTOR.Val:
+		currentScopeKind = st.KINDCONSTRUCTOR
 		err = ce.ProcessKeyWord(tk.CONSTRUCTOR)
 		if err != nil {
 			return err
 		}
 	case token.Val == tk.FUNCTION.Val:
+		currentScopeKind = st.KINDFUNCTION
 		err = ce.ProcessKeyWord(tk.FUNCTION)
 		if err != nil {
 			return err
 		}
 	case token.Val == tk.METHOD.Val:
+		currentScopeKind = st.KINDMETHOD
 		err = ce.ProcessKeyWord(tk.METHOD)
 		if err != nil {
 			return err
@@ -185,12 +190,15 @@ func (ce *CompilationEngine) CompileSubroutine() error {
 	}
 
 	// process the void or type: int, char, boolean, className
+	var currentScopeType string
 	if token := ce.t.CurrentToken; token.Val == "void" {
+		currentScopeType = st.VOIDFUNC
 		err = ce.ProcessKeyWord(tk.VOID)
 		if err != nil {
 			return err
 		}
 	} else {
+		currentScopeType = st.NOTVOIDFUNC
 		// int, char, boolean, className
 		err = ce.ProcessType()
 		if err != nil {
@@ -199,14 +207,16 @@ func (ce *CompilationEngine) CompileSubroutine() error {
 	}
 
 	// process the subroutine name
-	subroutineName := ce.t.CurrentToken.Val // subroutineName
+	className := ce.classST.CurrentScope.Name
+	subroutineName := className + "." + ce.t.CurrentToken.Val // subroutineName
 	err = ce.ProcessIdentifier()
 	if err != nil {
 		return err
 	}
 
 	// Add the subroutine name to the symbol table
-	err = ce.classST.Define(subroutineName, "subroutine", st.NONE)
+	// TODO: remove this part
+	err = ce.subroutineST.SetCurrentScope(subroutineName, currentScopeKind, currentScopeType)
 	if err != nil {
 		return err
 	}
@@ -218,7 +228,6 @@ func (ce *CompilationEngine) CompileSubroutine() error {
 	}
 
 	// process the parameter list
-	// TODO: implement symbol table for method
 	err = ce.CompileParameterList()
 	if err != nil {
 		return err
@@ -279,7 +288,6 @@ func (ce *CompilationEngine) CompileVarDec() error {
 	if err != nil {
 		return err
 	}
-
 	// process the comma or semicolon
 	for ce.t.CurrentToken.Val == tk.COMMA.Val {
 		// process the comma
@@ -308,6 +316,7 @@ func (ce *CompilationEngine) CompileVarDec() error {
 	if err != nil {
 		return err
 	}
+
 	return nil
 }
 
@@ -403,6 +412,11 @@ func (ce *CompilationEngine) CompileSubroutineBody() error {
 			return err
 		}
 	}
+
+	// write the function to the VM file
+	nVars := ce.subroutineST.VarCnt
+	subroutineName := ce.subroutineST.CurrentScope.Name
+	ce.vmwriter.WriteFunction(subroutineName, nVars)
 
 	// process the statements
 	err = ce.CompileStatements()
