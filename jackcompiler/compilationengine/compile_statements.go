@@ -66,6 +66,7 @@ func (ce *CompilationEngine) CompileLet() error {
 	}
 
 	// process the var name
+	varName := ce.t.CurrentToken.Val
 	err = ce.ProcessIdentifier()
 	if err != nil {
 		return err
@@ -104,6 +105,19 @@ func (ce *CompilationEngine) CompileLet() error {
 	err = ce.ProcessSymbol(tk.SEMICOLON)
 	if err != nil {
 		return err
+	}
+
+	// pop the value to the variable
+	if identifier, ok := ce.Lookup(varName); ok {
+		seg := vw.SegmentOfKind[identifier.Kind]
+		index := identifier.Index
+		err = ce.vmwriter.WritePop(seg, index)
+		if err != nil {
+			return err
+		}
+	} else {
+		// TODO: handle the case where the variable is not defined
+		// return fmt.Errorf("variable %s is not defined. LetStatement cannot be used", varName)
 	}
 
 	_, err = io.WriteString(ce.writer, "</letStatement>\n")

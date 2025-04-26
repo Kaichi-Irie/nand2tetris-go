@@ -3,6 +3,7 @@ package vmwriter
 import (
 	"fmt"
 	"io"
+	st "nand2tetris-go/jackcompiler/symboltable"
 	"slices"
 )
 
@@ -26,6 +27,13 @@ var Segments = []string{
 	THAT,
 	POINTER,
 	TEMP,
+}
+
+var SegmentOfKind = map[string]string{
+	st.STATIC: STATIC,
+	st.FIELD:  THIS,
+	st.ARG:    ARGUMENT,
+	st.VAR:    LOCAL,
 }
 
 const (

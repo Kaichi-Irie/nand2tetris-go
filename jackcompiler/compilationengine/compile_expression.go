@@ -80,6 +80,29 @@ func (ce *CompilationEngine) CompileTerm(isDoStatement bool) error {
 			return err
 		}
 	// process the keyword constant: true, false, null, this
+	case token.Val == tk.NULL.Val || token.Val == tk.FALSE.Val:
+		err = ce.vmwriter.WritePush(vw.CONSTANT, 0)
+		if err != nil {
+			return err
+		}
+		err = ce.ProcessKeyWord(token)
+		if err != nil {
+			return err
+		}
+	case token.Val == tk.TRUE.Val:
+		err = ce.vmwriter.WritePush(vw.CONSTANT, 1)
+		if err != nil {
+			return err
+		}
+		err = ce.vmwriter.WriteArithmetic(vw.NEG)
+		if err != nil {
+			return err
+		}
+		err = ce.ProcessKeyWord(token)
+		if err != nil {
+			return err
+		}
+	// TODO: implement `this`
 	case token.IsKeywordConst():
 		err = ce.ProcessKeyWord(token)
 		if err != nil {
@@ -95,11 +118,21 @@ func (ce *CompilationEngine) CompileTerm(isDoStatement bool) error {
 		We have to process the identifier first, then check if it is a subroutine call or a varName. To do this, we use the strings.Builder as a temporary buffer.
 	*/
 	case token.Is(tk.TT_IDENTIFIER):
+		// process the primitive type variable
+		if id, ok := ce.Lookup(token.Val); ok && (id.T == tk.INT.Val || id.T == tk.CHAR.Val || id.T == tk.BOOLEAN.Val) {
+			seg := vw.SegmentOfKind[id.Kind]
+			index := id.Index
+			err = ce.vmwriter.WritePush(seg, index)
+			if err != nil {
+				return err
+			}
+		}
 		subroutineName := token.Val // used only for the subroutine call
 		err = ce.ProcessIdentifier()
 		if err != nil {
 			return err
 		}
+
 		// process the . or ( or [
 		switch token := ce.t.CurrentToken; token.Val {
 		// process

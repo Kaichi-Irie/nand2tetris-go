@@ -41,3 +41,14 @@ func NewWithVMWriter(vmwriter io.Writer, xmlFile io.Writer, r io.Reader, classNa
 	ce.vmwriter = vw.New(vmwriter)
 	return ce
 }
+
+func (ce *CompilationEngine) Lookup(name string) (st.Identifier, bool) {
+	if id, ok := ce.subroutineST.Lookup(name); ok {
+		return id, true
+	}
+	if id, ok := ce.classST.Lookup(name); ok {
+		return id, true
+	}
+	return st.Identifier{}, false
+
+}
