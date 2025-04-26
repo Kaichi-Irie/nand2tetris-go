@@ -18,7 +18,7 @@ type Tokenizer struct {
 // New creates a new Tokenizer with the given reader. It uses a [CodeScanner] to read the file. commentPrefix is the prefix that indicates a comment. Example: "//"
 func New(r io.Reader) *Tokenizer {
 	t := &Tokenizer{
-		Scanner:           vmtranslator.NewCodeScanner(r, "//"),
+		Scanner:           vmtranslator.New(r, "//"),
 		CurrentLine:       "",
 		CurrentLineLength: 0,
 		CurrentPos:        0,

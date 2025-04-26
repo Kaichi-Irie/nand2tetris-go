@@ -39,15 +39,18 @@ const (
 // TODO: integrate this code into the hack assembler project
 // CodeScanner is a struct that reads a file line by line and skips empty lines and comments. It provides a method to get the current line of the scanner without leading and trailing spaces and comments.
 // TODO: support multiple comment prefixes. Example: "//" and "#"
-// TODO: support multiple comment styles. Example: "//" and "/* */"
 type CodeScanner struct {
-	scanner       *bufio.Scanner
-	commentPrefix string // the prefix that indicates a comment. Example: "//"
+	scanner                        *bufio.Scanner
+	SingleLineCommentPrefix        string // the prefix that indicates a comment. Example: "//"
+	MultiLineCommentStart          string
+	MultiLineCommentInternalPrefix string
+	MultiLineCommentEnd            string
+	isInComment                    bool
 }
 
-// NewCodeScanner creates a new CodeScanner with the given reader and comment prefix
-func NewCodeScanner(r io.Reader, commentPrefix string) CodeScanner {
-	return CodeScanner{scanner: bufio.NewScanner(r), commentPrefix: commentPrefix}
+// New creates a new CodeScanner with the given reader and comment prefix
+func New(r io.Reader, commentPrefix string) CodeScanner {
+	return CodeScanner{scanner: bufio.NewScanner(r), SingleLineCommentPrefix: commentPrefix, MultiLineCommentStart: "/*", MultiLineCommentEnd: "*/", MultiLineCommentInternalPrefix: "*", isInComment: false}
 }
 
 // Parser is a struct that reads VM commands from a file and provides methods to get the command type and arguments
@@ -59,7 +62,7 @@ type Parser struct {
 
 // NewParser creates a new Parser with the given reader and comment prefix. It uses a [CodeScanner] to read the file. commentPrefix is the prefix that indicates a comment. Example: "//"
 func NewParser(r io.Reader, commentPrefix string) Parser {
-	cs := NewCodeScanner(r, commentPrefix)
+	cs := New(r, commentPrefix)
 	return Parser{scanner: cs}
 }
 
@@ -69,21 +72,33 @@ func (cs CodeScanner) isEmptyLine(line string) bool {
 }
 
 // isCommentLine returns true if the line is a comment line.
-func (cs CodeScanner) isCommentLine(line string) bool {
+func (cs *CodeScanner) isCommentLine(line string) bool {
 	line = strings.TrimSpace(line)
-	if len(line) < 2 {
-		return false
+	// process single line comments
+	if p := cs.SingleLineCommentPrefix; len(line) >= len(p) && line[0:len(p)] == p {
+		return true
 	}
-	// check if the line starts with the comment prefix
-	p := cs.commentPrefix
-	return line[0:len(p)] == p
+	// process multiple comment lines
+	if p := cs.MultiLineCommentInternalPrefix; len(line) >= len(p) && line[0:len(p)] == p && cs.isInComment {
+		return true
+	}
+	// check if the line contains the comment prefix
+	if p := cs.MultiLineCommentStart; len(line) >= len(p) && line[0:len(p)] == p {
+		cs.isInComment = true
+		return true
+	}
+	if p := cs.MultiLineCommentEnd; len(line) >= len(p) && line[0:len(p)] == p {
+		cs.isInComment = false
+		return true
+	}
+	return false
 }
 
 // Text returns the current line of the scanner without leading and trailing spaces and comments. It replaces multiple spaces with a single space and removes comments at the end of the line.
 func (cs CodeScanner) Text() string {
 	text := cs.scanner.Text()
 	//Remove comment at the end of the line
-	text = strings.Split(text, cs.commentPrefix)[0]
+	text = strings.Split(text, cs.SingleLineCommentPrefix)[0]
 	// remove spaces at the beginning and end of the line
 	// replace multiple spaces with a single space
 	return strings.Join(strings.Fields(text), " ")

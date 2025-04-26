@@ -1,7 +1,6 @@
 package vmtranslator
 
 import (
-	"bufio"
 	"strings"
 	"testing"
 )
@@ -26,7 +25,7 @@ push constant   8
 `
 
 func TestCodeScanner(t *testing.T) {
-	cs := CodeScanner{bufio.NewScanner(strings.NewReader(source)), "//"}
+	cs := New(strings.NewReader(source), "//")
 	if !cs.Scan() {
 		t.Errorf("scan() returned false")
 	}
@@ -52,7 +51,7 @@ func TestCodeScanner(t *testing.T) {
 }
 
 func TestParser(t *testing.T) {
-	cs := CodeScanner{bufio.NewScanner(strings.NewReader(source)), "//"}
+	cs := New(strings.NewReader(source), "//")
 	p := Parser{cs, "", C_PUSH}
 	if !p.advance() {
 		t.Errorf("advance() returned false")
