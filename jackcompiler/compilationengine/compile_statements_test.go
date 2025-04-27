@@ -44,11 +44,11 @@ func TestCompileLet(t *testing.T) {
 		ce := NewWithFirstToken(xmlFile, strings.NewReader(test.jackCode), "")
 		err := ce.CompileLet()
 		if err != nil {
-			t.Errorf("CompileClass() error: %v", err)
+			t.Errorf("CompileLet() error: %v", err)
 		}
 		// remove leading and trailing whitespace from the actual XML
 		if xmlFile.String() != test.expectedXML {
-			t.Errorf("CompileClass() = %v, want %v", xmlFile.String(), test.expectedXML)
+			t.Errorf("CompileLet() = %v, want %v", xmlFile.String(), test.expectedXML)
 			diff := cmp.Diff(xmlFile.String(), test.expectedXML)
 			t.Errorf("Diff: %s", diff)
 		}
@@ -190,11 +190,11 @@ func TestCompileIf(t *testing.T) {
 		ce := NewWithFirstToken(xmlFile, strings.NewReader(test.jackCode), "")
 		err := ce.CompileIf()
 		if err != nil {
-			t.Errorf("CompileClass() error: %v", err)
+			t.Errorf("CompileIf() error: %v", err)
 		}
 		// remove leading and trailing whitespace from the actual XML
 		if xmlFile.String() != test.expectedXML {
-			t.Errorf("CompileClass() = %v, want %v", xmlFile.String(), test.expectedXML)
+			t.Errorf("CompileIf() = %v, want %v", xmlFile.String(), test.expectedXML)
 			diff := cmp.Diff(xmlFile.String(), test.expectedXML)
 			t.Errorf("Diff: %s", diff)
 		}
@@ -314,11 +314,11 @@ func TestCompileWhile(t *testing.T) {
 		ce := NewWithFirstToken(xmlFile, strings.NewReader(test.jackCode), "")
 		err := ce.CompileWhile()
 		if err != nil {
-			t.Errorf("CompileClass() error: %v", err)
+			t.Errorf("CompileWhile() error: %v", err)
 		}
 		// remove leading and trailing whitespace from the actual XML
 		if xmlFile.String() != test.expectedXML {
-			t.Errorf("CompileClass() = %v, want %v", xmlFile.String(), test.expectedXML)
+			t.Errorf("CompileWhile() = %v, want %v", xmlFile.String(), test.expectedXML)
 			diff := cmp.Diff(xmlFile.String(), test.expectedXML)
 			t.Errorf("Diff: %s", diff)
 		}
@@ -408,11 +408,11 @@ func TestCompileDo(t *testing.T) {
 		ce := NewWithFirstToken(xmlFile, strings.NewReader(test.jackCode), "")
 		err := ce.CompileDo()
 		if err != nil {
-			t.Errorf("CompileClass() error: %v", err)
+			t.Errorf("CompileDo() error: %v", err)
 		}
 		// remove leading and trailing whitespace from the actual XML
 		if xmlFile.String() != test.expectedXML {
-			t.Errorf("CompileClass() = %v, want %v", xmlFile.String(), test.expectedXML)
+			t.Errorf("CompileDo() = %v, want %v", xmlFile.String(), test.expectedXML)
 			diff := cmp.Diff(xmlFile.String(), test.expectedXML)
 			t.Errorf("Diff: %s", diff)
 		}
@@ -448,13 +448,14 @@ func TestCompileReturn(t *testing.T) {
 	for _, test := range tests {
 		xmlFile := &bytes.Buffer{}
 		ce := NewWithFirstToken(xmlFile, strings.NewReader(test.jackCode), "")
+		
 		err := ce.CompileReturn()
 		if err != nil {
-			t.Errorf("CompileClass() error: %v", err)
+			t.Errorf("CompileReturn() error: %v", err)
 		}
 		// remove leading and trailing whitespace from the actual XML
 		if xmlFile.String() != test.expectedXML {
-			t.Errorf("CompileClass() = %v, want %v", xmlFile.String(), test.expectedXML)
+			t.Errorf("CompileReturn() = %v, want %v", xmlFile.String(), test.expectedXML)
 			diff := cmp.Diff(xmlFile.String(), test.expectedXML)
 			t.Errorf("Diff: %s", diff)
 		}
