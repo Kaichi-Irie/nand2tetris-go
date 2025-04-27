@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#375EAB">
+
+  <title>vmwriter - Go Documentation Server</title>
+
+<link type="text/css" rel="stylesheet" href="../../../../lib/godoc/style.css">
+
+<script>window.initFuncs = [];</script>
+<script src="../../../../lib/godoc/jquery.js" defer></script>
+
+
+
+<script>var goVersion = "go1.24.2";</script>
+<script src="../../../../lib/godoc/godocs.js" defer></script>
+</head>
+<body>
+
+<div id='lowframe' style="position: fixed; bottom: 0; left: 0; height: 0; width: 100%; border-top: thin solid grey; background-color: white; overflow: auto;">
+...
+</div><!-- #lowframe -->
+
+<div id="topbar" class="wide"><div class="container">
+<div class="top-heading" id="heading-wide"><a href="http://localhost:6060/pkg/">Go Documentation Server</a></div>
+<div class="top-heading" id="heading-narrow"><a href="http://localhost:6060/pkg/">GoDoc</a></div>
+<a href="index.html%3Fm=all.html#" id="menu-button"><span id="menu-button-arrow">&#9661;</span></a>
+<form method="GET" action="http://localhost:6060/search">
+<div id="menu">
+
+<span class="search-box"><input type="search" id="search" name="q" placeholder="Search" aria-label="Search" required><button type="submit"><span><!-- magnifying glass: --><svg width="24" height="24" viewBox="0 0 24 24"><title>submit search</title><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/><path d="M0 0h24v24H0z" fill="none"/></svg></span></button></span>
+</div>
+</form>
+
+</div></div>
+
+
+
+<div id="page" class="wide">
+<div class="container">
+
+
+  <h1>
+    Package vmwriter
+    <span class="text-muted"></span>
+  </h1>
+
+
+
+
+
+
+
+<div id="nav"></div>
+
+
+<!--
+	Copyright 2009 The Go Authors. All rights reserved.
+	Use of this source code is governed by a BSD-style
+	license that can be found in the LICENSE file.
+-->
+<!--
+	Note: Static (i.e., not template-generated) href and id
+	attributes start with "pkg-" to make it impossible for
+	them to conflict with generated attributes (some of which
+	correspond to Go identifiers).
+-->
+
+	<script>
+	document.ANALYSIS_DATA = null;
+	document.CALLGRAPH = null;
+	</script>
+
+	
+		
+		<div id="short-nav">
+			<dl>
+			<dd><code>import "nand2tetris-go/jackcompiler/vmwriter"</code></dd>
+			</dl>
+			<dl>
+			<dd><a href="index.html%3Fm=all.html#pkg-overview" class="overviewLink">Overview</a></dd>
+			<dd><a href="index.html%3Fm=all.html#pkg-index" class="indexLink">Index</a></dd>
+			
+			
+			</dl>
+		</div>
+		<!-- The package's Name is printed as title by the top-level template -->
+		<div id="pkg-overview" class="toggleVisible">
+			<div class="collapsed">
+				<h2 class="toggleButton" title="Click to show Overview section">Overview ▹</h2>
+			</div>
+			<div class="expanded">
+				<h2 class="toggleButton" title="Click to hide Overview section">Overview ▾</h2>
+				
+				
+			</div>
+		</div>
+
+		<div id="pkg-index" class="toggleVisible">
+		<div class="collapsed">
+			<h2 class="toggleButton" title="Click to show Index section">Index ▹</h2>
+		</div>
+		<div class="expanded">
+			<h2 class="toggleButton" title="Click to hide Index section">Index ▾</h2>
+
+		<!-- Table of contents for API; must be named manual-nav to turn off auto nav. -->
+			<div id="manual-nav">
+			<dl>
+			
+				<dd><a href="index.html%3Fm=all.html#pkg-constants">Constants</a></dd>
+			
+			
+				<dd><a href="index.html%3Fm=all.html#pkg-variables">Variables</a></dd>
+			
+			
+			
+				
+				<dd><a href="index.html%3Fm=all.html#VMWriter">type VMWriter</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html%3Fm=all.html#New">func New(w io.Writer) *VMWriter</a></dd>
+				
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html%3Fm=all.html#VMWriter.WriteArithmetic">func (vmw *VMWriter) WriteArithmetic(command string) error</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html%3Fm=all.html#VMWriter.WriteCall">func (vmw *VMWriter) WriteCall(name string, nArgs int) error</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html%3Fm=all.html#VMWriter.WriteFunction">func (vmw *VMWriter) WriteFunction(name string, nVars int) error</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html%3Fm=all.html#VMWriter.WriteGoto">func (vmw *VMWriter) WriteGoto(label string) error</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html%3Fm=all.html#VMWriter.WriteIf">func (vmw *VMWriter) WriteIf(label string) error</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html%3Fm=all.html#VMWriter.WriteLabel">func (vmw *VMWriter) WriteLabel(label string) error</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html%3Fm=all.html#VMWriter.WritePop">func (vmw *VMWriter) WritePop(segment string, index int) error</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html%3Fm=all.html#VMWriter.WritePush">func (vmw *VMWriter) WritePush(segment string, index int) error</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html%3Fm=all.html#VMWriter.WriteReturn">func (vmw *VMWriter) WriteReturn() error</a></dd>
+				
+			
+			
+			</dl>
+			</div><!-- #manual-nav -->
+
+		
+
+		
+			<h3>Package files</h3>
+			<p>
+			<span style="font-size:90%">
+			
+				<a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/vmwriter/vmwriter.go">vmwriter.go</a>
+			
+			</span>
+			</p>
+		
+		</div><!-- .expanded -->
+		</div><!-- #pkg-index -->
+
+		
+
+		
+			<h2 id="pkg-constants">Constants</h2>
+			
+				
+				<pre>const (
+    <span id="ARGUMENT">ARGUMENT</span> <a href="http://localhost:6060/pkg/builtin/#string">string</a> = &#34;argument&#34;
+    <span id="LOCAL">LOCAL</span>    <a href="http://localhost:6060/pkg/builtin/#string">string</a> = &#34;local&#34;
+    <span id="STATIC">STATIC</span>   <a href="http://localhost:6060/pkg/builtin/#string">string</a> = &#34;static&#34;
+    <span id="CONSTANT">CONSTANT</span> <a href="http://localhost:6060/pkg/builtin/#string">string</a> = &#34;constant&#34;
+    <span id="THIS">THIS</span>     <a href="http://localhost:6060/pkg/builtin/#string">string</a> = &#34;this&#34;
+    <span id="THAT">THAT</span>     <a href="http://localhost:6060/pkg/builtin/#string">string</a> = &#34;that&#34;
+    <span id="POINTER">POINTER</span>  <a href="http://localhost:6060/pkg/builtin/#string">string</a> = &#34;pointer&#34;
+    <span id="TEMP">TEMP</span>     <a href="http://localhost:6060/pkg/builtin/#string">string</a> = &#34;temp&#34;
+)</pre>
+			
+				
+				<pre>const (
+    <span id="ADD">ADD</span> <a href="http://localhost:6060/pkg/builtin/#string">string</a> = &#34;add&#34;
+    <span id="SUB">SUB</span> <a href="http://localhost:6060/pkg/builtin/#string">string</a> = &#34;sub&#34;
+    <span id="NEG">NEG</span> <a href="http://localhost:6060/pkg/builtin/#string">string</a> = &#34;neg&#34;
+    <span id="EQ">EQ</span>  <a href="http://localhost:6060/pkg/builtin/#string">string</a> = &#34;eq&#34;
+    <span id="GT">GT</span>  <a href="http://localhost:6060/pkg/builtin/#string">string</a> = &#34;gt&#34;
+    <span id="LT">LT</span>  <a href="http://localhost:6060/pkg/builtin/#string">string</a> = &#34;lt&#34;
+    <span id="AND">AND</span> <a href="http://localhost:6060/pkg/builtin/#string">string</a> = &#34;and&#34;
+    <span id="OR">OR</span>  <a href="http://localhost:6060/pkg/builtin/#string">string</a> = &#34;or&#34;
+    <span id="NOT">NOT</span> <a href="http://localhost:6060/pkg/builtin/#string">string</a> = &#34;not&#34;
+    <span id="MUL">MUL</span> <a href="http://localhost:6060/pkg/builtin/#string">string</a> = &#34;call Math.multiply 2&#34;
+    <span id="DIV">DIV</span> <a href="http://localhost:6060/pkg/builtin/#string">string</a> = &#34;call Math.divide 2&#34;
+)</pre>
+			
+		
+		
+			<h2 id="pkg-variables">Variables</h2>
+			
+				
+				<pre>var <span id="Commands">Commands</span> = []<a href="http://localhost:6060/pkg/builtin/#string">string</a>{
+    <a href="index.html%3Fm=all.html#ADD">ADD</a>,
+    <a href="index.html%3Fm=all.html#SUB">SUB</a>,
+    <a href="index.html%3Fm=all.html#NEG">NEG</a>,
+    <a href="index.html%3Fm=all.html#EQ">EQ</a>,
+    <a href="index.html%3Fm=all.html#GT">GT</a>,
+    <a href="index.html%3Fm=all.html#LT">LT</a>,
+    <a href="index.html%3Fm=all.html#AND">AND</a>,
+    <a href="index.html%3Fm=all.html#OR">OR</a>,
+    <a href="index.html%3Fm=all.html#NOT">NOT</a>,
+    <a href="index.html%3Fm=all.html#MUL">MUL</a>,
+    <a href="index.html%3Fm=all.html#DIV">DIV</a>,
+}</pre>
+			
+				
+				<pre>var <span id="SegmentOfKind">SegmentOfKind</span> = map[<a href="http://localhost:6060/pkg/builtin/#string">string</a>]<a href="http://localhost:6060/pkg/builtin/#string">string</a>{
+    <a href="../symboltable/index.html">st</a>.<a href="../symboltable/index.html#STATIC">STATIC</a>: <a href="index.html%3Fm=all.html#STATIC">STATIC</a>,
+    <a href="../symboltable/index.html">st</a>.<a href="../symboltable/index.html#FIELD">FIELD</a>:  <a href="index.html%3Fm=all.html#THIS">THIS</a>,
+    <a href="../symboltable/index.html">st</a>.<a href="../symboltable/index.html#ARG">ARG</a>:    <a href="index.html%3Fm=all.html#ARGUMENT">ARGUMENT</a>,
+    <a href="../symboltable/index.html">st</a>.<a href="../symboltable/index.html#VAR">VAR</a>:    <a href="index.html%3Fm=all.html#LOCAL">LOCAL</a>,
+}</pre>
+			
+				
+				<pre>var <span id="Segments">Segments</span> = []<a href="http://localhost:6060/pkg/builtin/#string">string</a>{
+    <a href="index.html%3Fm=all.html#CONSTANT">CONSTANT</a>,
+    <a href="index.html%3Fm=all.html#ARGUMENT">ARGUMENT</a>,
+    <a href="index.html%3Fm=all.html#LOCAL">LOCAL</a>,
+    <a href="index.html%3Fm=all.html#STATIC">STATIC</a>,
+    <a href="index.html%3Fm=all.html#THIS">THIS</a>,
+    <a href="index.html%3Fm=all.html#THAT">THAT</a>,
+    <a href="index.html%3Fm=all.html#POINTER">POINTER</a>,
+    <a href="index.html%3Fm=all.html#TEMP">TEMP</a>,
+}</pre>
+			
+		
+		
+		
+			
+			
+			<h2 id="VMWriter">type <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/vmwriter/vmwriter.go?s=900:937#L57">VMWriter</a>
+				<a class="permalink" href="index.html%3Fm=all.html#VMWriter">&#xb6;</a>
+				
+				
+			</h2>
+			
+			<pre>type VMWriter struct {
+<span id="VMWriter.w"></span>    w <a href="http://localhost:6060/pkg/io/">io</a>.<a href="http://localhost:6060/pkg/io/#Writer">Writer</a>
+}
+</pre>
+
+			
+
+			
+
+			
+			
+			
+
+			
+				
+				<h3 id="New">func <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/vmwriter/vmwriter.go?s=939:970#L61">New</a>
+					<a class="permalink" href="index.html%3Fm=all.html#New">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func New(w <a href="http://localhost:6060/pkg/io/">io</a>.<a href="http://localhost:6060/pkg/io/#Writer">Writer</a>) *<a href="index.html%3Fm=all.html#VMWriter">VMWriter</a></pre>
+				
+				
+				
+			
+
+			
+				
+				<h3 id="VMWriter.WriteArithmetic">func (*VMWriter) <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/vmwriter/vmwriter.go?s=1768:1826#L92">WriteArithmetic</a>
+					<a class="permalink" href="index.html%3Fm=all.html#VMWriter.WriteArithmetic">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (vmw *<a href="index.html%3Fm=all.html#VMWriter">VMWriter</a>) WriteArithmetic(command <a href="http://localhost:6060/pkg/builtin/#string">string</a>) <a href="http://localhost:6060/pkg/builtin/#error">error</a></pre>
+				
+				
+				
+				
+			
+				
+				<h3 id="VMWriter.WriteCall">func (*VMWriter) <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/vmwriter/vmwriter.go?s=2645:2705#L125">WriteCall</a>
+					<a class="permalink" href="index.html%3Fm=all.html#VMWriter.WriteCall">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (vmw *<a href="index.html%3Fm=all.html#VMWriter">VMWriter</a>) WriteCall(name <a href="http://localhost:6060/pkg/builtin/#string">string</a>, nArgs <a href="http://localhost:6060/pkg/builtin/#int">int</a>) <a href="http://localhost:6060/pkg/builtin/#error">error</a></pre>
+				
+				
+				
+				
+			
+				
+				<h3 id="VMWriter.WriteFunction">func (*VMWriter) <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/vmwriter/vmwriter.go?s=2934:2998#L136">WriteFunction</a>
+					<a class="permalink" href="index.html%3Fm=all.html#VMWriter.WriteFunction">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (vmw *<a href="index.html%3Fm=all.html#VMWriter">VMWriter</a>) WriteFunction(name <a href="http://localhost:6060/pkg/builtin/#string">string</a>, nVars <a href="http://localhost:6060/pkg/builtin/#int">int</a>) <a href="http://localhost:6060/pkg/builtin/#error">error</a></pre>
+				
+				
+				
+				
+			
+				
+				<h3 id="VMWriter.WriteGoto">func (*VMWriter) <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/vmwriter/vmwriter.go?s=2265:2315#L111">WriteGoto</a>
+					<a class="permalink" href="index.html%3Fm=all.html#VMWriter.WriteGoto">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (vmw *<a href="index.html%3Fm=all.html#VMWriter">VMWriter</a>) WriteGoto(label <a href="http://localhost:6060/pkg/builtin/#string">string</a>) <a href="http://localhost:6060/pkg/builtin/#error">error</a></pre>
+				
+				
+				
+				
+			
+				
+				<h3 id="VMWriter.WriteIf">func (*VMWriter) <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/vmwriter/vmwriter.go?s=2453:2501#L118">WriteIf</a>
+					<a class="permalink" href="index.html%3Fm=all.html#VMWriter.WriteIf">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (vmw *<a href="index.html%3Fm=all.html#VMWriter">VMWriter</a>) WriteIf(label <a href="http://localhost:6060/pkg/builtin/#string">string</a>) <a href="http://localhost:6060/pkg/builtin/#error">error</a></pre>
+				
+				
+				
+				
+			
+				
+				<h3 id="VMWriter.WriteLabel">func (*VMWriter) <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/vmwriter/vmwriter.go?s=2073:2124#L103">WriteLabel</a>
+					<a class="permalink" href="index.html%3Fm=all.html#VMWriter.WriteLabel">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (vmw *<a href="index.html%3Fm=all.html#VMWriter">VMWriter</a>) WriteLabel(label <a href="http://localhost:6060/pkg/builtin/#string">string</a>) <a href="http://localhost:6060/pkg/builtin/#error">error</a></pre>
+				
+				
+				
+				
+			
+				
+				<h3 id="VMWriter.WritePop">func (*VMWriter) <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/vmwriter/vmwriter.go?s=1385:1447#L78">WritePop</a>
+					<a class="permalink" href="index.html%3Fm=all.html#VMWriter.WritePop">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (vmw *<a href="index.html%3Fm=all.html#VMWriter">VMWriter</a>) WritePop(segment <a href="http://localhost:6060/pkg/builtin/#string">string</a>, index <a href="http://localhost:6060/pkg/builtin/#int">int</a>) <a href="http://localhost:6060/pkg/builtin/#error">error</a></pre>
+				
+				
+				
+				
+			
+				
+				<h3 id="VMWriter.WritePush">func (*VMWriter) <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/vmwriter/vmwriter.go?s=999:1062#L64">WritePush</a>
+					<a class="permalink" href="index.html%3Fm=all.html#VMWriter.WritePush">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (vmw *<a href="index.html%3Fm=all.html#VMWriter">VMWriter</a>) WritePush(segment <a href="http://localhost:6060/pkg/builtin/#string">string</a>, index <a href="http://localhost:6060/pkg/builtin/#int">int</a>) <a href="http://localhost:6060/pkg/builtin/#error">error</a></pre>
+				
+				
+				
+				
+			
+				
+				<h3 id="VMWriter.WriteReturn">func (*VMWriter) <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/vmwriter/vmwriter.go?s=3235:3275#L147">WriteReturn</a>
+					<a class="permalink" href="index.html%3Fm=all.html#VMWriter.WriteReturn">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (vmw *<a href="index.html%3Fm=all.html#VMWriter">VMWriter</a>) WriteReturn() <a href="http://localhost:6060/pkg/builtin/#error">error</a></pre>
+				
+				
+				
+				
+			
+		
+	
+
+	
+
+
+
+
+
+
+
+<div id="footer">
+Build version go1.24.2.<br>
+Except as <a href="https://developers.google.com/site-policies#restrictions">noted</a>,
+the content of this page is licensed under the
+Creative Commons Attribution 3.0 License,
+and code is licensed under a <a href="http://localhost:6060/LICENSE">BSD license</a>.<br>
+<a href="https://golang.org/doc/tos.html">Terms of Service</a> |
+<a href="https://www.google.com/intl/en/policies/privacy/">Privacy Policy</a>
+</div>
+
+</div><!-- .container -->
+</div><!-- #page -->
+</body>
+</html>

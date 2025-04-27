@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#375EAB">
+
+  <title>symboltable - Go Documentation Server</title>
+
+<link type="text/css" rel="stylesheet" href="../../../../lib/godoc/style.css">
+
+<script>window.initFuncs = [];</script>
+<script src="../../../../lib/godoc/jquery.js" defer></script>
+
+
+
+<script>var goVersion = "go1.24.2";</script>
+<script src="../../../../lib/godoc/godocs.js" defer></script>
+</head>
+<body>
+
+<div id='lowframe' style="position: fixed; bottom: 0; left: 0; height: 0; width: 100%; border-top: thin solid grey; background-color: white; overflow: auto;">
+...
+</div><!-- #lowframe -->
+
+<div id="topbar" class="wide"><div class="container">
+<div class="top-heading" id="heading-wide"><a href="http://localhost:6060/pkg/">Go Documentation Server</a></div>
+<div class="top-heading" id="heading-narrow"><a href="http://localhost:6060/pkg/">GoDoc</a></div>
+<a href="index.html%3Fm=all.html#" id="menu-button"><span id="menu-button-arrow">&#9661;</span></a>
+<form method="GET" action="http://localhost:6060/search">
+<div id="menu">
+
+<span class="search-box"><input type="search" id="search" name="q" placeholder="Search" aria-label="Search" required><button type="submit"><span><!-- magnifying glass: --><svg width="24" height="24" viewBox="0 0 24 24"><title>submit search</title><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/><path d="M0 0h24v24H0z" fill="none"/></svg></span></button></span>
+</div>
+</form>
+
+</div></div>
+
+
+
+<div id="page" class="wide">
+<div class="container">
+
+
+  <h1>
+    Package symboltable
+    <span class="text-muted"></span>
+  </h1>
+
+
+
+
+
+
+
+<div id="nav"></div>
+
+
+<!--
+	Copyright 2009 The Go Authors. All rights reserved.
+	Use of this source code is governed by a BSD-style
+	license that can be found in the LICENSE file.
+-->
+<!--
+	Note: Static (i.e., not template-generated) href and id
+	attributes start with "pkg-" to make it impossible for
+	them to conflict with generated attributes (some of which
+	correspond to Go identifiers).
+-->
+
+	<script>
+	document.ANALYSIS_DATA = null;
+	document.CALLGRAPH = null;
+	</script>
+
+	
+		
+		<div id="short-nav">
+			<dl>
+			<dd><code>import "nand2tetris-go/jackcompiler/symboltable"</code></dd>
+			</dl>
+			<dl>
+			<dd><a href="index.html%3Fm=all.html#pkg-overview" class="overviewLink">Overview</a></dd>
+			<dd><a href="index.html%3Fm=all.html#pkg-index" class="indexLink">Index</a></dd>
+			
+			
+			</dl>
+		</div>
+		<!-- The package's Name is printed as title by the top-level template -->
+		<div id="pkg-overview" class="toggleVisible">
+			<div class="collapsed">
+				<h2 class="toggleButton" title="Click to show Overview section">Overview ▹</h2>
+			</div>
+			<div class="expanded">
+				<h2 class="toggleButton" title="Click to hide Overview section">Overview ▾</h2>
+				
+				
+			</div>
+		</div>
+
+		<div id="pkg-index" class="toggleVisible">
+		<div class="collapsed">
+			<h2 class="toggleButton" title="Click to show Index section">Index ▹</h2>
+		</div>
+		<div class="expanded">
+			<h2 class="toggleButton" title="Click to hide Index section">Index ▾</h2>
+
+		<!-- Table of contents for API; must be named manual-nav to turn off auto nav. -->
+			<div id="manual-nav">
+			<dl>
+			
+				<dd><a href="index.html%3Fm=all.html#pkg-constants">Constants</a></dd>
+			
+			
+				<dd><a href="index.html%3Fm=all.html#pkg-variables">Variables</a></dd>
+			
+			
+			
+				
+				<dd><a href="index.html%3Fm=all.html#Identifier">type Identifier</a></dd>
+				
+				
+			
+				
+				<dd><a href="index.html%3Fm=all.html#SymbolTable">type SymbolTable</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html%3Fm=all.html#NewSymbolTable">func NewSymbolTable() *SymbolTable</a></dd>
+				
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html%3Fm=all.html#SymbolTable.Define">func (s *SymbolTable) Define(name string, T string, kind string) error</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html%3Fm=all.html#SymbolTable.IsCurrentVoidFunc">func (s *SymbolTable) IsCurrentVoidFunc() bool</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html%3Fm=all.html#SymbolTable.Lookup">func (s *SymbolTable) Lookup(name string) (Identifier, bool)</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html%3Fm=all.html#SymbolTable.Reset">func (s *SymbolTable) Reset() error</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html%3Fm=all.html#SymbolTable.SetCurrentScope">func (s *SymbolTable) SetCurrentScope(name string, kind string, T string) error</a></dd>
+				
+			
+			
+			</dl>
+			</div><!-- #manual-nav -->
+
+		
+
+		
+			<h3>Package files</h3>
+			<p>
+			<span style="font-size:90%">
+			
+				<a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/symboltable/symboltable.go">symboltable.go</a>
+			
+			</span>
+			</p>
+		
+		</div><!-- .expanded -->
+		</div><!-- #pkg-index -->
+
+		
+
+		
+			<h2 id="pkg-constants">Constants</h2>
+			
+				<p>kind
+
+				<pre>const (
+    <span id="STATIC">STATIC</span> = &#34;static&#34;
+    <span id="FIELD">FIELD</span>  = &#34;field&#34;
+    <span id="ARG">ARG</span>    = &#34;arg&#34;
+    <span id="VAR">VAR</span>    = &#34;var&#34;
+    <span id="NONE">NONE</span>   = &#34;none&#34;
+    <span id="ARRAY">ARRAY</span>  = &#34;Array&#34;
+)</pre>
+			
+				<p>constants for current scope
+
+				<pre>const (
+    <span id="CURRENTSCOPE">CURRENTSCOPE</span> = &#34;currentScope&#34;
+    <span id="VOIDFUNC">VOIDFUNC</span>     = &#34;void&#34;
+    <span id="NOTVOIDFUNC">NOTVOIDFUNC</span>  = &#34;notvoid&#34;
+)</pre>
+			
+		
+		
+			<h2 id="pkg-variables">Variables</h2>
+			
+				
+				<pre>var (
+    <span id="KINDCLASS">KINDCLASS</span>       = <a href="../tokenizer/index.html">tk</a>.<a href="../tokenizer/index.html#CLASS">CLASS</a>.<a href="index.html%3Fm=all.html#Val">Val</a>
+    <span id="KINDCONSTRUCTOR">KINDCONSTRUCTOR</span> = <a href="../tokenizer/index.html">tk</a>.<a href="../tokenizer/index.html#CONSTRUCTOR">CONSTRUCTOR</a>.<a href="index.html%3Fm=all.html#Val">Val</a>
+    <span id="KINDMETHOD">KINDMETHOD</span>      = <a href="../tokenizer/index.html">tk</a>.<a href="../tokenizer/index.html#METHOD">METHOD</a>.<a href="index.html%3Fm=all.html#Val">Val</a>
+    <span id="KINDFUNCTION">KINDFUNCTION</span>    = <a href="../tokenizer/index.html">tk</a>.<a href="../tokenizer/index.html#FUNCTION">FUNCTION</a>.<a href="index.html%3Fm=all.html#Val">Val</a>
+)</pre>
+			
+				
+				<pre>var <span id="Kinds">Kinds</span> = []<a href="http://localhost:6060/pkg/builtin/#string">string</a>{
+    <a href="index.html%3Fm=all.html#STATIC">STATIC</a>,
+    <a href="index.html%3Fm=all.html#FIELD">FIELD</a>,
+    <a href="index.html%3Fm=all.html#ARG">ARG</a>,
+    <a href="index.html%3Fm=all.html#VAR">VAR</a>,
+    <a href="index.html%3Fm=all.html#NONE">NONE</a>,
+    <a href="index.html%3Fm=all.html#KINDCLASS">KINDCLASS</a>,
+    <a href="index.html%3Fm=all.html#KINDCONSTRUCTOR">KINDCONSTRUCTOR</a>,
+    <a href="index.html%3Fm=all.html#KINDMETHOD">KINDMETHOD</a>,
+    <a href="index.html%3Fm=all.html#KINDFUNCTION">KINDFUNCTION</a>,
+}</pre>
+			
+		
+		
+		
+			
+			
+			<h2 id="Identifier">type <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/symboltable/symboltable.go?s=595:674#L34">Identifier</a>
+				<a class="permalink" href="index.html%3Fm=all.html#Identifier">&#xb6;</a>
+				
+				
+			</h2>
+			
+			<pre>type Identifier struct {
+<span id="Identifier.Name"></span>    Name  <a href="http://localhost:6060/pkg/builtin/#string">string</a>
+<span id="Identifier.Kind"></span>    Kind  <a href="http://localhost:6060/pkg/builtin/#string">string</a>
+<span id="Identifier.T"></span>    T     <a href="http://localhost:6060/pkg/builtin/#string">string</a>
+<span id="Identifier.Index"></span>    Index <a href="http://localhost:6060/pkg/builtin/#int">int</a>
+}
+</pre>
+
+			
+
+			
+
+			
+			
+			
+
+			
+
+			
+		
+			
+			
+			<h2 id="SymbolTable">type <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/symboltable/symboltable.go?s=676:836#L41">SymbolTable</a>
+				<a class="permalink" href="index.html%3Fm=all.html#SymbolTable">&#xb6;</a>
+				
+				
+			</h2>
+			
+			<pre>type SymbolTable struct {
+<span id="SymbolTable.StaticCnt"></span>    StaticCnt    <a href="http://localhost:6060/pkg/builtin/#int">int</a>
+<span id="SymbolTable.FieldCnt"></span>    FieldCnt     <a href="http://localhost:6060/pkg/builtin/#int">int</a>
+<span id="SymbolTable.ArgCnt"></span>    ArgCnt       <a href="http://localhost:6060/pkg/builtin/#int">int</a>
+<span id="SymbolTable.VarCnt"></span>    VarCnt       <a href="http://localhost:6060/pkg/builtin/#int">int</a>
+<span id="SymbolTable.CurrentScope"></span>    CurrentScope <a href="index.html%3Fm=all.html#Identifier">Identifier</a>
+<span id="SymbolTable.VariableMap"></span>    VariableMap  map[<a href="http://localhost:6060/pkg/builtin/#string">string</a>]<a href="index.html%3Fm=all.html#Identifier">Identifier</a>
+}
+</pre>
+
+			
+
+			
+
+			
+			
+			
+
+			
+				
+				<h3 id="NewSymbolTable">func <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/symboltable/symboltable.go?s=838:872#L50">NewSymbolTable</a>
+					<a class="permalink" href="index.html%3Fm=all.html#NewSymbolTable">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func NewSymbolTable() *<a href="index.html%3Fm=all.html#SymbolTable">SymbolTable</a></pre>
+				
+				
+				
+			
+
+			
+				
+				<h3 id="SymbolTable.Define">func (*SymbolTable) <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/symboltable/symboltable.go?s=1888:1958#L90">Define</a>
+					<a class="permalink" href="index.html%3Fm=all.html#SymbolTable.Define">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (s *<a href="index.html%3Fm=all.html#SymbolTable">SymbolTable</a>) Define(name <a href="http://localhost:6060/pkg/builtin/#string">string</a>, T <a href="http://localhost:6060/pkg/builtin/#string">string</a>, kind <a href="http://localhost:6060/pkg/builtin/#string">string</a>) <a href="http://localhost:6060/pkg/builtin/#error">error</a></pre>
+				<p>Define adds a new identifier to the symbol table with the given name, type, and kind.
+name: the name of the identifier
+kind: static, field, arg, var
+T: int, char, boolean, className
+
+				
+				
+				
+			
+				
+				<h3 id="SymbolTable.IsCurrentVoidFunc">func (*SymbolTable) <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/symboltable/symboltable.go?s=3235:3281#L149">IsCurrentVoidFunc</a>
+					<a class="permalink" href="index.html%3Fm=all.html#SymbolTable.IsCurrentVoidFunc">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (s *<a href="index.html%3Fm=all.html#SymbolTable">SymbolTable</a>) IsCurrentVoidFunc() <a href="http://localhost:6060/pkg/builtin/#bool">bool</a></pre>
+				
+				
+				
+				
+			
+				
+				<h3 id="SymbolTable.Lookup">func (*SymbolTable) <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/symboltable/symboltable.go?s=1521:1581#L77">Lookup</a>
+					<a class="permalink" href="index.html%3Fm=all.html#SymbolTable.Lookup">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (s *<a href="index.html%3Fm=all.html#SymbolTable">SymbolTable</a>) Lookup(name <a href="http://localhost:6060/pkg/builtin/#string">string</a>) (<a href="index.html%3Fm=all.html#Identifier">Identifier</a>, <a href="http://localhost:6060/pkg/builtin/#bool">bool</a>)</pre>
+				<p>Lookup checks if the identifier with the given name exists in the symbol table.
+If it exists, it returns the identifier and true. Otherwise, it returns an empty identifier and false.
+name: the name of the identifier
+
+				
+				
+				
+			
+				
+				<h3 id="SymbolTable.Reset">func (*SymbolTable) <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/symboltable/symboltable.go?s=1109:1144#L62">Reset</a>
+					<a class="permalink" href="index.html%3Fm=all.html#SymbolTable.Reset">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (s *<a href="index.html%3Fm=all.html#SymbolTable">SymbolTable</a>) Reset() <a href="http://localhost:6060/pkg/builtin/#error">error</a></pre>
+				<p>Reset resets the symbol table to its initial state.
+
+				
+				
+				
+			
+				
+				<h3 id="SymbolTable.SetCurrentScope">func (*SymbolTable) <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/symboltable/symboltable.go?s=2680:2759#L129">SetCurrentScope</a>
+					<a class="permalink" href="index.html%3Fm=all.html#SymbolTable.SetCurrentScope">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (s *<a href="index.html%3Fm=all.html#SymbolTable">SymbolTable</a>) SetCurrentScope(name <a href="http://localhost:6060/pkg/builtin/#string">string</a>, kind <a href="http://localhost:6060/pkg/builtin/#string">string</a>, T <a href="http://localhost:6060/pkg/builtin/#string">string</a>) <a href="http://localhost:6060/pkg/builtin/#error">error</a></pre>
+				
+				
+				
+				
+			
+		
+	
+
+	
+
+
+
+
+
+
+
+<div id="footer">
+Build version go1.24.2.<br>
+Except as <a href="https://developers.google.com/site-policies#restrictions">noted</a>,
+the content of this page is licensed under the
+Creative Commons Attribution 3.0 License,
+and code is licensed under a <a href="http://localhost:6060/LICENSE">BSD license</a>.<br>
+<a href="https://golang.org/doc/tos.html">Terms of Service</a> |
+<a href="https://www.google.com/intl/en/policies/privacy/">Privacy Policy</a>
+</div>
+
+</div><!-- .container -->
+</div><!-- #page -->
+</body>
+</html>

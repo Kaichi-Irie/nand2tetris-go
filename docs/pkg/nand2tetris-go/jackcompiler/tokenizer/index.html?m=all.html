@@ -151,12 +151,6 @@
 					
 					<dd>&nbsp; &nbsp; <a href="index.html%3Fm=all.html#Token.IsUnaryOp">func (t Token) IsUnaryOp() bool</a></dd>
 				
-					
-					<dd>&nbsp; &nbsp; <a href="index.html%3Fm=all.html#Token.Type">func (t Token) Type() TokenType</a></dd>
-				
-					
-					<dd>&nbsp; &nbsp; <a href="index.html%3Fm=all.html#Token.Val">func (t Token) Val() string</a></dd>
-				
 			
 				
 				<dd><a href="index.html%3Fm=all.html#TokenType">type TokenType</a></dd>
@@ -167,32 +161,14 @@
 				<dd><a href="index.html%3Fm=all.html#Tokenizer">type Tokenizer</a></dd>
 				
 					
-					<dd>&nbsp; &nbsp; <a href="index.html%3Fm=all.html#CreateTokenizerWithFirstToken">func CreateTokenizerWithFirstToken(r io.Reader) (*Tokenizer, error)</a></dd>
+					<dd>&nbsp; &nbsp; <a href="index.html%3Fm=all.html#New">func New(r io.Reader) *Tokenizer</a></dd>
 				
 					
-					<dd>&nbsp; &nbsp; <a href="index.html%3Fm=all.html#New">func New(r io.Reader) *Tokenizer</a></dd>
+					<dd>&nbsp; &nbsp; <a href="index.html%3Fm=all.html#NewWithFirstToken">func NewWithFirstToken(r io.Reader) (*Tokenizer, error)</a></dd>
 				
 				
 					
 					<dd>&nbsp; &nbsp; <a href="index.html%3Fm=all.html#Tokenizer.Advance">func (t *Tokenizer) Advance() bool</a></dd>
-				
-					
-					<dd>&nbsp; &nbsp; <a href="index.html%3Fm=all.html#Tokenizer.ProcessIdentifier">func (t *Tokenizer) ProcessIdentifier(w io.Writer) error</a></dd>
-				
-					
-					<dd>&nbsp; &nbsp; <a href="index.html%3Fm=all.html#Tokenizer.ProcessIntConst">func (t *Tokenizer) ProcessIntConst(w io.Writer) error</a></dd>
-				
-					
-					<dd>&nbsp; &nbsp; <a href="index.html%3Fm=all.html#Tokenizer.ProcessKeyWord">func (t *Tokenizer) ProcessKeyWord(kw Token, w io.Writer) error</a></dd>
-				
-					
-					<dd>&nbsp; &nbsp; <a href="index.html%3Fm=all.html#Tokenizer.ProcessStringConst">func (t *Tokenizer) ProcessStringConst(w io.Writer) error</a></dd>
-				
-					
-					<dd>&nbsp; &nbsp; <a href="index.html%3Fm=all.html#Tokenizer.ProcessSymbol">func (t *Tokenizer) ProcessSymbol(symbol Token, w io.Writer) error</a></dd>
-				
-					
-					<dd>&nbsp; &nbsp; <a href="index.html%3Fm=all.html#Tokenizer.ProcessType">func (t *Tokenizer) ProcessType(w io.Writer) error</a></dd>
 				
 			
 			
@@ -210,11 +186,7 @@
 			
 				<a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/tokenizer/parse.go">parse.go</a>
 			
-				<a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/tokenizer/process_func.go">process_func.go</a>
-			
 				<a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/tokenizer/tokenizer.go">tokenizer.go</a>
-			
-				<a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/tokenizer/xmlescapes.go">xmlescapes.go</a>
 			
 			</span>
 			</p>
@@ -274,19 +246,11 @@
     <a href="index.html%3Fm=all.html#EQUAL">EQUAL</a>,
     <a href="index.html%3Fm=all.html#NOT">NOT</a>}</pre>
 			
-				
-				<pre>var <span id="XMLEscapes">XMLEscapes</span> = map[<a href="http://localhost:6060/pkg/builtin/#string">string</a>]<a href="http://localhost:6060/pkg/builtin/#string">string</a>{
-    <a href="index.html%3Fm=all.html#LESS">LESS</a>.<a href="index.html%3Fm=all.html#Val">Val</a>():    &#34;&amp;lt;&#34;,
-    <a href="index.html%3Fm=all.html#GREATER">GREATER</a>.<a href="index.html%3Fm=all.html#Val">Val</a>(): &#34;&amp;gt;&#34;,
-    <a href="index.html%3Fm=all.html#AND">AND</a>.<a href="index.html%3Fm=all.html#Val">Val</a>():     &#34;&amp;amp;&#34;,
-    &#34;\&#34;&#34;:          &#34;&amp;quot;&#34;,
-}</pre>
-			
 		
 		
 			
 			
-			<h2 id="isAlphanumeric">func <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/tokenizer/tokenizer.go?s=1376:1408#L30">isAlphanumeric</a>
+			<h2 id="isAlphanumeric">func <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/tokenizer/tokenizer.go?s=1341:1373#L30">isAlphanumeric</a>
 				<a class="permalink" href="index.html%3Fm=all.html#isAlphanumeric">&#xb6;</a>
 				
 				
@@ -308,8 +272,8 @@
 			</h2>
 			
 			<pre>type Token struct {
-<span id="Token.t"></span>    t   <a href="index.html%3Fm=all.html#TokenType">TokenType</a>
-<span id="Token.val"></span>    val <a href="http://localhost:6060/pkg/builtin/#string">string</a>
+<span id="Token.T"></span>    T   <a href="index.html%3Fm=all.html#TokenType">TokenType</a>
+<span id="Token.Val"></span>    Val <a href="http://localhost:6060/pkg/builtin/#string">string</a>
 }
 </pre>
 
@@ -319,48 +283,48 @@
 				
 				<pre>var (
     <span class="comment">// keywords</span>
-    <span id="CLASS">CLASS</span>       <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.t">t</a>: <a href="index.html%3Fm=all.html#TT_KEYWORD">TT_KEYWORD</a>, <a href="index.html%3Fm=all.html#Token.val">val</a>: &#34;class&#34;}
-    <span id="METHOD">METHOD</span>      <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.t">t</a>: <a href="index.html%3Fm=all.html#TT_KEYWORD">TT_KEYWORD</a>, <a href="index.html%3Fm=all.html#Token.val">val</a>: &#34;method&#34;}
-    <span id="FUNCTION">FUNCTION</span>    <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.t">t</a>: <a href="index.html%3Fm=all.html#TT_KEYWORD">TT_KEYWORD</a>, <a href="index.html%3Fm=all.html#Token.val">val</a>: &#34;function&#34;}
-    <span id="CONSTRUCTOR">CONSTRUCTOR</span> <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.t">t</a>: <a href="index.html%3Fm=all.html#TT_KEYWORD">TT_KEYWORD</a>, <a href="index.html%3Fm=all.html#Token.val">val</a>: &#34;constructor&#34;}
-    <span id="INT">INT</span>         <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.t">t</a>: <a href="index.html%3Fm=all.html#TT_KEYWORD">TT_KEYWORD</a>, <a href="index.html%3Fm=all.html#Token.val">val</a>: &#34;int&#34;}
-    <span id="BOOLEAN">BOOLEAN</span>     <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.t">t</a>: <a href="index.html%3Fm=all.html#TT_KEYWORD">TT_KEYWORD</a>, <a href="index.html%3Fm=all.html#Token.val">val</a>: &#34;boolean&#34;}
-    <span id="CHAR">CHAR</span>        <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.t">t</a>: <a href="index.html%3Fm=all.html#TT_KEYWORD">TT_KEYWORD</a>, <a href="index.html%3Fm=all.html#Token.val">val</a>: &#34;char&#34;}
-    <span id="VOID">VOID</span>        <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.t">t</a>: <a href="index.html%3Fm=all.html#TT_KEYWORD">TT_KEYWORD</a>, <a href="index.html%3Fm=all.html#Token.val">val</a>: &#34;void&#34;}
-    <span id="VAR">VAR</span>         <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.t">t</a>: <a href="index.html%3Fm=all.html#TT_KEYWORD">TT_KEYWORD</a>, <a href="index.html%3Fm=all.html#Token.val">val</a>: &#34;var&#34;}
-    <span id="STATIC">STATIC</span>      <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.t">t</a>: <a href="index.html%3Fm=all.html#TT_KEYWORD">TT_KEYWORD</a>, <a href="index.html%3Fm=all.html#Token.val">val</a>: &#34;static&#34;}
-    <span id="FIELD">FIELD</span>       <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.t">t</a>: <a href="index.html%3Fm=all.html#TT_KEYWORD">TT_KEYWORD</a>, <a href="index.html%3Fm=all.html#Token.val">val</a>: &#34;field&#34;}
-    <span id="LET">LET</span>         <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.t">t</a>: <a href="index.html%3Fm=all.html#TT_KEYWORD">TT_KEYWORD</a>, <a href="index.html%3Fm=all.html#Token.val">val</a>: &#34;let&#34;}
-    <span id="DO">DO</span>          <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.t">t</a>: <a href="index.html%3Fm=all.html#TT_KEYWORD">TT_KEYWORD</a>, <a href="index.html%3Fm=all.html#Token.val">val</a>: &#34;do&#34;}
-    <span id="IF">IF</span>          <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.t">t</a>: <a href="index.html%3Fm=all.html#TT_KEYWORD">TT_KEYWORD</a>, <a href="index.html%3Fm=all.html#Token.val">val</a>: &#34;if&#34;}
-    <span id="ELSE">ELSE</span>        <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.t">t</a>: <a href="index.html%3Fm=all.html#TT_KEYWORD">TT_KEYWORD</a>, <a href="index.html%3Fm=all.html#Token.val">val</a>: &#34;else&#34;}
-    <span id="WHILE">WHILE</span>       <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.t">t</a>: <a href="index.html%3Fm=all.html#TT_KEYWORD">TT_KEYWORD</a>, <a href="index.html%3Fm=all.html#Token.val">val</a>: &#34;while&#34;}
-    <span id="RETURN">RETURN</span>      <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.t">t</a>: <a href="index.html%3Fm=all.html#TT_KEYWORD">TT_KEYWORD</a>, <a href="index.html%3Fm=all.html#Token.val">val</a>: &#34;return&#34;}
-    <span id="TRUE">TRUE</span>        <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.t">t</a>: <a href="index.html%3Fm=all.html#TT_KEYWORD">TT_KEYWORD</a>, <a href="index.html%3Fm=all.html#Token.val">val</a>: &#34;true&#34;}
-    <span id="FALSE">FALSE</span>       <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.t">t</a>: <a href="index.html%3Fm=all.html#TT_KEYWORD">TT_KEYWORD</a>, <a href="index.html%3Fm=all.html#Token.val">val</a>: &#34;false&#34;}
-    <span id="NULL">NULL</span>        <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.t">t</a>: <a href="index.html%3Fm=all.html#TT_KEYWORD">TT_KEYWORD</a>, <a href="index.html%3Fm=all.html#Token.val">val</a>: &#34;null&#34;}
-    <span id="THIS">THIS</span>        <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.t">t</a>: <a href="index.html%3Fm=all.html#TT_KEYWORD">TT_KEYWORD</a>, <a href="index.html%3Fm=all.html#Token.val">val</a>: &#34;this&#34;}
+    <span id="CLASS">CLASS</span>       <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.T">T</a>: <a href="index.html%3Fm=all.html#TT_KEYWORD">TT_KEYWORD</a>, <a href="index.html%3Fm=all.html#Token.Val">Val</a>: &#34;class&#34;}
+    <span id="METHOD">METHOD</span>      <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.T">T</a>: <a href="index.html%3Fm=all.html#TT_KEYWORD">TT_KEYWORD</a>, <a href="index.html%3Fm=all.html#Token.Val">Val</a>: &#34;method&#34;}
+    <span id="FUNCTION">FUNCTION</span>    <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.T">T</a>: <a href="index.html%3Fm=all.html#TT_KEYWORD">TT_KEYWORD</a>, <a href="index.html%3Fm=all.html#Token.Val">Val</a>: &#34;function&#34;}
+    <span id="CONSTRUCTOR">CONSTRUCTOR</span> <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.T">T</a>: <a href="index.html%3Fm=all.html#TT_KEYWORD">TT_KEYWORD</a>, <a href="index.html%3Fm=all.html#Token.Val">Val</a>: &#34;constructor&#34;}
+    <span id="INT">INT</span>         <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.T">T</a>: <a href="index.html%3Fm=all.html#TT_KEYWORD">TT_KEYWORD</a>, <a href="index.html%3Fm=all.html#Token.Val">Val</a>: &#34;int&#34;}
+    <span id="BOOLEAN">BOOLEAN</span>     <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.T">T</a>: <a href="index.html%3Fm=all.html#TT_KEYWORD">TT_KEYWORD</a>, <a href="index.html%3Fm=all.html#Token.Val">Val</a>: &#34;boolean&#34;}
+    <span id="CHAR">CHAR</span>        <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.T">T</a>: <a href="index.html%3Fm=all.html#TT_KEYWORD">TT_KEYWORD</a>, <a href="index.html%3Fm=all.html#Token.Val">Val</a>: &#34;char&#34;}
+    <span id="VOID">VOID</span>        <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.T">T</a>: <a href="index.html%3Fm=all.html#TT_KEYWORD">TT_KEYWORD</a>, <a href="index.html%3Fm=all.html#Token.Val">Val</a>: &#34;void&#34;}
+    <span id="VAR">VAR</span>         <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.T">T</a>: <a href="index.html%3Fm=all.html#TT_KEYWORD">TT_KEYWORD</a>, <a href="index.html%3Fm=all.html#Token.Val">Val</a>: &#34;var&#34;}
+    <span id="STATIC">STATIC</span>      <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.T">T</a>: <a href="index.html%3Fm=all.html#TT_KEYWORD">TT_KEYWORD</a>, <a href="index.html%3Fm=all.html#Token.Val">Val</a>: &#34;static&#34;}
+    <span id="FIELD">FIELD</span>       <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.T">T</a>: <a href="index.html%3Fm=all.html#TT_KEYWORD">TT_KEYWORD</a>, <a href="index.html%3Fm=all.html#Token.Val">Val</a>: &#34;field&#34;}
+    <span id="LET">LET</span>         <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.T">T</a>: <a href="index.html%3Fm=all.html#TT_KEYWORD">TT_KEYWORD</a>, <a href="index.html%3Fm=all.html#Token.Val">Val</a>: &#34;let&#34;}
+    <span id="DO">DO</span>          <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.T">T</a>: <a href="index.html%3Fm=all.html#TT_KEYWORD">TT_KEYWORD</a>, <a href="index.html%3Fm=all.html#Token.Val">Val</a>: &#34;do&#34;}
+    <span id="IF">IF</span>          <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.T">T</a>: <a href="index.html%3Fm=all.html#TT_KEYWORD">TT_KEYWORD</a>, <a href="index.html%3Fm=all.html#Token.Val">Val</a>: &#34;if&#34;}
+    <span id="ELSE">ELSE</span>        <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.T">T</a>: <a href="index.html%3Fm=all.html#TT_KEYWORD">TT_KEYWORD</a>, <a href="index.html%3Fm=all.html#Token.Val">Val</a>: &#34;else&#34;}
+    <span id="WHILE">WHILE</span>       <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.T">T</a>: <a href="index.html%3Fm=all.html#TT_KEYWORD">TT_KEYWORD</a>, <a href="index.html%3Fm=all.html#Token.Val">Val</a>: &#34;while&#34;}
+    <span id="RETURN">RETURN</span>      <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.T">T</a>: <a href="index.html%3Fm=all.html#TT_KEYWORD">TT_KEYWORD</a>, <a href="index.html%3Fm=all.html#Token.Val">Val</a>: &#34;return&#34;}
+    <span id="TRUE">TRUE</span>        <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.T">T</a>: <a href="index.html%3Fm=all.html#TT_KEYWORD">TT_KEYWORD</a>, <a href="index.html%3Fm=all.html#Token.Val">Val</a>: &#34;true&#34;}
+    <span id="FALSE">FALSE</span>       <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.T">T</a>: <a href="index.html%3Fm=all.html#TT_KEYWORD">TT_KEYWORD</a>, <a href="index.html%3Fm=all.html#Token.Val">Val</a>: &#34;false&#34;}
+    <span id="NULL">NULL</span>        <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.T">T</a>: <a href="index.html%3Fm=all.html#TT_KEYWORD">TT_KEYWORD</a>, <a href="index.html%3Fm=all.html#Token.Val">Val</a>: &#34;null&#34;}
+    <span id="THIS">THIS</span>        <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.T">T</a>: <a href="index.html%3Fm=all.html#TT_KEYWORD">TT_KEYWORD</a>, <a href="index.html%3Fm=all.html#Token.Val">Val</a>: &#34;this&#34;}
     <span class="comment">// symbols</span>
-    <span id="DOT">DOT</span>        <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.t">t</a>: <a href="index.html%3Fm=all.html#TT_SYMBOL">TT_SYMBOL</a>, <a href="index.html%3Fm=all.html#Token.val">val</a>: &#34;.&#34;}
-    <span id="COMMA">COMMA</span>      <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.t">t</a>: <a href="index.html%3Fm=all.html#TT_SYMBOL">TT_SYMBOL</a>, <a href="index.html%3Fm=all.html#Token.val">val</a>: &#34;,&#34;}
-    <span id="SEMICOLON">SEMICOLON</span>  <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.t">t</a>: <a href="index.html%3Fm=all.html#TT_SYMBOL">TT_SYMBOL</a>, <a href="index.html%3Fm=all.html#Token.val">val</a>: &#34;;&#34;}
-    <span id="UNDERSCORE">UNDERSCORE</span> <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.t">t</a>: <a href="index.html%3Fm=all.html#TT_SYMBOL">TT_SYMBOL</a>, <a href="index.html%3Fm=all.html#Token.val">val</a>: &#34;_&#34;}
-    <span id="NOT">NOT</span>        <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.t">t</a>: <a href="index.html%3Fm=all.html#TT_SYMBOL">TT_SYMBOL</a>, <a href="index.html%3Fm=all.html#Token.val">val</a>: &#34;~&#34;}
-    <span id="LPAREN">LPAREN</span>     <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.t">t</a>: <a href="index.html%3Fm=all.html#TT_SYMBOL">TT_SYMBOL</a>, <a href="index.html%3Fm=all.html#Token.val">val</a>: &#34;(&#34;}
-    <span id="RPAREN">RPAREN</span>     <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.t">t</a>: <a href="index.html%3Fm=all.html#TT_SYMBOL">TT_SYMBOL</a>, <a href="index.html%3Fm=all.html#Token.val">val</a>: &#34;)&#34;}
-    <span id="LBRACE">LBRACE</span>     <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.t">t</a>: <a href="index.html%3Fm=all.html#TT_SYMBOL">TT_SYMBOL</a>, <a href="index.html%3Fm=all.html#Token.val">val</a>: &#34;{&#34;}
-    <span id="RBRACE">RBRACE</span>     <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.t">t</a>: <a href="index.html%3Fm=all.html#TT_SYMBOL">TT_SYMBOL</a>, <a href="index.html%3Fm=all.html#Token.val">val</a>: &#34;}&#34;}
-    <span id="LSQUARE">LSQUARE</span>    <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.t">t</a>: <a href="index.html%3Fm=all.html#TT_SYMBOL">TT_SYMBOL</a>, <a href="index.html%3Fm=all.html#Token.val">val</a>: &#34;[&#34;}
-    <span id="RSQUARE">RSQUARE</span>    <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.t">t</a>: <a href="index.html%3Fm=all.html#TT_SYMBOL">TT_SYMBOL</a>, <a href="index.html%3Fm=all.html#Token.val">val</a>: &#34;]&#34;}
-    <span id="PLUS">PLUS</span>       <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.t">t</a>: <a href="index.html%3Fm=all.html#TT_SYMBOL">TT_SYMBOL</a>, <a href="index.html%3Fm=all.html#Token.val">val</a>: &#34;+&#34;}
-    <span id="MINUS">MINUS</span>      <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.t">t</a>: <a href="index.html%3Fm=all.html#TT_SYMBOL">TT_SYMBOL</a>, <a href="index.html%3Fm=all.html#Token.val">val</a>: &#34;-&#34;}
-    <span id="ASTERISK">ASTERISK</span>   <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.t">t</a>: <a href="index.html%3Fm=all.html#TT_SYMBOL">TT_SYMBOL</a>, <a href="index.html%3Fm=all.html#Token.val">val</a>: &#34;*&#34;}
-    <span id="SLASH">SLASH</span>      <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.t">t</a>: <a href="index.html%3Fm=all.html#TT_SYMBOL">TT_SYMBOL</a>, <a href="index.html%3Fm=all.html#Token.val">val</a>: &#34;/&#34;}
-    <span id="AND">AND</span>        <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.t">t</a>: <a href="index.html%3Fm=all.html#TT_SYMBOL">TT_SYMBOL</a>, <a href="index.html%3Fm=all.html#Token.val">val</a>: &#34;&amp;&#34;}
-    <span id="OR">OR</span>         <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.t">t</a>: <a href="index.html%3Fm=all.html#TT_SYMBOL">TT_SYMBOL</a>, <a href="index.html%3Fm=all.html#Token.val">val</a>: &#34;|&#34;}
-    <span id="LESS">LESS</span>       <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.t">t</a>: <a href="index.html%3Fm=all.html#TT_SYMBOL">TT_SYMBOL</a>, <a href="index.html%3Fm=all.html#Token.val">val</a>: &#34;&lt;&#34;}
-    <span id="GREATER">GREATER</span>    <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.t">t</a>: <a href="index.html%3Fm=all.html#TT_SYMBOL">TT_SYMBOL</a>, <a href="index.html%3Fm=all.html#Token.val">val</a>: &#34;&gt;&#34;}
-    <span id="EQUAL">EQUAL</span>      <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.t">t</a>: <a href="index.html%3Fm=all.html#TT_SYMBOL">TT_SYMBOL</a>, <a href="index.html%3Fm=all.html#Token.val">val</a>: &#34;=&#34;}
+    <span id="DOT">DOT</span>        <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.T">T</a>: <a href="index.html%3Fm=all.html#TT_SYMBOL">TT_SYMBOL</a>, <a href="index.html%3Fm=all.html#Token.Val">Val</a>: &#34;.&#34;}
+    <span id="COMMA">COMMA</span>      <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.T">T</a>: <a href="index.html%3Fm=all.html#TT_SYMBOL">TT_SYMBOL</a>, <a href="index.html%3Fm=all.html#Token.Val">Val</a>: &#34;,&#34;}
+    <span id="SEMICOLON">SEMICOLON</span>  <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.T">T</a>: <a href="index.html%3Fm=all.html#TT_SYMBOL">TT_SYMBOL</a>, <a href="index.html%3Fm=all.html#Token.Val">Val</a>: &#34;;&#34;}
+    <span id="UNDERSCORE">UNDERSCORE</span> <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.T">T</a>: <a href="index.html%3Fm=all.html#TT_SYMBOL">TT_SYMBOL</a>, <a href="index.html%3Fm=all.html#Token.Val">Val</a>: &#34;_&#34;}
+    <span id="NOT">NOT</span>        <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.T">T</a>: <a href="index.html%3Fm=all.html#TT_SYMBOL">TT_SYMBOL</a>, <a href="index.html%3Fm=all.html#Token.Val">Val</a>: &#34;~&#34;}
+    <span id="LPAREN">LPAREN</span>     <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.T">T</a>: <a href="index.html%3Fm=all.html#TT_SYMBOL">TT_SYMBOL</a>, <a href="index.html%3Fm=all.html#Token.Val">Val</a>: &#34;(&#34;}
+    <span id="RPAREN">RPAREN</span>     <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.T">T</a>: <a href="index.html%3Fm=all.html#TT_SYMBOL">TT_SYMBOL</a>, <a href="index.html%3Fm=all.html#Token.Val">Val</a>: &#34;)&#34;}
+    <span id="LBRACE">LBRACE</span>     <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.T">T</a>: <a href="index.html%3Fm=all.html#TT_SYMBOL">TT_SYMBOL</a>, <a href="index.html%3Fm=all.html#Token.Val">Val</a>: &#34;{&#34;}
+    <span id="RBRACE">RBRACE</span>     <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.T">T</a>: <a href="index.html%3Fm=all.html#TT_SYMBOL">TT_SYMBOL</a>, <a href="index.html%3Fm=all.html#Token.Val">Val</a>: &#34;}&#34;}
+    <span id="LSQUARE">LSQUARE</span>    <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.T">T</a>: <a href="index.html%3Fm=all.html#TT_SYMBOL">TT_SYMBOL</a>, <a href="index.html%3Fm=all.html#Token.Val">Val</a>: &#34;[&#34;}
+    <span id="RSQUARE">RSQUARE</span>    <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.T">T</a>: <a href="index.html%3Fm=all.html#TT_SYMBOL">TT_SYMBOL</a>, <a href="index.html%3Fm=all.html#Token.Val">Val</a>: &#34;]&#34;}
+    <span id="PLUS">PLUS</span>       <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.T">T</a>: <a href="index.html%3Fm=all.html#TT_SYMBOL">TT_SYMBOL</a>, <a href="index.html%3Fm=all.html#Token.Val">Val</a>: &#34;+&#34;}
+    <span id="MINUS">MINUS</span>      <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.T">T</a>: <a href="index.html%3Fm=all.html#TT_SYMBOL">TT_SYMBOL</a>, <a href="index.html%3Fm=all.html#Token.Val">Val</a>: &#34;-&#34;}
+    <span id="ASTERISK">ASTERISK</span>   <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.T">T</a>: <a href="index.html%3Fm=all.html#TT_SYMBOL">TT_SYMBOL</a>, <a href="index.html%3Fm=all.html#Token.Val">Val</a>: &#34;*&#34;}
+    <span id="SLASH">SLASH</span>      <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.T">T</a>: <a href="index.html%3Fm=all.html#TT_SYMBOL">TT_SYMBOL</a>, <a href="index.html%3Fm=all.html#Token.Val">Val</a>: &#34;/&#34;}
+    <span id="AND">AND</span>        <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.T">T</a>: <a href="index.html%3Fm=all.html#TT_SYMBOL">TT_SYMBOL</a>, <a href="index.html%3Fm=all.html#Token.Val">Val</a>: &#34;&amp;&#34;}
+    <span id="OR">OR</span>         <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.T">T</a>: <a href="index.html%3Fm=all.html#TT_SYMBOL">TT_SYMBOL</a>, <a href="index.html%3Fm=all.html#Token.Val">Val</a>: &#34;|&#34;}
+    <span id="LESS">LESS</span>       <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.T">T</a>: <a href="index.html%3Fm=all.html#TT_SYMBOL">TT_SYMBOL</a>, <a href="index.html%3Fm=all.html#Token.Val">Val</a>: &#34;&lt;&#34;}
+    <span id="GREATER">GREATER</span>    <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.T">T</a>: <a href="index.html%3Fm=all.html#TT_SYMBOL">TT_SYMBOL</a>, <a href="index.html%3Fm=all.html#Token.Val">Val</a>: &#34;&gt;&#34;}
+    <span id="EQUAL">EQUAL</span>      <a href="index.html%3Fm=all.html#Token">Token</a> = <a href="index.html%3Fm=all.html#Token">Token</a>{<a href="index.html%3Fm=all.html#Token.T">T</a>: <a href="index.html%3Fm=all.html#TT_SYMBOL">TT_SYMBOL</a>, <a href="index.html%3Fm=all.html#Token.Val">Val</a>: &#34;=&#34;}
 )</pre>
 			
 
@@ -370,7 +334,7 @@
 
 			
 				
-				<h3 id="ParseIdentifier">func <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/tokenizer/parse.go?s=2864:2909#L86">ParseIdentifier</a>
+				<h3 id="ParseIdentifier">func <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/tokenizer/parse.go?s=2856:2901#L86">ParseIdentifier</a>
 					<a class="permalink" href="index.html%3Fm=all.html#ParseIdentifier">&#xb6;</a>
 					
 					
@@ -382,7 +346,7 @@
 				
 			
 				
-				<h3 id="ParseIntConst">func <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/tokenizer/parse.go?s=1590:1633#L50">ParseIntConst</a>
+				<h3 id="ParseIntConst">func <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/tokenizer/parse.go?s=1582:1625#L50">ParseIntConst</a>
 					<a class="permalink" href="index.html%3Fm=all.html#ParseIntConst">&#xb6;</a>
 					
 					
@@ -396,7 +360,7 @@ It also checks if the integer constant is a valid integer constant.
 				
 			
 				
-				<h3 id="ParseKeyword">func <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/tokenizer/parse.go?s=792:834#L22">ParseKeyword</a>
+				<h3 id="ParseKeyword">func <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/tokenizer/parse.go?s=788:830#L22">ParseKeyword</a>
 					<a class="permalink" href="index.html%3Fm=all.html#ParseKeyword">&#xb6;</a>
 					
 					
@@ -410,7 +374,7 @@ It also checks if the keyword is a valid keyword.
 				
 			
 				
-				<h3 id="ParseStringConst">func <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/tokenizer/parse.go?s=2207:2253#L68">ParseStringConst</a>
+				<h3 id="ParseStringConst">func <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/tokenizer/parse.go?s=2199:2245#L68">ParseStringConst</a>
 					<a class="permalink" href="index.html%3Fm=all.html#ParseStringConst">&#xb6;</a>
 					
 					
@@ -439,7 +403,7 @@ It also checks if the symbol is a valid symbol.
 
 			
 				
-				<h3 id="Token.Is">func (Token) <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/tokenizer/constants.go?s=2701:2740#L65">Is</a>
+				<h3 id="Token.Is">func (Token) <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/tokenizer/constants.go?s=2529:2568#L55">Is</a>
 					<a class="permalink" href="index.html%3Fm=all.html#Token.Is">&#xb6;</a>
 					
 					
@@ -452,7 +416,7 @@ It also checks if the symbol is a valid symbol.
 				
 			
 				
-				<h3 id="Token.IsKeywordConst">func (Token) <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/tokenizer/constants.go?s=3560:3596#L98">IsKeywordConst</a>
+				<h3 id="Token.IsKeywordConst">func (Token) <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/tokenizer/constants.go?s=3352:3388#L88">IsKeywordConst</a>
 					<a class="permalink" href="index.html%3Fm=all.html#Token.IsKeywordConst">&#xb6;</a>
 					
 					
@@ -465,7 +429,7 @@ It also checks if the symbol is a valid symbol.
 				
 			
 				
-				<h3 id="Token.IsOp">func (Token) <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/tokenizer/constants.go?s=3084:3110#L79">IsOp</a>
+				<h3 id="Token.IsOp">func (Token) <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/tokenizer/constants.go?s=2902:2928#L69">IsOp</a>
 					<a class="permalink" href="index.html%3Fm=all.html#Token.IsOp">&#xb6;</a>
 					
 					
@@ -478,7 +442,7 @@ It also checks if the symbol is a valid symbol.
 				
 			
 				
-				<h3 id="Token.IsPrimitiveType">func (Token) <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/tokenizer/constants.go?s=2860:2897#L70">IsPrimitiveType</a>
+				<h3 id="Token.IsPrimitiveType">func (Token) <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/tokenizer/constants.go?s=2688:2725#L60">IsPrimitiveType</a>
 					<a class="permalink" href="index.html%3Fm=all.html#Token.IsPrimitiveType">&#xb6;</a>
 					
 					
@@ -491,39 +455,13 @@ It also checks if the symbol is a valid symbol.
 				
 			
 				
-				<h3 id="Token.IsUnaryOp">func (Token) <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/tokenizer/constants.go?s=3353:3384#L89">IsUnaryOp</a>
+				<h3 id="Token.IsUnaryOp">func (Token) <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/tokenizer/constants.go?s=3151:3182#L79">IsUnaryOp</a>
 					<a class="permalink" href="index.html%3Fm=all.html#Token.IsUnaryOp">&#xb6;</a>
 					
 					
 				</h3>
 				<pre>func (t <a href="index.html%3Fm=all.html#Token">Token</a>) IsUnaryOp() <a href="http://localhost:6060/pkg/builtin/#bool">bool</a></pre>
 				<p>IsUnaryOp returns true if the token is a unary operator: ~, -
-
-				
-				
-				
-			
-				
-				<h3 id="Token.Type">func (Token) <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/tokenizer/constants.go?s=2519:2550#L60">Type</a>
-					<a class="permalink" href="index.html%3Fm=all.html#Token.Type">&#xb6;</a>
-					
-					
-				</h3>
-				<pre>func (t <a href="index.html%3Fm=all.html#Token">Token</a>) Type() <a href="index.html%3Fm=all.html#TokenType">TokenType</a></pre>
-				<p>Type returns the type of the token
-
-				
-				
-				
-			
-				
-				<h3 id="Token.Val">func (Token) <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/tokenizer/constants.go?s=2434:2461#L55">Val</a>
-					<a class="permalink" href="index.html%3Fm=all.html#Token.Val">&#xb6;</a>
-					
-					
-				</h3>
-				<pre>func (t <a href="index.html%3Fm=all.html#Token">Token</a>) Val() <a href="http://localhost:6060/pkg/builtin/#string">string</a></pre>
-				<p>Val returns the value of the token
 
 				
 				
@@ -589,18 +527,6 @@ It also checks if the symbol is a valid symbol.
 
 			
 				
-				<h3 id="CreateTokenizerWithFirstToken">func <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/tokenizer/tokenizer.go?s=1079:1146#L21">CreateTokenizerWithFirstToken</a>
-					<a class="permalink" href="index.html%3Fm=all.html#CreateTokenizerWithFirstToken">&#xb6;</a>
-					
-					
-				</h3>
-				<pre>func CreateTokenizerWithFirstToken(r <a href="http://localhost:6060/pkg/io/">io</a>.<a href="http://localhost:6060/pkg/io/#Reader">Reader</a>) (*<a href="index.html%3Fm=all.html#Tokenizer">Tokenizer</a>, <a href="http://localhost:6060/pkg/builtin/#error">error</a>)</pre>
-				<p>CreateTokenizerWithFirstToken creates a new Tokenizer with the given reader and advances to the first token. It returns an error if there are no tokens in the file.
-
-				
-				
-			
-				
 				<h3 id="New">func <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/tokenizer/tokenizer.go?s=680:712#L9">New</a>
 					<a class="permalink" href="index.html%3Fm=all.html#New">&#xb6;</a>
 					
@@ -612,10 +538,22 @@ It also checks if the symbol is a valid symbol.
 				
 				
 			
+				
+				<h3 id="NewWithFirstToken">func <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/tokenizer/tokenizer.go?s=1056:1111#L21">NewWithFirstToken</a>
+					<a class="permalink" href="index.html%3Fm=all.html#NewWithFirstToken">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func NewWithFirstToken(r <a href="http://localhost:6060/pkg/io/">io</a>.<a href="http://localhost:6060/pkg/io/#Reader">Reader</a>) (*<a href="index.html%3Fm=all.html#Tokenizer">Tokenizer</a>, <a href="http://localhost:6060/pkg/builtin/#error">error</a>)</pre>
+				<p>NewWithFirstToken creates a new Tokenizer with the given reader and advances to the first token. It returns an error if there are no tokens in the file.
+
+				
+				
+			
 
 			
 				
-				<h3 id="Tokenizer.Advance">func (*Tokenizer) <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/tokenizer/tokenizer.go?s=1605:1639#L37">Advance</a>
+				<h3 id="Tokenizer.Advance">func (*Tokenizer) <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/tokenizer/tokenizer.go?s=1570:1604#L37">Advance</a>
 					<a class="permalink" href="index.html%3Fm=all.html#Tokenizer.Advance">&#xb6;</a>
 					
 					
@@ -623,84 +561,6 @@ It also checks if the symbol is a valid symbol.
 				<pre>func (t *<a href="index.html%3Fm=all.html#Tokenizer">Tokenizer</a>) Advance() <a href="http://localhost:6060/pkg/builtin/#bool">bool</a></pre>
 				<p>Advance advances the scanner to the next token. It returns true if there is a next token, false otherwise.
 
-				
-				
-				
-			
-				
-				<h3 id="Tokenizer.ProcessIdentifier">func (*Tokenizer) <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/tokenizer/process_func.go?s=2126:2182#L61">ProcessIdentifier</a>
-					<a class="permalink" href="index.html%3Fm=all.html#Tokenizer.ProcessIdentifier">&#xb6;</a>
-					
-					
-				</h3>
-				<pre>func (t *<a href="index.html%3Fm=all.html#Tokenizer">Tokenizer</a>) ProcessIdentifier(w <a href="http://localhost:6060/pkg/io/">io</a>.<a href="http://localhost:6060/pkg/io/#Writer">Writer</a>) <a href="http://localhost:6060/pkg/builtin/#error">error</a></pre>
-				<p>ProcessIdentifier checks if the current token is an identifier. If it is, it writes the identifier to the writer and advances to the next token. It returns an error if the current token is not an identifier.
-
-				
-				
-				
-			
-				
-				<h3 id="Tokenizer.ProcessIntConst">func (*Tokenizer) <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/tokenizer/process_func.go?s=3315:3369#L94">ProcessIntConst</a>
-					<a class="permalink" href="index.html%3Fm=all.html#Tokenizer.ProcessIntConst">&#xb6;</a>
-					
-					
-				</h3>
-				<pre>func (t *<a href="index.html%3Fm=all.html#Tokenizer">Tokenizer</a>) ProcessIntConst(w <a href="http://localhost:6060/pkg/io/">io</a>.<a href="http://localhost:6060/pkg/io/#Writer">Writer</a>) <a href="http://localhost:6060/pkg/builtin/#error">error</a></pre>
-				<p>ProcessIntConst checks if the current token is an integer constant. If it is, it writes the integer constant to the writer and advances to the next token. It returns an error if the current token is not an integer constant.
-
-				
-				
-				
-			
-				
-				<h3 id="Tokenizer.ProcessKeyWord">func (*Tokenizer) <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/tokenizer/process_func.go?s=335:398#L1">ProcessKeyWord</a>
-					<a class="permalink" href="index.html%3Fm=all.html#Tokenizer.ProcessKeyWord">&#xb6;</a>
-					
-					
-				</h3>
-				<pre>func (t *<a href="index.html%3Fm=all.html#Tokenizer">Tokenizer</a>) ProcessKeyWord(kw <a href="index.html%3Fm=all.html#Token">Token</a>, w <a href="http://localhost:6060/pkg/io/">io</a>.<a href="http://localhost:6060/pkg/io/#Writer">Writer</a>) <a href="http://localhost:6060/pkg/builtin/#error">error</a></pre>
-				<p>TODO: Move ProcessXXX functions to  compilation engine
-ProcessKeyWord checks if the current token is a keyword of the given type. If it is, it writes the keyword to the writer and advances to the next token. It returns an error if the current token is not a keyword of the given type.
-
-				
-				
-				
-			
-				
-				<h3 id="Tokenizer.ProcessStringConst">func (*Tokenizer) <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/tokenizer/process_func.go?s=2659:2716#L77">ProcessStringConst</a>
-					<a class="permalink" href="index.html%3Fm=all.html#Tokenizer.ProcessStringConst">&#xb6;</a>
-					
-					
-				</h3>
-				<pre>func (t *<a href="index.html%3Fm=all.html#Tokenizer">Tokenizer</a>) ProcessStringConst(w <a href="http://localhost:6060/pkg/io/">io</a>.<a href="http://localhost:6060/pkg/io/#Writer">Writer</a>) <a href="http://localhost:6060/pkg/builtin/#error">error</a></pre>
-				<p>ProcessStringConst checks if the current token is a string constant. If it is, it writes the string constant to the writer and advances to the next token. It returns an error if the current token is not a string constant.
-
-				
-				
-				
-			
-				
-				<h3 id="Tokenizer.ProcessSymbol">func (*Tokenizer) <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/tokenizer/process_func.go?s=1416:1482#L39">ProcessSymbol</a>
-					<a class="permalink" href="index.html%3Fm=all.html#Tokenizer.ProcessSymbol">&#xb6;</a>
-					
-					
-				</h3>
-				<pre>func (t *<a href="index.html%3Fm=all.html#Tokenizer">Tokenizer</a>) ProcessSymbol(symbol <a href="index.html%3Fm=all.html#Token">Token</a>, w <a href="http://localhost:6060/pkg/io/">io</a>.<a href="http://localhost:6060/pkg/io/#Writer">Writer</a>) <a href="http://localhost:6060/pkg/builtin/#error">error</a></pre>
-				<p>ProcessSymbol checks if the current token is a symbol. If it is, it writes the symbol to the writer and advances to the next token. It returns an error if the current token is not a symbol.
-
-				
-				
-				
-			
-				
-				<h3 id="Tokenizer.ProcessType">func (*Tokenizer) <a href="http://localhost:6060/src/nand2tetris-go/jackcompiler/tokenizer/process_func.go?s=721:771#L16">ProcessType</a>
-					<a class="permalink" href="index.html%3Fm=all.html#Tokenizer.ProcessType">&#xb6;</a>
-					
-					
-				</h3>
-				<pre>func (t *<a href="index.html%3Fm=all.html#Tokenizer">Tokenizer</a>) ProcessType(w <a href="http://localhost:6060/pkg/io/">io</a>.<a href="http://localhost:6060/pkg/io/#Writer">Writer</a>) <a href="http://localhost:6060/pkg/builtin/#error">error</a></pre>
-				
 				
 				
 				
