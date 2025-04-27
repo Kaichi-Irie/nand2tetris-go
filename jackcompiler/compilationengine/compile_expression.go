@@ -62,6 +62,31 @@ func (ce *CompilationEngine) CompileTerm(isDoStatement bool) error {
 
 	// process the string constant
 	case token.Is(tk.TT_STRING_CONST):
+		trimmedStrConst := token.Val[1 : len(token.Val)-1]
+		length := len(trimmedStrConst)
+		err = ce.vmwriter.WritePush(vw.CONSTANT, length)
+		if err != nil {
+			return err
+		}
+		err = ce.vmwriter.WriteCall("String.new", 1)
+		if err != nil {
+			return err
+		}
+		for _, c := range trimmedStrConst {
+			err = ce.vmwriter.WritePush(vw.CONSTANT, int(c))
+			if err != nil {
+				return err
+			}
+
+			err = ce.vmwriter.WriteCall("String.appendChar", 2)
+			if err != nil {
+				return err
+			}
+		}
+		if err != nil {
+			return err
+		}
+
 		err = ce.ProcessStringConst()
 		if err != nil {
 			return err
@@ -232,6 +257,17 @@ func (ce *CompilationEngine) CompileTerm(isDoStatement bool) error {
 
 		// process the varName '[' expression ']' | varName
 		case tk.LSQUARE.Val:
+			arrayName := name1
+
+			// TODO: make this process as a function; WritePush(varName)
+			id, _ := ce.Lookup(arrayName)
+			// TODO: implement this error
+			// if !ok {
+			// 	return fmt.Errorf("array %s is not defined. Term cannot be used", arrayName)
+			// }
+			seg := vw.SegmentOfKind[id.Kind]
+			index := id.Index
+			ce.vmwriter.WritePush(seg, index)
 			err = ce.ProcessSymbol(tk.LSQUARE)
 			if err != nil {
 				return err
@@ -243,6 +279,19 @@ func (ce *CompilationEngine) CompileTerm(isDoStatement bool) error {
 			}
 			// process the ]
 			err = ce.ProcessSymbol(tk.RSQUARE)
+			if err != nil {
+				return err
+			}
+
+			ce.vmwriter.WriteArithmetic(vw.ADD)
+			if err != nil {
+				return err
+			}
+			ce.vmwriter.WritePop(vw.POINTER, 1)
+			if err != nil {
+				return err
+			}
+			ce.vmwriter.WritePush(vw.THAT, 0)
 			if err != nil {
 				return err
 			}

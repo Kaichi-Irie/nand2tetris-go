@@ -117,6 +117,26 @@ push constant 0
 and
 pop local 0`,
 		},
+		{
+			jackCode: `let a[i] = b[j];`,
+			Variables: []st.Identifier{
+				{Name: "a", Kind: st.VAR, T: st.ARRAY, Index: 0},
+				{Name: "b", Kind: st.VAR, T: st.ARRAY, Index: 1},
+				{Name: "i", Kind: st.VAR, T: tk.INT.Val, Index: 2},
+				{Name: "j", Kind: st.VAR, T: tk.INT.Val, Index: 3}},
+			expectedVMCommands: `push local 0
+push local 2
+add
+push local 1
+push local 3
+add
+pop pointer 1
+push that 0
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0`,
+		},
 	}
 
 	for _, test := range tests {
@@ -448,7 +468,7 @@ func TestCompileReturn(t *testing.T) {
 	for _, test := range tests {
 		xmlFile := &bytes.Buffer{}
 		ce := NewWithFirstToken(xmlFile, strings.NewReader(test.jackCode), "")
-		
+
 		err := ce.CompileReturn()
 		if err != nil {
 			t.Errorf("CompileReturn() error: %v", err)

@@ -1,6 +1,7 @@
 package compilationengine
 
 import (
+	"fmt"
 	"io"
 	tk "nand2tetris-go/jackcompiler/tokenizer"
 	vw "nand2tetris-go/jackcompiler/vmwriter"
@@ -72,7 +73,22 @@ func (ce *CompilationEngine) CompileLet() error {
 	if err != nil {
 		return err
 	}
-	for ce.t.CurrentToken.Val == tk.LSQUARE.Val {
+	// process the [
+	isArray := false
+	if ce.t.CurrentToken.Val == tk.LSQUARE.Val {
+		isArray = true
+		// push array base address
+		id, ok := ce.Lookup(varName)
+		if !ok {
+			return fmt.Errorf("variable %s is not defined. LetStatement cannot be used", varName)
+		}
+		seg := vw.SegmentOfKind[id.Kind]
+		index := id.Index
+		err = ce.vmwriter.WritePush(seg, index)
+		if err != nil {
+			return err
+		}
+
 		// process the [
 		err = ce.ProcessSymbol(tk.LSQUARE)
 		if err != nil {
@@ -85,6 +101,12 @@ func (ce *CompilationEngine) CompileLet() error {
 		}
 		// process the ]
 		err = ce.ProcessSymbol(tk.RSQUARE)
+		if err != nil {
+			return err
+		}
+
+		// add
+		err = ce.vmwriter.WriteArithmetic(vw.ADD)
 		if err != nil {
 			return err
 		}
@@ -108,8 +130,26 @@ func (ce *CompilationEngine) CompileLet() error {
 		return err
 	}
 
-	// pop the value to the variable
-	if identifier, ok := ce.Lookup(varName); ok {
+	if isArray {
+		// pop the destination expression to temp segment
+		err = ce.vmwriter.WritePop(vw.TEMP, 0)
+		if err != nil {
+			return err
+		}
+		err = ce.vmwriter.WritePop(vw.POINTER, 1)
+		if err != nil {
+			return err
+		}
+		err = ce.vmwriter.WritePush(vw.TEMP, 0)
+		if err != nil {
+			return err
+		}
+		err = ce.vmwriter.WritePop(vw.THAT, 0)
+		if err != nil {
+			return err
+		}
+		// pop the value to the variable
+	} else if identifier, ok := ce.Lookup(varName); ok {
 		seg := vw.SegmentOfKind[identifier.Kind]
 		index := identifier.Index
 		err = ce.vmwriter.WritePop(seg, index)

@@ -12,6 +12,7 @@ const (
 	ARG    = "arg"
 	VAR    = "var"
 	NONE   = "none"
+	ARRAY  = "Array"
 )
 
 var (
