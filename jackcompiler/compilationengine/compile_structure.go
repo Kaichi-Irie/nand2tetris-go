@@ -2,7 +2,6 @@ package compilationengine
 
 import (
 	"fmt"
-	"io"
 	st "nand2tetris-go/jackcompiler/symboltable"
 	tk "nand2tetris-go/jackcompiler/tokenizer"
 	vw "nand2tetris-go/jackcompiler/vmwriter"
@@ -15,12 +14,8 @@ Class: 'class' className '{' classVarDec* subroutineDec* '}'
 func (ce *CompilationEngine) CompileClass() error {
 	// reserve the class symbol table
 	ce.classST.Reset()
-
-	io.WriteString(ce.writer, "<class>\n")
-
 	// class keyword
 	err := ce.ProcessKeyWord(tk.CLASS)
-
 	if err != nil {
 		return err
 	}
@@ -84,8 +79,6 @@ SUBROUTINEDEC:
 	if err != nil {
 		return err
 	}
-
-	io.WriteString(ce.writer, "</class>\n")
 	return nil
 }
 
@@ -94,14 +87,9 @@ CompileClassVarDec compiles a class variable declaration and writes it to the XM
 ClassVarDec: (static | field) type varName (',' varName)* ';'
 */
 func (ce *CompilationEngine) CompileClassVarDec(staticOrField tk.Token) error {
-	_, err := io.WriteString(ce.writer, "<classVarDec>\n")
-	if err != nil {
-		return err
-	}
-
 	// static or field keyword
 	kind := ce.t.CurrentToken.Val // static or field
-	err = ce.ProcessKeyWord(staticOrField)
+	err := ce.ProcessKeyWord(staticOrField)
 	if err != nil {
 		return err
 	}
@@ -150,23 +138,15 @@ func (ce *CompilationEngine) CompileClassVarDec(staticOrField tk.Token) error {
 	if err != nil {
 		return err
 	}
-	_, err = io.WriteString(ce.writer, "</classVarDec>\n")
-	if err != nil {
-		return err
-	}
 	return nil
 
 }
 
 func (ce *CompilationEngine) CompileSubroutine() error {
 	ce.subroutineST.Reset() // reset the subroutine symbol table
-	_, err := io.WriteString(ce.writer, "<subroutineDec>\n")
-	if err != nil {
-		return err
-	}
-
 	// subroutine keyword: constructor, function, method
 	var currentScopeKind string
+	var err error
 	switch token := ce.t.CurrentToken; {
 	case token.Val == tk.CONSTRUCTOR.Val:
 		currentScopeKind = st.KINDCONSTRUCTOR
@@ -251,11 +231,6 @@ func (ce *CompilationEngine) CompileSubroutine() error {
 	if err != nil {
 		return err
 	}
-
-	_, err = io.WriteString(ce.writer, "</subroutineDec>\n")
-	if err != nil {
-		return err
-	}
 	return nil
 }
 
@@ -264,14 +239,9 @@ CompileVarDec compiles a variable declaration and writes it to the XML file.
 VarDec: 'var' type varName (',' varName)* ';'
 */
 func (ce *CompilationEngine) CompileVarDec() error {
-	_, err := io.WriteString(ce.writer, "<varDec>\n")
-	if err != nil {
-		return err
-	}
-
 	// var keyword
 	kind := ce.t.CurrentToken.Val // var
-	err = ce.ProcessKeyWord(tk.VAR)
+	err := ce.ProcessKeyWord(tk.VAR)
 	if err != nil {
 		return err
 	}
@@ -319,11 +289,6 @@ func (ce *CompilationEngine) CompileVarDec() error {
 	if err != nil {
 		return err
 	}
-	_, err = io.WriteString(ce.writer, "</varDec>\n")
-	if err != nil {
-		return err
-	}
-
 	return nil
 }
 
@@ -331,23 +296,13 @@ func (ce *CompilationEngine) CompileParameterList() error {
 
 	// no parameters
 	if ce.t.CurrentToken.Val == tk.RPAREN.Val {
-		_, err := io.WriteString(ce.writer, "<parameterList>\n</parameterList>\n")
-		if err != nil {
-			return err
-		}
 		return nil
-	}
-
-	// parameter list
-	_, err := io.WriteString(ce.writer, "<parameterList>\n")
-	if err != nil {
-		return err
 	}
 
 	// TODO: Refactor this code as function ProcessTypeAndIdentifier. These processes are repeated in CompileVarDec, CompileParameterList and CompileClassVarDec
 	// process the type: int, char, boolean, className
 	T := ce.t.CurrentToken.Val // int, char, boolean, className
-	err = ce.ProcessType()
+	err := ce.ProcessType()
 	if err != nil {
 		return err
 	}
@@ -391,23 +346,12 @@ func (ce *CompilationEngine) CompileParameterList() error {
 		}
 
 	}
-
-	_, err = io.WriteString(ce.writer, "</parameterList>\n")
-	if err != nil {
-		return err
-	}
-
 	return nil
 }
 
 func (ce *CompilationEngine) CompileSubroutineBody() error {
-	_, err := io.WriteString(ce.writer, "<subroutineBody>\n")
-	if err != nil {
-		return err
-	}
-
 	// process the {
-	err = ce.ProcessSymbol(tk.LBRACE)
+	err := ce.ProcessSymbol(tk.LBRACE)
 	if err != nil {
 		return err
 	}
@@ -443,11 +387,6 @@ func (ce *CompilationEngine) CompileSubroutineBody() error {
 
 	// process the }
 	err = ce.ProcessSymbol(tk.RBRACE)
-	if err != nil {
-		return err
-	}
-
-	_, err = io.WriteString(ce.writer, "</subroutineBody>\n")
 	if err != nil {
 		return err
 	}

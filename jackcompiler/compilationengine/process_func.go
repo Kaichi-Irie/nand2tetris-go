@@ -2,7 +2,6 @@ package compilationengine
 
 import (
 	"fmt"
-	"io"
 	tk "nand2tetris-go/jackcompiler/tokenizer"
 )
 
@@ -14,12 +13,6 @@ func (ce *CompilationEngine) ProcessKeyWord(kw tk.Token) error {
 	} else if token.Val != kw.Val {
 		return fmt.Errorf("token is not the expected keyword")
 	}
-
-	_, err := io.WriteString(ce.writer, "<keyword> "+kw.Val+" </keyword>\n")
-	if err != nil {
-		return err
-	}
-
 	ce.t.Advance()
 	return nil
 }
@@ -54,16 +47,7 @@ func (ce *CompilationEngine) ProcessSymbol(symbol tk.Token) error {
 	} else if token.Val != symbol.Val {
 		return fmt.Errorf("current token is not the expected symbol")
 	}
-
-	val := token.Val
 	// escape the symbol
-	if escaped, ok := XMLEscapes[val]; ok {
-		val = escaped
-	}
-	_, err := io.WriteString(ce.writer, "<symbol> "+val+" </symbol>\n")
-	if err != nil {
-		return err
-	}
 	ce.t.Advance()
 	return nil
 }
@@ -74,23 +58,6 @@ func (ce *CompilationEngine) ProcessIdentifier() error {
 	if !token.Is(tk.TT_IDENTIFIER) {
 		return fmt.Errorf("token is not an identifier")
 	}
-
-	_, err := io.WriteString(ce.writer, "<identifier> "+token.Val+" </identifier>\n")
-	if err != nil {
-		return err
-	}
-
-	// check if the identifier is registered in the symbol table
-	if ce.classST == nil || ce.subroutineST == nil {
-		return fmt.Errorf("symbol table is not initialized")
-	} else if _, ok := ce.subroutineST.Lookup(token.Val); ok {
-		fmt.Printf("identifier %s already registered in the subroutine symbol table.\n", token.Val)
-	} else if _, ok := ce.classST.Lookup(token.Val); ok {
-		fmt.Printf("identifier %s already registered in the subroutine symbol table.\n", token.Val)
-	} else {
-		fmt.Printf("identifier %s not registered in the symbol table. This is expected for a new identifier.\n", token.Val)
-	}
-
 	ce.t.Advance()
 	return nil
 }
@@ -101,13 +68,6 @@ func (ce *CompilationEngine) ProcessStringConst() error {
 	if !token.Is(tk.TT_STRING_CONST) {
 		return fmt.Errorf("token is not a string constant")
 	}
-	// remove the quotes from the string constant
-	trimmedStrConst := token.Val[1 : len(token.Val)-1]
-	_, err := io.WriteString(ce.writer, "<stringConstant> "+trimmedStrConst+" </stringConstant>\n")
-	if err != nil {
-		return err
-	}
-
 	ce.t.Advance()
 	return nil
 }
@@ -118,12 +78,6 @@ func (ce *CompilationEngine) ProcessIntConst() error {
 	if !token.Is(tk.TT_INT_CONST) {
 		return fmt.Errorf("token is not an integer constant")
 	}
-
-	_, err := io.WriteString(ce.writer, "<integerConstant> "+token.Val+" </integerConstant>\n")
-	if err != nil {
-		return err
-	}
-
 	ce.t.Advance()
 	return nil
 }

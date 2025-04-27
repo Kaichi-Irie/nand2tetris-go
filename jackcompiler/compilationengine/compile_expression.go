@@ -2,7 +2,6 @@ package compilationengine
 
 import (
 	"fmt"
-	"io"
 	st "nand2tetris-go/jackcompiler/symboltable"
 	tk "nand2tetris-go/jackcompiler/tokenizer"
 	vw "nand2tetris-go/jackcompiler/vmwriter"
@@ -16,14 +15,6 @@ skipTags: if true, do not write the <term> and </term> tags. This is used for su
 */
 func (ce *CompilationEngine) CompileTerm(isDoStatement bool) error {
 	var err error
-	// process not a subroutine call
-	if !isDoStatement {
-		_, err = io.WriteString(ce.writer, "<term>\n")
-		if err != nil {
-			return err
-		}
-	}
-
 	// process the term
 	switch token := ce.t.CurrentToken; {
 
@@ -283,15 +274,15 @@ func (ce *CompilationEngine) CompileTerm(isDoStatement bool) error {
 				return err
 			}
 
-			ce.vmwriter.WriteArithmetic(vw.ADD)
+			err = ce.vmwriter.WriteArithmetic(vw.ADD)
 			if err != nil {
 				return err
 			}
-			ce.vmwriter.WritePop(vw.POINTER, 1)
+			err = ce.vmwriter.WritePop(vw.POINTER, 1)
 			if err != nil {
 				return err
 			}
-			ce.vmwriter.WritePush(vw.THAT, 0)
+			err = ce.vmwriter.WritePush(vw.THAT, 0)
 			if err != nil {
 				return err
 			}
@@ -315,14 +306,6 @@ func (ce *CompilationEngine) CompileTerm(isDoStatement bool) error {
 	default:
 		return fmt.Errorf("unexpected token %s", token.Val)
 	}
-	// Do Statement: skip the </term> tag
-	if isDoStatement {
-		return nil
-	}
-	_, err = io.WriteString(ce.writer, "</term>\n")
-	if err != nil {
-		return err
-	}
 	return nil
 }
 
@@ -338,12 +321,6 @@ func (ce *CompilationEngine) CompileExpression(isDoStatement bool) error {
 	if isDoStatement {
 		return ce.CompileTerm(isDoStatement)
 	}
-
-	_, err = io.WriteString(ce.writer, "<expression>\n")
-	if err != nil {
-		return err
-	}
-
 	// process the term
 	err = ce.CompileTerm(false)
 	if err != nil {
@@ -378,30 +355,18 @@ func (ce *CompilationEngine) CompileExpression(isDoStatement bool) error {
 		}
 
 	}
-	_, err = io.WriteString(ce.writer, "</expression>\n")
-	if err != nil {
-		return err
-	}
 	return nil
 }
 
 func (ce *CompilationEngine) CompileExpressionList() (int, error) {
 	nArgs := 0
-	_, err := io.WriteString(ce.writer, "<expressionList>\n")
-	if err != nil {
-		return 0, err
-	}
 	// no expressions
 	if ce.t.CurrentToken.Val == tk.RPAREN.Val {
-		_, err := io.WriteString(ce.writer, "</expressionList>\n")
-		if err != nil {
-			return 0, err
-		}
 		return nArgs, nil
 	}
 
 	// process the expression
-	err = ce.CompileExpression(false)
+	err := ce.CompileExpression(false)
 	if err != nil {
 		return 0, err
 	}
@@ -420,11 +385,5 @@ func (ce *CompilationEngine) CompileExpressionList() (int, error) {
 
 		nArgs++
 	}
-
-	_, err = io.WriteString(ce.writer, "</expressionList>\n")
-	if err != nil {
-		return 0, err
-	}
 	return nArgs, nil
-
 }

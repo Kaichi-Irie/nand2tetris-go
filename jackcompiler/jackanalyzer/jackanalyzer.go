@@ -28,29 +28,22 @@ func Analize(path string) error {
 	}
 	for _, jackFilePath := range jackFilePaths {
 		className := jackFilePath[:len(jackFilePath)-5]
-		xmlFilePath := className + ".xml"
 		jackFile, err := os.Open(jackFilePath)
 		if err != nil {
 			return err
 		}
 		defer jackFile.Close()
-
-		xmlFile, err := os.Create(xmlFilePath)
-		if err != nil {
-			return err
-		}
-		defer xmlFile.Close()
 		vmFile, err := os.Create(className + ".vm")
 		if err != nil {
 			return err
 		}
 
-		ce := compilationengine.NewWithVMWriter(vmFile, xmlFile, jackFile, className)
+		ce := compilationengine.NewWithVMWriter(vmFile, jackFile, className)
 		err = ce.CompileClass()
 		if err != nil {
 			return err
 		}
-		fmt.Println("compiled", jackFilePath, "to", xmlFilePath)
+		fmt.Println("compiled", jackFilePath, "to", vmFile.Name())
 	}
 	fmt.Println("done")
 	return nil

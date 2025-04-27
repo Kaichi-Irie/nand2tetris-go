@@ -20,43 +20,6 @@ var codeComparer = cmp.Comparer(func(x string, y string) bool {
 
 func TestCompileLet(t *testing.T) {
 	tests := []struct {
-		jackCode    string
-		expectedXML string
-	}{
-		{
-			jackCode: `let i = j;`,
-			expectedXML: `<letStatement>
-<keyword> let </keyword>
-<identifier> i </identifier>
-<symbol> = </symbol>
-<expression>
-<term>
-<identifier> j </identifier>
-</term>
-</expression>
-<symbol> ; </symbol>
-</letStatement>
-`,
-		},
-	}
-	for _, test := range tests {
-		xmlFile := &bytes.Buffer{}
-		ce := NewWithFirstToken(xmlFile, strings.NewReader(test.jackCode), "")
-		err := ce.CompileLet()
-		if err != nil {
-			t.Errorf("CompileLet() error: %v", err)
-		}
-		// remove leading and trailing whitespace from the actual XML
-		if xmlFile.String() != test.expectedXML {
-			t.Errorf("CompileLet() = %v, want %v", xmlFile.String(), test.expectedXML)
-			diff := cmp.Diff(xmlFile.String(), test.expectedXML)
-			t.Errorf("Diff: %s", diff)
-		}
-	}
-}
-
-func TestCompileLet2(t *testing.T) {
-	tests := []struct {
 		jackCode           string
 		Variables          []st.Identifier
 		expectedVMCommands string
@@ -141,7 +104,7 @@ pop that 0`,
 
 	for _, test := range tests {
 		vmFile := &bytes.Buffer{}
-		ce := NewWithVMWriter(vmFile, &bytes.Buffer{}, strings.NewReader(test.jackCode), "")
+		ce := NewWithVMWriter(vmFile, strings.NewReader(test.jackCode), "")
 
 		// Define the variables in the symbol table
 		for _, id := range test.Variables {
@@ -162,65 +125,6 @@ pop that 0`,
 }
 
 func TestCompileIf(t *testing.T) {
-	tests := []struct {
-		jackCode    string
-		expectedXML string
-	}{
-		{
-			jackCode: `if (x) { }`,
-			expectedXML: `<ifStatement>
-<keyword> if </keyword>
-<symbol> ( </symbol>
-<expression>
-<term>
-<identifier> x </identifier>
-</term>
-</expression>
-<symbol> ) </symbol>
-<symbol> { </symbol>
-<statements>
-</statements>
-<symbol> } </symbol>
-</ifStatement>
-`},
-		{
-			jackCode: `if (x) {  } else {  }`,
-			expectedXML: `<ifStatement>
-<keyword> if </keyword>
-<symbol> ( </symbol>
-<expression>
-<term>
-<identifier> x </identifier>
-</term>
-</expression>
-<symbol> ) </symbol>
-<symbol> { </symbol>
-<statements>
-</statements>
-<symbol> } </symbol>
-<keyword> else </keyword>
-<symbol> { </symbol>
-<statements>
-</statements>
-<symbol> } </symbol>
-</ifStatement>
-`}}
-	for _, test := range tests {
-		xmlFile := &bytes.Buffer{}
-		ce := NewWithFirstToken(xmlFile, strings.NewReader(test.jackCode), "")
-		err := ce.CompileIf()
-		if err != nil {
-			t.Errorf("CompileIf() error: %v", err)
-		}
-		// remove leading and trailing whitespace from the actual XML
-		if xmlFile.String() != test.expectedXML {
-			t.Errorf("CompileIf() = %v, want %v", xmlFile.String(), test.expectedXML)
-			diff := cmp.Diff(xmlFile.String(), test.expectedXML)
-			t.Errorf("Diff: %s", diff)
-		}
-	}
-}
-func TestCompileIf2(t *testing.T) {
 	Variables := []st.Identifier{
 		{Name: "x", Kind: st.VAR, T: tk.INT.Val, Index: 0}}
 	tests := []struct {
@@ -259,7 +163,7 @@ label label1`,
 	}
 	for _, test := range tests {
 		vmFile := &bytes.Buffer{}
-		ce := NewWithVMWriter(vmFile, &bytes.Buffer{}, strings.NewReader(test.jackCode), "")
+		ce := NewWithVMWriter(vmFile, strings.NewReader(test.jackCode), "")
 
 		// Define the variables in the symbol table
 		for _, id := range Variables {
@@ -280,204 +184,213 @@ label label1`,
 }
 
 func TestCompileWhile(t *testing.T) {
-	tests := []struct {
-		jackCode    string
-		expectedXML string
-	}{
-		{
-			jackCode: `while (i) { }`,
-			expectedXML: `<whileStatement>
-<keyword> while </keyword>
-<symbol> ( </symbol>
-<expression>
-<term>
-<identifier> i </identifier>
-</term>
-</expression>
-<symbol> ) </symbol>
-<symbol> { </symbol>
-<statements>
-</statements>
-<symbol> } </symbol>
-</whileStatement>
-`}, {
-			jackCode: `while (i) { let i = i; }`,
-			expectedXML: `<whileStatement>
-<keyword> while </keyword>
-<symbol> ( </symbol>
-<expression>
-<term>
-<identifier> i </identifier>
-</term>
-</expression>
-<symbol> ) </symbol>
-<symbol> { </symbol>
-<statements>
-<letStatement>
-<keyword> let </keyword>
-<identifier> i </identifier>
-<symbol> = </symbol>
-<expression>
-<term>
-<identifier> i </identifier>
-</term>
-</expression>
-<symbol> ; </symbol>
-</letStatement>
-</statements>
-<symbol> } </symbol>
-</whileStatement>
-`},
-	}
-	for _, test := range tests {
-		xmlFile := &bytes.Buffer{}
-		ce := NewWithFirstToken(xmlFile, strings.NewReader(test.jackCode), "")
-		err := ce.CompileWhile()
-		if err != nil {
-			t.Errorf("CompileWhile() error: %v", err)
-		}
-		// remove leading and trailing whitespace from the actual XML
-		if xmlFile.String() != test.expectedXML {
-			t.Errorf("CompileWhile() = %v, want %v", xmlFile.String(), test.expectedXML)
-			diff := cmp.Diff(xmlFile.String(), test.expectedXML)
-			t.Errorf("Diff: %s", diff)
-		}
-	}
-}
-func TestCompileWhile2(t *testing.T) {
 	variables := []st.Identifier{
 		{Name: "i", Kind: st.VAR, T: tk.INT.Val, Index: 0}}
 	tests := []struct {
+		name              string
 		jackCode          string
 		expectedVMCommand string
 	}{
 		{
+			name:     "Simple while",
 			jackCode: `while (i) { }`,
 			expectedVMCommand: `label label0
-			push local 0
-			not
-			if-goto label1
-			goto label0
-			label label1`},
+            push local 0
+            not
+            if-goto label1
+            goto label0
+            label label1`},
 		{
+			name:     "While with statement",
 			jackCode: `while (i) { let i = i; }`,
 			expectedVMCommand: `label label0
-			push local 0
-			not
-			if-goto label1
-			push local 0
-			pop local 0
-			goto label0
-			label label1`},
+            push local 0
+            not
+            if-goto label1
+            push local 0
+            pop local 0
+            goto label0
+            label label1`},
 	}
-	for _, test := range tests {
-		vmFile := &bytes.Buffer{}
-		ce := NewWithVMWriter(vmFile, &bytes.Buffer{}, strings.NewReader(test.jackCode), "")
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			vmFile := &bytes.Buffer{}
+			ce := NewWithVMWriter(vmFile, strings.NewReader(tt.jackCode), "TestClass")
 
-		// Define the variables in the symbol table
-		for _, id := range variables {
-			ce.classST.Define(id.Name, id.T, id.Kind)
-		}
-		err := ce.CompileWhile()
-		if err != nil {
-			t.Errorf("CompileWhile() error: %v", err)
-		}
+			// Define the variables in the symbol table
+			ce.subroutineST.SetCurrentScope("TestClass.testFunc", st.KINDFUNCTION, st.VOIDFUNC)
+			for _, id := range variables {
+				ce.subroutineST.Define(id.Name, id.T, id.Kind)
+			}
 
-		// trim leading and trailing whitespace
-		vmOutput := vmFile.String()
-		want := test.expectedVMCommand
-		if diff := cmp.Diff(vmOutput, want, codeComparer); diff != "" {
-			t.Errorf("CompileWhile() mismatch (-got +want):\n%s\n%s", vmOutput, want)
-		}
+			err := ce.CompileWhile()
+			if err != nil {
+				t.Fatalf("CompileWhile() error: %v", err)
+			}
+
+			vmOutput := vmFile.String()
+			want := tt.expectedVMCommand
+			if diff := cmp.Diff(want, vmOutput, codeComparer); diff != "" {
+				t.Errorf("CompileWhile() VM code mismatch (-want +got):\n%s", diff)
+				t.Logf("Got VM Code:\n%s", vmOutput)
+				t.Logf("Want VM Code:\n%s", want)
+			}
+		})
 	}
 }
 
 func TestCompileDo(t *testing.T) {
 	tests := []struct {
-		jackCode    string
-		expectedXML string
+		name               string
+		jackCode           string
+		className          string
+		variables          []st.Identifier // For method calls on objects
+		expectedVMCommands string
 	}{
 		{
-			jackCode: `do myfunc();`,
-			expectedXML: `<doStatement>
-<keyword> do </keyword>
-<identifier> myfunc </identifier>
-<symbol> ( </symbol>
-<expressionList>
-</expressionList>
-<symbol> ) </symbol>
-<symbol> ; </symbol>
-</doStatement>
-`}, {
-			jackCode: `do game.run();`,
-			expectedXML: `<doStatement>
-<keyword> do </keyword>
-<identifier> game </identifier>
-<symbol> . </symbol>
-<identifier> run </identifier>
-<symbol> ( </symbol>
-<expressionList>
-</expressionList>
-<symbol> ) </symbol>
-<symbol> ; </symbol>
-</doStatement>
-`},
+			name:               "Simple function call",
+			jackCode:           `do Output.printInt(1);`,
+			className:          "Main",
+			expectedVMCommands: `push constant 1 call Output.printInt 1 pop temp 0`,
+		},
+		{
+			name:               "Method call on current object",
+			jackCode:           `do draw();`, // Assumes draw is a method of the current class
+			className:          "Square",
+			expectedVMCommands: `push pointer 0 call Square.draw 1 pop temp 0`, // Pushes 'this', calls method, pops void return
+		},
+		{
+			name:      "Method call on another object",
+			jackCode:  `do game.run();`,
+			className: "Main",
+			variables: []st.Identifier{
+				{Name: "game", Kind: st.VAR, T: "SquareGame", Index: 0}, // Assume 'game' is a local var of type SquareGame
+			},
+			expectedVMCommands: `push local 0 call SquareGame.run 1 pop temp 0`, // Pushes 'game' object, calls method, pops void return
+		},
+		{
+			name:      "Function call with multiple args",
+			jackCode:  `do Math.multiply(x, y);`,
+			className: "Main",
+			variables: []st.Identifier{ // Define x and y
+				{Name: "x", Kind: st.VAR, T: tk.INT.Val, Index: 0},
+				{Name: "y", Kind: st.VAR, T: tk.INT.Val, Index: 1},
+			},
+			expectedVMCommands: `push local 0 push local 1 call Math.multiply 2 pop temp 0`,
+		},
 	}
-	for _, test := range tests {
-		xmlFile := &bytes.Buffer{}
-		ce := NewWithFirstToken(xmlFile, strings.NewReader(test.jackCode), "")
-		err := ce.CompileDo()
-		if err != nil {
-			t.Errorf("CompileDo() error: %v", err)
-		}
-		// remove leading and trailing whitespace from the actual XML
-		if xmlFile.String() != test.expectedXML {
-			t.Errorf("CompileDo() = %v, want %v", xmlFile.String(), test.expectedXML)
-			diff := cmp.Diff(xmlFile.String(), test.expectedXML)
-			t.Errorf("Diff: %s", diff)
-		}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			vmFile := &bytes.Buffer{}
+			ce := NewWithVMWriter(vmFile, strings.NewReader(tt.jackCode), tt.className)
+
+			// Set up context
+			ce.classST.SetCurrentScope(tt.className, st.KINDCLASS, st.NOTVOIDFUNC)
+			ce.subroutineST.SetCurrentScope(tt.className+".testFunc", st.KINDFUNCTION, st.VOIDFUNC) // Assume a function context
+			if strings.Contains(tt.jackCode, "draw()") {                                            // If it's a method call test
+				ce.subroutineST.SetCurrentScope(tt.className+".testMethod", st.KINDMETHOD, st.VOIDFUNC)
+				ce.subroutineST.Define("this", tt.className, st.ARG) // Add 'this' for method context
+			}
+
+			// Define variables if provided
+			for _, id := range tt.variables {
+				if id.Kind == st.STATIC || id.Kind == st.FIELD {
+					ce.classST.Define(id.Name, id.T, id.Kind)
+				} else {
+					ce.subroutineST.Define(id.Name, id.T, id.Kind)
+				}
+			}
+
+			err := ce.CompileDo()
+			if err != nil {
+				t.Fatalf("CompileDo() error: %v", err)
+			}
+
+			vmOutput := vmFile.String()
+			want := tt.expectedVMCommands
+			if diff := cmp.Diff(want, vmOutput, codeComparer); diff != "" {
+				t.Errorf("CompileDo() VM code mismatch (-want +got):\n%s", diff)
+				t.Logf("Got VM Code:\n%s", vmOutput)
+				t.Logf("Want VM Code:\n%s", want)
+			}
+		})
 	}
 }
 
 func TestCompileReturn(t *testing.T) {
 	tests := []struct {
-		jackCode    string
-		expectedXML string
+		name               string
+		jackCode           string
+		isVoidFunc         bool
+		variables          []st.Identifier // For returning variables
+		expectedVMCommands string
 	}{
 		{
-			jackCode: `return i;`,
-			expectedXML: `<returnStatement>
-<keyword> return </keyword>
-<expression>
-<term>
-<identifier> i </identifier>
-</term>
-</expression>
-<symbol> ; </symbol>
-</returnStatement>
-`,
+			name:               "Return void",
+			jackCode:           `return;`,
+			isVoidFunc:         true,
+			expectedVMCommands: `push constant 0 return`, // Void functions push 0 before returning
 		},
 		{
-			jackCode: `return;`,
-			expectedXML: `<returnStatement>
-<keyword> return </keyword>
-<symbol> ; </symbol>
-</returnStatement>
-`},
+			name:               "Return constant",
+			jackCode:           `return 10;`,
+			isVoidFunc:         false,
+			expectedVMCommands: `push constant 10 return`,
+		},
+		{
+			name:       "Return variable",
+			jackCode:   `return i;`,
+			isVoidFunc: false,
+			variables: []st.Identifier{
+				{Name: "i", Kind: st.VAR, T: tk.INT.Val, Index: 0},
+			},
+			expectedVMCommands: `push local 0 return`,
+		},
+		{
+			name:       "Return expression",
+			jackCode:   `return i + 1;`,
+			isVoidFunc: false,
+			variables: []st.Identifier{
+				{Name: "i", Kind: st.VAR, T: tk.INT.Val, Index: 0},
+			},
+			expectedVMCommands: `push local 0 push constant 1 add return`,
+		},
+		{
+			name:               "Return this",
+			jackCode:           `return this;`, // Common in constructors
+			isVoidFunc:         false,
+			expectedVMCommands: `push pointer 0 return`,
+		},
 	}
-	for _, test := range tests {
-		xmlFile := &bytes.Buffer{}
-		ce := NewWithFirstToken(xmlFile, strings.NewReader(test.jackCode), "")
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			vmFile := &bytes.Buffer{}
+			ce := NewWithVMWriter(vmFile, strings.NewReader(tt.jackCode), "TestClass")
 
-		err := ce.CompileReturn()
-		if err != nil {
-			t.Errorf("CompileReturn() error: %v", err)
-		}
-		// remove leading and trailing whitespace from the actual XML
-		if xmlFile.String() != test.expectedXML {
-			t.Errorf("CompileReturn() = %v, want %v", xmlFile.String(), test.expectedXML)
-			diff := cmp.Diff(xmlFile.String(), test.expectedXML)
-			t.Errorf("Diff: %s", diff)
-		}
+			// Set up context
+			funcType := st.NOTVOIDFUNC
+			if tt.isVoidFunc {
+				funcType = st.VOIDFUNC
+			}
+			ce.subroutineST.SetCurrentScope("TestClass.testFunc", st.KINDFUNCTION, funcType)
+
+			// Define variables if provided
+			for _, id := range tt.variables {
+				ce.subroutineST.Define(id.Name, id.T, id.Kind)
+			}
+
+			err := ce.CompileReturn()
+			if err != nil {
+				t.Fatalf("CompileReturn() error: %v", err)
+			}
+
+			vmOutput := vmFile.String()
+			want := tt.expectedVMCommands
+			if diff := cmp.Diff(want, vmOutput, codeComparer); diff != "" {
+				t.Errorf("CompileReturn() VM code mismatch (-want +got):\n%s", diff)
+				t.Logf("Got VM Code:\n%s", vmOutput)
+				t.Logf("Want VM Code:\n%s", want)
+			}
+		})
 	}
 }

@@ -60,45 +60,28 @@ func (t *Tokenizer) Advance() bool {
 	}
 
 	pos := t.CurrentPos
+	var token Token
 	// skip spaces
 	if t.CurrentLine[pos] == ' ' {
 		t.CurrentPos++
 		return t.Advance()
+		// check if the next token is a symbol
+	} else if s, ok := ParseSymbol(t.CurrentLine[pos:]); ok == nil {
+		token = s
+		// check if the next token is a keyword
+	} else if kw, ok := ParseKeyword(t.CurrentLine[pos:]); ok == nil {
+		token = kw
+	} else if i, ok := ParseIntConst(t.CurrentLine[pos:]); ok == nil {
+		token = i
+	} else if s, ok := ParseStringConst(t.CurrentLine[pos:]); ok == nil {
+		token = s
+	} else if id, ok := ParseIdentifier(t.CurrentLine[pos:]); ok == nil {
+		token = id
+	} else {
+		return false
 	}
-
-	// check if the next token is a symbol
-	if s, ok := ParseSymbol(t.CurrentLine[pos:]); ok == nil {
-		t.CurrentPos += len(s.Val)
-		t.CurrentToken = s
-		return true
-	}
-
-	// check if the next token is a keyword
-	if kw, ok := ParseKeyword(t.CurrentLine[pos:]); ok == nil {
-		t.CurrentPos += len(kw.Val)
-		t.CurrentToken = kw
-		return true
-	}
-
-	// check if the next token is an integer constant
-	if i, ok := ParseIntConst(t.CurrentLine[pos:]); ok == nil {
-		t.CurrentPos += len(i.Val)
-		t.CurrentToken = i
-		return true
-	}
-
-	// check if the next token is a string constant. A string constant is a string that starts and ends with a double quote, so s contains the double quotes.
-	if s, ok := ParseStringConst(t.CurrentLine[pos:]); ok == nil {
-		t.CurrentPos += len(s.Val)
-		t.CurrentToken = s
-		return true
-	}
-
-	// check if the next token is an identifier
-	if id, ok := ParseIdentifier(t.CurrentLine[pos:]); ok == nil {
-		t.CurrentPos += len(id.Val)
-		t.CurrentToken = id
-		return true
-	}
-	return false
+	t.CurrentPos += len(token.Val)
+	t.CurrentToken = token
+	fmt.Printf("Current token: %s\n", t.CurrentToken.Val)
+	return true
 }

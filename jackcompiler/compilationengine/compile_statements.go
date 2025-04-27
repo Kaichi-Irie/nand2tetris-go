@@ -2,18 +2,13 @@ package compilationengine
 
 import (
 	"fmt"
-	"io"
 	tk "nand2tetris-go/jackcompiler/tokenizer"
 	vw "nand2tetris-go/jackcompiler/vmwriter"
 	"strconv"
 )
 
 func (ce *CompilationEngine) CompileStatements() error {
-	_, err := io.WriteString(ce.writer, "<statements>\n")
-	if err != nil {
-		return err
-	}
-
+	var err error
 	// process the statements
 LOOP:
 	for {
@@ -47,22 +42,12 @@ LOOP:
 			break LOOP
 		}
 	}
-
-	_, err = io.WriteString(ce.writer, "</statements>\n")
-	if err != nil {
-		return err
-	}
 	return nil
 }
 
 func (ce *CompilationEngine) CompileLet() error {
-	_, err := io.WriteString(ce.writer, "<letStatement>\n")
-	if err != nil {
-		return err
-	}
-
 	// process the let keyword
-	err = ce.ProcessKeyWord(tk.LET)
+	err := ce.ProcessKeyWord(tk.LET)
 	if err != nil {
 		return err
 	}
@@ -160,21 +145,12 @@ func (ce *CompilationEngine) CompileLet() error {
 		// TODO: handle the case where the variable is not defined
 		// return fmt.Errorf("variable %s is not defined. LetStatement cannot be used", varName)
 	}
-
-	_, err = io.WriteString(ce.writer, "</letStatement>\n")
-	if err != nil {
-		return err
-	}
 	return nil
 }
 
 func (ce *CompilationEngine) CompileIf() error {
-	_, err := io.WriteString(ce.writer, "<ifStatement>\n")
-	if err != nil {
-		return err
-	}
 	// process the if keyword
-	err = ce.ProcessKeyWord(tk.IF)
+	err := ce.ProcessKeyWord(tk.IF)
 	if err != nil {
 		return err
 	}
@@ -268,24 +244,14 @@ func (ce *CompilationEngine) CompileIf() error {
 	if err != nil {
 		return err
 	}
-
-	_, err = io.WriteString(ce.writer, "</ifStatement>\n")
-	if err != nil {
-		return err
-	}
 	return nil
 
 }
 
 func (ce *CompilationEngine) CompileWhile() error {
-	_, err := io.WriteString(ce.writer, "<whileStatement>\n")
-	if err != nil {
-		return err
-	}
-
 	// labelWhile
 	labelWhile := "label" + strconv.Itoa(ce.labelCount)
-	err = ce.vmwriter.WriteLabel(labelWhile)
+	err := ce.vmwriter.WriteLabel(labelWhile)
 	if err != nil {
 		return err
 	}
@@ -356,22 +322,11 @@ func (ce *CompilationEngine) CompileWhile() error {
 	if err != nil {
 		return err
 	}
-
-	_, err = io.WriteString(ce.writer, "</whileStatement>\n")
-	if err != nil {
-		return err
-	}
 	return nil
 }
 
-func (ce *CompilationEngine) CompileDo() error {
-	_, err := io.WriteString(ce.writer, "<doStatement>\n")
-	if err != nil {
-		return err
-	}
-
-	// process the do keyword
-	err = ce.ProcessKeyWord(tk.DO)
+func (ce *CompilationEngine) CompileDo() error { // process the do keyword
+	err := ce.ProcessKeyWord(tk.DO)
 	if err != nil {
 		return err
 	}
@@ -387,24 +342,14 @@ func (ce *CompilationEngine) CompileDo() error {
 	if err != nil {
 		return err
 	}
-
-	_, err = io.WriteString(ce.writer, "</doStatement>\n")
-	if err != nil {
-		return err
-	}
 	// remove the return value from the stack
 	ce.vmwriter.WritePop(vw.TEMP, 0)
 	return nil
 }
 
 func (ce *CompilationEngine) CompileReturn() error {
-	_, err := io.WriteString(ce.writer, "<returnStatement>\n")
-	if err != nil {
-		return err
-	}
-
 	// process the return keyword
-	err = ce.ProcessKeyWord(tk.RETURN)
+	err := ce.ProcessKeyWord(tk.RETURN)
 	if err != nil {
 		return err
 	}
@@ -433,12 +378,6 @@ func (ce *CompilationEngine) CompileReturn() error {
 	if err != nil {
 		return err
 	}
-
-	_, err = io.WriteString(ce.writer, "</returnStatement>\n")
-	if err != nil {
-		return err
-	}
-
 	// write the return command to the VM writer
 	err = ce.vmwriter.WriteReturn()
 	if err != nil {
