@@ -369,8 +369,19 @@ func (ce *CompilationEngine) CompileReturn() error {
 		return err
 	}
 
-	// process the expression. Skip if the case is return;
-	if ce.t.CurrentToken.Val != tk.SEMICOLON.Val {
+	// process return; for void functions
+	if ce.t.CurrentToken.Val == tk.SEMICOLON.Val {
+		// TODO: activate this error check
+		// if !ce.subroutineST.IsCurrentVoidFunc() {
+		// 	return fmt.Errorf("bare return in a non-void function: %s", ce.subroutineST.CurrentScope.Name)
+		// }
+
+		// void function must push constant 0 to the stack
+		err := ce.vmwriter.WritePush(vw.CONSTANT, 0)
+		if err != nil {
+			return err
+		}
+	} else if ce.t.CurrentToken.Val != tk.SEMICOLON.Val {
 		// process the expression
 		err = ce.CompileExpression(false)
 		if err != nil {
@@ -389,7 +400,7 @@ func (ce *CompilationEngine) CompileReturn() error {
 	}
 
 	// write the return command to the VM writer
-	err = ce.vmwriter.WriteReturn(ce.subroutineST.IsCurrentVoidFunc())
+	err = ce.vmwriter.WriteReturn()
 	if err != nil {
 		return err
 	}

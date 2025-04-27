@@ -8,10 +8,10 @@ import (
 )
 
 const (
-	CONSTANT string = "constant"
 	ARGUMENT string = "argument"
 	LOCAL    string = "local"
 	STATIC   string = "static"
+	CONSTANT string = "constant"
 	THIS     string = "this"
 	THAT     string = "that"
 	POINTER  string = "pointer"
@@ -154,13 +154,7 @@ func (vmw *VMWriter) WriteFunction(name string, nVars int) error {
 	return nil
 }
 
-func (vmw *VMWriter) WriteReturn(isVoid bool) error {
-	if isVoid {
-		err := vmw.WritePush(CONSTANT, 0)
-		if err != nil {
-			return err
-		}
-	}
+func (vmw *VMWriter) WriteReturn() error {
 	_, err := io.WriteString(vmw.w, "return\n")
 	if err != nil {
 		return fmt.Errorf("error writing return: %w", err)

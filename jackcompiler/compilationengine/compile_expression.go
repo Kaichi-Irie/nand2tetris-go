@@ -3,6 +3,7 @@ package compilationengine
 import (
 	"fmt"
 	"io"
+	st "nand2tetris-go/jackcompiler/symboltable"
 	tk "nand2tetris-go/jackcompiler/tokenizer"
 	vw "nand2tetris-go/jackcompiler/vmwriter"
 	"strconv"
@@ -102,8 +103,11 @@ func (ce *CompilationEngine) CompileTerm(isDoStatement bool) error {
 		if err != nil {
 			return err
 		}
-	// TODO: implement `this`
-	case token.IsKeywordConst():
+	case token.Val == tk.THIS.Val:
+		err = ce.vmwriter.WritePush(vw.POINTER, 0)
+		if err != nil {
+			return err
+		}
 		err = ce.ProcessKeyWord(token)
 		if err != nil {
 			return err
@@ -118,16 +122,7 @@ func (ce *CompilationEngine) CompileTerm(isDoStatement bool) error {
 		We have to process the identifier first, then check if it is a subroutine call or a varName. To do this, we use the strings.Builder as a temporary buffer.
 	*/
 	case token.Is(tk.TT_IDENTIFIER):
-		// process the primitive type variable
-		if id, ok := ce.Lookup(token.Val); ok && (id.T == tk.INT.Val || id.T == tk.CHAR.Val || id.T == tk.BOOLEAN.Val) {
-			seg := vw.SegmentOfKind[id.Kind]
-			index := id.Index
-			err = ce.vmwriter.WritePush(seg, index)
-			if err != nil {
-				return err
-			}
-		}
-		subroutineName := token.Val // used only for the subroutine call
+		name1 := token.Val // used only for the subroutine call
 		err = ce.ProcessIdentifier()
 		if err != nil {
 			return err
@@ -135,16 +130,16 @@ func (ce *CompilationEngine) CompileTerm(isDoStatement bool) error {
 
 		// process the . or ( or [
 		switch token := ce.t.CurrentToken; token.Val {
-		// process
+		// process (className | varName) '.' subroutineName '(' expressionList ')
+		// name1 '.' name2 '(' expressionList ')
 		case tk.DOT.Val:
-			subroutineName += "."
 			err = ce.ProcessSymbol(tk.DOT)
 			if err != nil {
 				return err
 			}
 
 			// process the subroutine name
-			subroutineName += ce.t.CurrentToken.Val
+			name2 := ce.t.CurrentToken.Val
 			err = ce.ProcessIdentifier()
 			if err != nil {
 				return err
@@ -154,37 +149,82 @@ func (ce *CompilationEngine) CompileTerm(isDoStatement bool) error {
 			if err != nil {
 				return err
 			}
-			// process the expression list
-			nArgs, err := ce.CompileExpressionList()
-			if err != nil {
-				return err
+
+			var subroutineName string
+			var nArgs int
+			/*
+				process 2 cases;
+				case1. varName.methodName(...)
+				case2. className.functionName(...)
+			*/
+			if id, ok := ce.Lookup(name1); ok && (id.Kind == st.FIELD || id.Kind == st.STATIC || id.Kind == st.ARG || id.Kind == st.VAR) {
+				// case 1.
+				className := id.T
+				methodName := name2
+				subroutineName = className + "." + methodName
+
+				seg := vw.SegmentOfKind[id.Kind]
+				index := id.Index
+				err = ce.vmwriter.WritePush(seg, index)
+				if err != nil {
+					return err
+				}
+				nArgs, err = ce.CompileExpressionList()
+				if err != nil {
+					return err
+				}
+				nArgs++ // for variable pointer
+			} else {
+				// case 2.
+				className := name1
+				methodName := name2
+				subroutineName = className + "." + methodName
+				nArgs, err = ce.CompileExpressionList()
+				if err != nil {
+					return err
+				}
 			}
+
 			// process the )
 			err = ce.ProcessSymbol(tk.RPAREN)
 			if err != nil {
 				return err
 			}
 			// write vmcommand
+
 			err = ce.vmwriter.WriteCall(subroutineName, nArgs)
 			if err != nil {
 				return err
 			}
+
+		// process methodName '(' expressionList ')'
 		case tk.LPAREN.Val:
 			err = ce.ProcessSymbol(tk.LPAREN)
 			if err != nil {
 				return err
 			}
+
+			// push the object
+			err = ce.vmwriter.WritePush(vw.POINTER, 0)
+			if err != nil {
+				return err
+			}
+
 			// process the expression list
 			nArgs, err := ce.CompileExpressionList()
 			if err != nil {
 				return err
 			}
+			nArgs++
 			// process the )
 			err = ce.ProcessSymbol(tk.RPAREN)
 			if err != nil {
 				return err
 			}
 			// write vmcommand
+			className := ce.classST.CurrentScope.Name
+			methodName := name1
+			subroutineName := className + "." + methodName
 			err = ce.vmwriter.WriteCall(subroutineName, nArgs)
 			if err != nil {
 				return err
@@ -207,6 +247,20 @@ func (ce *CompilationEngine) CompileTerm(isDoStatement bool) error {
 				return err
 			}
 
+		default:
+			// process the variable
+			if id, ok := ce.Lookup(name1); ok {
+				seg := vw.SegmentOfKind[id.Kind]
+				index := id.Index
+				err = ce.vmwriter.WritePush(seg, index)
+				if err != nil {
+					return err
+				}
+			}
+			// TODO: activate this error
+			//  else {
+			// 	return fmt.Errorf("variable %s is not defined. Term cannot be used", name1)
+			// }
 		}
 
 	default:

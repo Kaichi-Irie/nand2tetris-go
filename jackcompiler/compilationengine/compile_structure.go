@@ -5,6 +5,7 @@ import (
 	"io"
 	st "nand2tetris-go/jackcompiler/symboltable"
 	tk "nand2tetris-go/jackcompiler/tokenizer"
+	vw "nand2tetris-go/jackcompiler/vmwriter"
 )
 
 /*
@@ -215,10 +216,16 @@ func (ce *CompilationEngine) CompileSubroutine() error {
 	}
 
 	// Add the subroutine name to the symbol table
-	// TODO: remove this part
 	err = ce.subroutineST.SetCurrentScope(subroutineName, currentScopeKind, currentScopeType)
 	if err != nil {
 		return err
+	}
+	if currentScopeKind == st.KINDMETHOD {
+		// Add the 'this' pointer to the symbol table
+		err = ce.subroutineST.Define("this", className, st.ARG)
+		if err != nil {
+			return err
+		}
 	}
 
 	// process the (
@@ -417,6 +424,16 @@ func (ce *CompilationEngine) CompileSubroutineBody() error {
 	nVars := ce.subroutineST.VarCnt
 	subroutineName := ce.subroutineST.CurrentScope.Name
 	ce.vmwriter.WriteFunction(subroutineName, nVars)
+
+	// set this pointer to the current object
+	if kind := ce.subroutineST.CurrentScope.Kind; kind == st.KINDMETHOD {
+		ce.vmwriter.WritePush(vw.ARGUMENT, 0)
+		ce.vmwriter.WritePop(vw.POINTER, 0)
+	} else if kind == st.KINDCONSTRUCTOR {
+		ce.vmwriter.WritePush(vw.CONSTANT, ce.classST.FieldCnt)
+		ce.vmwriter.WriteCall("Memory.alloc", 1)
+		ce.vmwriter.WritePop(vw.POINTER, 0)
+	}
 
 	// process the statements
 	err = ce.CompileStatements()
