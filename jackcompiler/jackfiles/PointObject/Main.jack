@@ -1,0 +1,12 @@
+class Main {
+function void main(){
+var  Point p1,p2; // local 0,1
+var int val,d; // local 2,3
+let p1 = Point.new(1,2);
+let p2 = Point.new(4,6);
+let val = p1.getX();
+let d = p1.distance(p2);
+do Output.printInt(d);
+return;
+}
+}

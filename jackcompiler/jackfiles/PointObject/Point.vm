@@ -1,0 +1,41 @@
+function Point.new 0
+push constant 2
+call Memory.alloc 1
+pop pointer 0
+push constant 10
+pop static 0
+push argument 0
+pop this 0
+push argument 1
+pop this 1
+push pointer 0
+return
+function Point.getX 0
+push argument 0
+pop pointer 0
+push this 0
+return
+function Point.getY 0
+push argument 0
+pop pointer 0
+push this 1
+return
+function Point.distance 2
+push argument 0
+pop pointer 0
+push argument 1
+call Point.getX 1
+push pointer 0
+call Point.getX 1
+call Math.multiply 2
+pop local 0
+push argument 1
+call Point.getY 1
+push pointer 0
+call Point.getY 1
+call Math.multiply 2
+pop local 1
+push local 0
+push local 1
+add
+return

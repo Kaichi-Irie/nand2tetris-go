@@ -1,0 +1,25 @@
+class Point {
+static int staticVariable;
+field int x,y;
+constructor Point new(int ax, int ay) {
+let staticVariable = 10;
+let x = ax;
+let y = ay;
+return this;
+}
+
+method int getX() {
+return x;
+}
+
+method int getY() {
+return y;
+}
+
+method int distance(Point p) {
+    var int d1,d2;
+    let d1 = p.getX()*getX();
+    let d2 = p.getY()*getY();
+    return d1+d2 ;
+}
+}
