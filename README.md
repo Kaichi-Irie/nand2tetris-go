@@ -65,18 +65,16 @@ $ go run main.go <dirname>
 
 ## Jackコンパイラ
 Jackコンパイラは，Jack言語をHack VM言語に変換するプログラムです．コンパイラは構文解析とコード生成の2つのフェーズに分かれています．
-構文解析では，Jack言語のソースコードを解析し，構文木を生成します．この構文木は，XML形式で出力されます．
+構文解析では，Jack言語のソースコードを解析し，構文木を生成します．その後，構文木をHack VM言語に変換します．
 ```sh
 $ cd compiler
 $ go run main.go <input.jack>
 ```
-このXMLファイルは，`<input>.xml`という名前で出力されます．
-ディレクトリを引数に与えると，ディレクトリ内の全てのJackファイルをコンパイルし，同じディレクトリに`<filename>.xml`が生成されます．
+このXMLファイルは，`<input>.vm`という名前で出力されます．
+ディレクトリを引数に与えると，ディレクトリ内の全てのJackファイルをコンパイルし，同じディレクトリに`<filename>.vm`が生成されます．
 ```sh
 $ go run main.go <dirname>
 ```
-コード生成は，現在，取り組んでいる途中です．
-
 ## ドキュメント生成
 godocのinstall
 ```
@@ -86,7 +84,7 @@ $ export PATH=$PATH:$GOROOT/bin:$GOPATH/bin
 ```
 godocの実行
 ```
-$ bash generate-doc.sh
+$./generate-doc.sh
 ```
 
 # References
