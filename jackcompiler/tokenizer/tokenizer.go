@@ -3,7 +3,8 @@ package tokenizer
 import (
 	"fmt"
 	"io"
-	"nand2tetris-go/vm/vmtranslator"
+
+	"github.com/Kaichi-Irie/nand2tetris-go/vm/vmtranslator"
 )
 
 // Tokenizer is a struct that reads a file line by line and skips empty lines and comments. It provides a method to get the current line of the scanner without leading and trailing spaces and comments.

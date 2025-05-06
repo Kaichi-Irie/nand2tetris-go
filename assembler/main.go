@@ -1,8 +1,9 @@
 package main
 
 import (
-	"nand2tetris-go/assembler/hack"
 	"os"
+
+	"github.com/Kaichi-Irie/nand2tetris-go/assembler/hack"
 )
 
 func main() {

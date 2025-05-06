@@ -1,4 +1,4 @@
-module nand2tetris-go
+module github.com/Kaichi-Irie/nand2tetris-go
 
 go 1.24.1
 

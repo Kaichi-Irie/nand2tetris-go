@@ -2,7 +2,8 @@ package symboltable
 
 import (
 	"fmt"
-	tk "nand2tetris-go/jackcompiler/tokenizer"
+
+	tk "github.com/Kaichi-Irie/nand2tetris-go/jackcompiler/tokenizer"
 )
 
 // kind

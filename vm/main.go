@@ -1,8 +1,9 @@
 package main
 
 import (
-	"nand2tetris-go/vm/vmtranslator"
 	"os"
+
+	"github.com/Kaichi-Irie/nand2tetris-go/vm/vmtranslator"
 )
 
 func main() {

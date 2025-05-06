@@ -3,8 +3,9 @@ package vmwriter
 import (
 	"fmt"
 	"io"
-	st "nand2tetris-go/jackcompiler/symboltable"
 	"slices"
+
+	st "github.com/Kaichi-Irie/nand2tetris-go/jackcompiler/symboltable"
 )
 
 const (

@@ -1,8 +1,9 @@
 package main
 
 import (
-	"nand2tetris-go/jackcompiler/jackanalyzer"
 	"os"
+
+	"github.com/Kaichi-Irie/nand2tetris-go/jackcompiler/jackanalyzer"
 )
 
 func main() {

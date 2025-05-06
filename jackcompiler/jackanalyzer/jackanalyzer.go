@@ -2,9 +2,10 @@ package jackanalyzer
 
 import (
 	"fmt"
-	"nand2tetris-go/jackcompiler/compilationengine"
 	"os"
 	"path/filepath"
+
+	"github.com/Kaichi-Irie/nand2tetris-go/jackcompiler/compilationengine"
 )
 
 func Analize(path string) error {

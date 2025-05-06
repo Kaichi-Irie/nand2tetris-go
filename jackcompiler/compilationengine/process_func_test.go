@@ -2,9 +2,10 @@ package compilationengine
 
 import (
 	"bytes"
-	tk "nand2tetris-go/jackcompiler/tokenizer"
 	"strings"
 	"testing"
+
+	tk "github.com/Kaichi-Irie/nand2tetris-go/jackcompiler/tokenizer"
 )
 
 func TestProcessKeyWord(t *testing.T) {

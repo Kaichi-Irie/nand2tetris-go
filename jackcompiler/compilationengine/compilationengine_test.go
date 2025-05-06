@@ -3,12 +3,13 @@ package compilationengine
 import (
 	"bytes"
 	"io"
-	st "nand2tetris-go/jackcompiler/symboltable"
-	tk "nand2tetris-go/jackcompiler/tokenizer"
-	vw "nand2tetris-go/jackcompiler/vmwriter"
 	"reflect"
 	"strings"
 	"testing"
+
+	st "github.com/Kaichi-Irie/nand2tetris-go/jackcompiler/symboltable"
+	tk "github.com/Kaichi-Irie/nand2tetris-go/jackcompiler/tokenizer"
+	vw "github.com/Kaichi-Irie/nand2tetris-go/jackcompiler/vmwriter"
 
 	"github.com/google/go-cmp/cmp"
 )

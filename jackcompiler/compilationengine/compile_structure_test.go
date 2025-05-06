@@ -2,10 +2,11 @@ package compilationengine
 
 import (
 	"bytes"
-	st "nand2tetris-go/jackcompiler/symboltable"
-	tk "nand2tetris-go/jackcompiler/tokenizer"
 	"strings"
 	"testing"
+
+	st "github.com/Kaichi-Irie/nand2tetris-go/jackcompiler/symboltable"
+	tk "github.com/Kaichi-Irie/nand2tetris-go/jackcompiler/tokenizer"
 
 	"github.com/google/go-cmp/cmp"
 )

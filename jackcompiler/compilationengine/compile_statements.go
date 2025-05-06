@@ -2,9 +2,10 @@ package compilationengine
 
 import (
 	"fmt"
-	tk "nand2tetris-go/jackcompiler/tokenizer"
-	vw "nand2tetris-go/jackcompiler/vmwriter"
 	"strconv"
+
+	tk "github.com/Kaichi-Irie/nand2tetris-go/jackcompiler/tokenizer"
+	vw "github.com/Kaichi-Irie/nand2tetris-go/jackcompiler/vmwriter"
 )
 
 func (ce *CompilationEngine) CompileStatements() error {
