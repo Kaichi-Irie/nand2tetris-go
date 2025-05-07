@@ -1,7 +1,7 @@
 ![img](img/nand2tetris-go.jpg)
 ![Coverage](https://img.shields.io/badge/Coverage-66.0%25-yellow)
 # Nand2TetrisをGolangで実装する
-[O'Reilly Japan - コンピュータシステムの理論と実装 第2版](https://www.oreilly.co.jp/books/9784814400874/)（通称Nand2Tetris）の実装プロジェクトを勉強がてら，go言語で実装していきます．書評は[こちら](https://qiita.com/garudakai/items/7e09c95ef8b2a3c4e8be)．
+[O'Reilly Japan - コンピュータシステムの理論と実装 第2版](https://www.oreilly.co.jp/books/9784814400874/)（通称Nand2Tetris）の実装プロジェクトを勉強がてら，go言語で実装していきます．書評は[こちら](https://qiita.com/garudakai/items/7e09c95ef8b2a3c4e8be)．ドキュメントは[こちら](https://pkg.go.dev/github.com/Kaichi-Irie/nand2tetris-go@v0.2.0)．
 
 ※ 1-5章はOnline IDEで実装
 - [x] 1章: ブール論理
