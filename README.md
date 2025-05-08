@@ -1,21 +1,24 @@
 ![img](img/nand2tetris-go.jpg)
+[![GoDev](https://img.shields.io/static/v1?label=godev&message=reference&color=00add8)](https://pkg.go.dev/github.com/Kaichi-Irie/nand2tetris-go@v0.2.0)
 ![Coverage](https://img.shields.io/badge/Coverage-66.0%25-yellow)
+[![Go Report Card](https://goreportcard.com/badge/github.com/Kaichi-Irie/nand2tetris-go)](https://goreportcard.com/report/github.com/Kaichi-Irie/nand2tetris-go)
+[![GitHub license](https://img.shields.io/github/license/Kaichi-Irie/nand2tetris-go)](https://github.com/Kaichi-Irie/nand2tetris-go/blob/main/LICENSE)
+
 # Nand2TetrisをGolangで実装する
 [O'Reilly Japan - コンピュータシステムの理論と実装 第2版](https://www.oreilly.co.jp/books/9784814400874/)（通称Nand2Tetris）の実装プロジェクトを勉強がてら，go言語で実装していきます．書評は[こちら](https://qiita.com/garudakai/items/7e09c95ef8b2a3c4e8be)．ドキュメントは[こちら](https://pkg.go.dev/github.com/Kaichi-Irie/nand2tetris-go@v0.2.0)．
 
-※ 1-5章はOnline IDEで実装
-- [x] 1章: ブール論理
-- [x] 2章: ブール算術
-- [x] 3章: メモリー
-- [x] 4章: 機械語
-- [x] 5章: コンピュータアーキテクチャ
-- [x] 6章: アセンブラ
-- [x] 7章: VM（コンパイラ バックエンド）1: 処理
-- [x] 8章: VM（コンパイラ バックエンド）2: 制御
-- [x] 9章: 高水準言語
-- [x] 10章: コンパイラ（コンパイラ フロントエンド）1: 構文解析
-- [x] 11章: コンパイラ（コンパイラ フロントエンド）2: コード生成
-- [ ] 12章: OS
+- [x] ハードウェア（ブール論理，ブール算術，メモリー，機械語，コンピュータアーキテクチャ）
+- [x] アセンブラ（Hackアセンブリ言語→Hackバイナリファイル）
+- [x] コンパイラバックエンド（VM変換器；VM言語→Hackアセンブリ言語）
+- [x] コンパイラ フロントエンド（構文解析，コード生成；Jack言語→VM言語）
+- [ ] OS（Jack言語標準ライブラリ）
+
+
+## インストール
+```
+go get -u github.com/Kaichi-Irie/nand2tetris-go
+```
+
 
 ## Nand2Tetrisとは
 　Nand2Tetrisプロジェクトとは，Nandゲートから始めて，論理ゲート、加算器、CPUを設計したのち、アセンブラ、VM変換器、コンパイラ、OSを実装し，コンピュータを完成させます．そして，最後にその上でアプリケーション（テトリスなど）を動作させるというプロジェクトです．
@@ -30,8 +33,6 @@
 - `vm/`: VM変換器の実装
 - `compiler/`: Jackコンパイラの実装
 - `img/`: プロジェクトの画像
-- `docs/`: 自動生成されたドキュメント
-- `generate-doc.sh`: ドキュメントを自動生成するスクリプト
 # 実行方法
 
 ## テスト
