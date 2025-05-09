@@ -29,9 +29,10 @@ go get -u github.com/Kaichi-Irie/nand2tetris-go
 [![Course Promo](https://img.youtube.com/vi/wTl5wRDT0CU/0.jpg)](https://youtu.be/wTl5wRDT0CU?si=cpyPA9cG7uHAp2tA "Course Promo")
 
 ## プロジェクトの構成
+- `hardware/`: ハードウェアの実装
 - `assembler/`: Hackアセンブラの実装
 - `vm/`: VM変換器の実装
-- `compiler/`: Jackコンパイラの実装
+- `jackcompiler/`: Jackコンパイラの実装
 - `img/`: プロジェクトの画像
 # 実行方法
 
@@ -75,17 +76,6 @@ $ go run main.go <input.jack>
 ディレクトリを引数に与えると，ディレクトリ内の全てのJackファイルをコンパイルし，同じディレクトリに`<filename>.vm`が生成されます．
 ```sh
 $ go run main.go <dirname>
-```
-## ドキュメント生成
-godocのinstall
-```
-$ go install golang.org/x/tools/cmd/godoc@latest
-$ export GOPATH=$HOME/go
-$ export PATH=$PATH:$GOROOT/bin:$GOPATH/bin
-```
-godocの実行
-```
-$./generate-doc.sh
 ```
 
 # References
