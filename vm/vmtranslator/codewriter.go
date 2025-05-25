@@ -9,7 +9,7 @@ import (
 
 // CodeWriter translates VM commands to Hack assembly code and writes the code to an output file.
 type CodeWriter struct {
-	file         io.WriteCloser
+	file         io.Writer
 	vmFileStem   string         // the base name of the .vm file without the .vm extension. e.g. "SimpleAdd"
 	commandCount int            // for generating unique labels
 	functionName string         // for generating unique return labels
@@ -36,10 +36,6 @@ func (cw *CodeWriter) Write(b []byte) (int, error) {
 	return cw.file.Write(b)
 }
 
-// Close closes the output file.
-func (cw *CodeWriter) Close() error {
-	return cw.file.Close()
-}
 
 // push the value in D register to the stack; RAM[SP]=D, SP++
 var push_D = "@SP\nA=M\nM=D\n@SP\nM=M+1\n"

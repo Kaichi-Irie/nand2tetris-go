@@ -9,15 +9,6 @@ import (
 	"testing"
 )
 
-type MyWriteCloser struct {
-	io.Writer
-}
-
-func (mwc *MyWriteCloser) Close() error {
-	// Noop
-	return nil
-}
-
 // testSingleFile tests the translation of a single .vm file to .asm file. It reads the .vm file, translates the commands to .asm, and compares the result with the expected .asm file.
 func testSingleFile(vmFilePath string, asmFilePath string) error {
 	if filepath.Ext(vmFilePath) != ".vm" {
@@ -40,9 +31,8 @@ func testSingleFile(vmFilePath string, asmFilePath string) error {
 	defer asmFile.Close()
 
 	buf := &bytes.Buffer{}
-	mwc := &MyWriteCloser{buf}
 	cw := &CodeWriter{
-		file:        mwc,
+		file:        buf,
 		vmFileStem:  filepath.Base(vmFilePath)[:len(filepath.Base(vmFilePath))-3],
 		returnCount: make(map[string]int),
 	}
@@ -83,12 +73,10 @@ func testSingleDir(dirName string, asmFilePath string) error {
 	defer asmFile.Close()
 
 	buf := &bytes.Buffer{}
-	mwc := &MyWriteCloser{buf}
 	cw := &CodeWriter{
-		file:        mwc,
+		file:        buf,
 		returnCount: make(map[string]int),
 	}
-	defer cw.Close()
 
 	vmFilePaths, err := filepath.Glob(filepath.Join(dirName, "*.vm"))
 	if err != nil {
