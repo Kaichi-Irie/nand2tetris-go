@@ -5,31 +5,20 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
+	"io"
 	"os"
 )
 
 // Hack converts an assembly language file to a binary code file. The file name is passed as a command line argument. The output file has the same name as the input file but with a .hack extension.
-func Hack(fileName string) error {
-	fmt.Println("Hack")
-	if fileName[len(fileName)-4:] != ".asm" {
-		return errors.New("invalid file extension")
-	}
-
+func Hack(asmFile io.Reader, hackFile io.Writer) error {
 	// first pass looks for only L instructions and add them to the symbol table
-	symbolTable, err := firstPass(fileName)
+	symbolTable, err := firstPass(asmFile)
 	if err != nil {
 		return err
 	}
-
-	// create a new file with the same name as the input file but with .hack extension
-	hackFile, err := os.Create(fileName[:len(fileName)-4] + ".hack")
-	if err != nil {
-		return err
-	}
-	defer hackFile.Close()
 
 	// second pass looks for A and C instructions and convert them to binary code
-	err = secondPass(fileName, hackFile, symbolTable)
+	err = secondPass(asmFile, hackFile, symbolTable)
 	if err != nil {
 		return err
 	}
@@ -37,16 +26,30 @@ func Hack(fileName string) error {
 	return nil
 }
 
-// firstPass looks for L instructions and add them to the symbol table.
-func firstPass(fileName string) (SymbolTable, error) {
-	fmt.Println("first pass")
+func HackFromFile(fileName string) error {
+	fmt.Println("Hack")
+	if fileName[len(fileName)-4:] != ".asm" {
+		return errors.New("invalid file extension")
+	}
 	asmFile, err := os.Open(fileName)
 	if err != nil {
-		return SymbolTable{}, err
+		return err
 	}
 	defer asmFile.Close()
 
-	p := Parser{scanner: bufio.NewScanner(asmFile)}
+	// create a new file with the same name as the input file but with .hack extension
+	hackFile, err := os.Create(fileName[:len(fileName)-4] + ".hack")
+	if err != nil {
+		return err
+	}
+	defer hackFile.Close()
+	return Hack(asmFile, hackFile)
+}
+
+// firstPass looks for L instructions and add them to the symbol table.
+func firstPass(asmFile io.Reader) (SymbolTable, error) {
+	fmt.Println("first pass")
+	p := NewParser(bufio.NewScanner(asmFile))
 	symbolTable := NewSymbolTable()
 
 	// first pass: build symbol table and add labels to it
@@ -68,16 +71,9 @@ func firstPass(fileName string) (SymbolTable, error) {
 }
 
 // secondPass looks for A and C instructions and convert them to binary code.
-func secondPass(fileName string, hackFile *os.File, symbolTable SymbolTable) error {
+func secondPass(asmFile io.Reader, hackFile io.Writer, symbolTable SymbolTable) error {
 	fmt.Println("second pass")
-
-	asmFile, err := os.Open(fileName)
-	if err != nil {
-		return err
-	}
-	defer asmFile.Close()
-
-	p := Parser{scanner: bufio.NewScanner(asmFile)}
+	p := NewParser(bufio.NewScanner(asmFile))
 	// second pass
 	for p.advance() {
 		instType := p.currentType
@@ -92,7 +88,7 @@ func secondPass(fileName string, hackFile *os.File, symbolTable SymbolTable) err
 				return err
 			}
 			code := "0" + string(symbolCode)
-			_, err = hackFile.WriteString(code + "\n")
+			_, err = io.WriteString(hackFile, code+"\n")
 			if err != nil {
 				return err
 			}
@@ -122,7 +118,7 @@ func secondPass(fileName string, hackFile *os.File, symbolTable SymbolTable) err
 				return err
 			}
 			code := "111" + string(compCode) + string(destCode) + string(jumpCode)
-			_, err = hackFile.WriteString(code + "\n")
+			_, err = io.WriteString(hackFile, code+"\n")
 			if err != nil {
 				return err
 			}

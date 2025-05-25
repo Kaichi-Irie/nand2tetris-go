@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	err := hack.Hack(os.Args[1])
+	err := hack.HackFromFile(os.Args[1])
 	if err != nil {
 		panic(err)
 	}

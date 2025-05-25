@@ -32,6 +32,12 @@ type Parser struct {
 	currentType        InstructionType
 }
 
+func NewParser(scanner *bufio.Scanner) *Parser {
+	return &Parser{
+		scanner: scanner,
+	}
+}
+
 // advance reads the next instruction from the input and makes it the current instruction. It returns false if there are no more instructions. The function ignores empty lines and comments.
 func (p *Parser) advance() bool {
 	ok := p.scanner.Scan()
