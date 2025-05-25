@@ -3,6 +3,7 @@ package hack
 
 import (
 	"bufio"
+	"bytes"
 	"errors"
 	"fmt"
 	"io"
@@ -11,14 +12,18 @@ import (
 
 // Hack converts an assembly language file to a binary code file. The file name is passed as a command line argument. The output file has the same name as the input file but with a .hack extension.
 func Hack(asmFile io.Reader, hackFile io.Writer) error {
+	var buf bytes.Buffer
+	tee := io.TeeReader(asmFile, &buf)
 	// first pass looks for only L instructions and add them to the symbol table
-	symbolTable, err := firstPass(asmFile)
+
+	symbolTable, err := firstPass(tee)
 	if err != nil {
 		return err
 	}
 
 	// second pass looks for A and C instructions and convert them to binary code
-	err = secondPass(asmFile, hackFile, symbolTable)
+	// reset the asmFile reader to the beginning
+	err = secondPass(&buf, hackFile, symbolTable)
 	if err != nil {
 		return err
 	}
@@ -42,6 +47,7 @@ func HackFromFile(fileName string) error {
 	if err != nil {
 		return err
 	}
+
 	defer hackFile.Close()
 	return Hack(asmFile, hackFile)
 }
@@ -73,7 +79,7 @@ func firstPass(asmFile io.Reader) (SymbolTable, error) {
 // secondPass looks for A and C instructions and convert them to binary code.
 func secondPass(asmFile io.Reader, hackFile io.Writer, symbolTable SymbolTable) error {
 	fmt.Println("second pass")
-	p := NewParser(bufio.NewScanner(asmFile))
+	p := Parser{scanner: bufio.NewScanner(asmFile)}
 	// second pass
 	for p.advance() {
 		instType := p.currentType
@@ -88,6 +94,7 @@ func secondPass(asmFile io.Reader, hackFile io.Writer, symbolTable SymbolTable) 
 				return err
 			}
 			code := "0" + string(symbolCode)
+			fmt.Println("A instruction:", code)
 			_, err = io.WriteString(hackFile, code+"\n")
 			if err != nil {
 				return err
@@ -118,6 +125,7 @@ func secondPass(asmFile io.Reader, hackFile io.Writer, symbolTable SymbolTable) 
 				return err
 			}
 			code := "111" + string(compCode) + string(destCode) + string(jumpCode)
+			fmt.Println("C instruction:", code)
 			_, err = io.WriteString(hackFile, code+"\n")
 			if err != nil {
 				return err
