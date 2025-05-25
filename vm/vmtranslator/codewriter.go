@@ -9,33 +9,36 @@ import (
 
 // CodeWriter translates VM commands to Hack assembly code and writes the code to an output file.
 type CodeWriter struct {
-	file         io.Writer
-	vmFileStem   string         // the base name of the .vm file without the .vm extension. e.g. "SimpleAdd"
-	commandCount int            // for generating unique labels
-	functionName string         // for generating unique return labels
-	returnCount  map[string]int // for generating unique return labels
+	File         io.Writer
+	VmFileStem   string         // the base name of the .vm file without the .vm extension. e.g. "SimpleAdd"
+	CommandCount int            // for generating unique labels
+	FunctionName string         // for generating unique return labels
+	ReturnCount  map[string]int // for generating unique return labels
 }
 
 // NewCodeWriter creates a new asm file with the given path and returns a CodeWriter. CodeWriter.FileNameStem is set to "", so it must be set before calling WriteCommand.
-func NewCodeWriter(asmFilePath string) *CodeWriter {
+func NewCodeWriter(asmFile io.Writer) *CodeWriter {
+	return &CodeWriter{
+		File:        asmFile,
+		ReturnCount: make(map[string]int),
+	}
+}
+
+func NewCodeWriterFromFile(asmFilePath string) (*CodeWriter, error) {
 	if filepath.Ext(asmFilePath) != ".asm" {
-		panic("invalid file extension")
+		return nil, fmt.Errorf("invalid file extension")
 	}
 	asmFile, err := os.Create(asmFilePath)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
-	return &CodeWriter{
-		file:        asmFile,
-		returnCount: make(map[string]int),
-	}
+	return NewCodeWriter(asmFile), nil
 }
 
 // Write writes the given bytes to the output file.
 func (cw *CodeWriter) Write(b []byte) (int, error) {
-	return cw.file.Write(b)
+	return cw.File.Write(b)
 }
-
 
 // push the value in D register to the stack; RAM[SP]=D, SP++
 var push_D = "@SP\nA=M\nM=D\n@SP\nM=M+1\n"
@@ -278,33 +281,33 @@ func (cw *CodeWriter) WriteCommand(gotoCommand VMCommand) error {
 	var err error
 	switch ctype {
 	case C_ARITHMETIC:
-		asmcommand, err = TranslateArithmetic(gotoCommand, cw.commandCount)
-		cw.commandCount++
+		asmcommand, err = TranslateArithmetic(gotoCommand, cw.CommandCount)
+		cw.CommandCount++
 	case C_PUSH, C_POP:
-		if cw.vmFileStem == "" {
+		if cw.VmFileStem == "" {
 			return fmt.Errorf("fileNameStem is not set")
 		}
-		asmcommand, err = TranslatePushPop(ctype, arg1(gotoCommand), arg2(gotoCommand), cw.vmFileStem)
+		asmcommand, err = TranslatePushPop(ctype, arg1(gotoCommand), arg2(gotoCommand), cw.VmFileStem)
 	case C_LABEL:
-		label := resolveLabel(cw.functionName, arg1(gotoCommand))
+		label := resolveLabel(cw.FunctionName, arg1(gotoCommand))
 		asmcommand, err = TranslateLabel(label)
 	case C_GOTO:
-		label := resolveLabel(cw.functionName, arg1(gotoCommand))
+		label := resolveLabel(cw.FunctionName, arg1(gotoCommand))
 		asmcommand, err = TranslateGoto(label)
 	case C_IF:
-		label := resolveLabel(cw.functionName, arg1(gotoCommand))
+		label := resolveLabel(cw.FunctionName, arg1(gotoCommand))
 		asmcommand, err = TranslateIf(label)
 	case C_FUNCTION:
 		asmcommand, err = TranslateFunction(arg1(gotoCommand), arg2(gotoCommand))
-		cw.functionName = arg1(gotoCommand)
+		cw.FunctionName = arg1(gotoCommand)
 	case C_CALL:
-		cnt, ok := cw.returnCount[arg1(gotoCommand)]
+		cnt, ok := cw.ReturnCount[arg1(gotoCommand)]
 		if !ok {
 			cnt = 0
-			cw.returnCount[arg1(gotoCommand)] = 0
+			cw.ReturnCount[arg1(gotoCommand)] = 0
 		}
 		asmcommand, err = TranslateCall(arg1(gotoCommand), arg2(gotoCommand), cnt)
-		cw.returnCount[arg1(gotoCommand)]++
+		cw.ReturnCount[arg1(gotoCommand)]++
 	case C_RETURN:
 		asmcommand, err = TranslateReturn()
 	default:
@@ -336,6 +339,6 @@ func (cw *CodeWriter) WriteBootStrap() error {
 	if err != nil {
 		return err
 	}
-	cw.vmFileStem = "Sys"
+	cw.VmFileStem = "Sys"
 	return cw.WriteCommand("call Sys.init 0")
 }

@@ -3,6 +3,7 @@ package vmtranslator
 
 import (
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"slices"
@@ -38,7 +39,11 @@ func VMTranslator(path string) error {
 		return fmt.Errorf("input file must be a .vm file or a directory")
 	}
 
-	codeWriter := NewCodeWriter(asmFilePath)
+	codeWriter, err := NewCodeWriterFromFile(asmFilePath)
+	if err != nil {
+		return err
+	}
+
 	if info.IsDir() {
 		// If the input is a directory, write the bootstrap code at the beginning of the .asm file. The bootstrap code initializes the stack pointer to 256 and calls Sys.init.
 		err := codeWriter.WriteBootStrap()
@@ -56,14 +61,12 @@ func VMTranslator(path string) error {
 
 		// vmFileBase is the base name of the .vm file with the .vm extension. e.g. "SimpleAdd.vm"
 		vmFileBase := filepath.Base(vmFilePath)
-		codeWriter.vmFileStem = vmFileBase[:len(vmFileBase)-3]
-		parser := NewParser(vmFile, "//")
-		for parser.advance() {
-			err := codeWriter.WriteCommand(parser.currentCommand)
-			if err != nil {
-				return err
-			}
+		codeWriter.VmFileStem = vmFileBase[:len(vmFileBase)-3]
+		err = Tranlate(codeWriter, vmFile)
+		if err != nil {
+			return fmt.Errorf("error translating %s: %w", vmFilePath, err)
 		}
+		fmt.Printf("Translated %s to %s\n", vmFilePath, asmFilePath)
 	}
 
 	// If the input is a file, write an infinite loop at the end of the .asm file
@@ -72,5 +75,16 @@ func VMTranslator(path string) error {
 	}
 
 	fmt.Println("done")
+	return nil
+}
+
+func Tranlate(cw *CodeWriter, vmFile io.Reader) error {
+	parser := NewParser(vmFile, "//")
+	for parser.advance() {
+		err := cw.WriteCommand(parser.currentCommand)
+		if err != nil {
+			return err
+		}
+	}
 	return nil
 }

@@ -32,9 +32,9 @@ func testSingleFile(vmFilePath string, asmFilePath string) error {
 
 	buf := &bytes.Buffer{}
 	cw := &CodeWriter{
-		file:        buf,
-		vmFileStem:  filepath.Base(vmFilePath)[:len(filepath.Base(vmFilePath))-3],
-		returnCount: make(map[string]int),
+		File:        buf,
+		VmFileStem:  filepath.Base(vmFilePath)[:len(filepath.Base(vmFilePath))-3],
+		ReturnCount: make(map[string]int),
 	}
 
 	parser := NewParser(vmFile, "//")
@@ -74,8 +74,8 @@ func testSingleDir(dirName string, asmFilePath string) error {
 
 	buf := &bytes.Buffer{}
 	cw := &CodeWriter{
-		file:        buf,
-		returnCount: make(map[string]int),
+		File:        buf,
+		ReturnCount: make(map[string]int),
 	}
 
 	vmFilePaths, err := filepath.Glob(filepath.Join(dirName, "*.vm"))
@@ -95,7 +95,7 @@ func testSingleDir(dirName string, asmFilePath string) error {
 
 		// vmFileBase is the base name of the .vm file with the .vm extension. e.g. "SimpleAdd.vm"
 		vmFileBase := filepath.Base(vmFilePath)
-		cw.vmFileStem = vmFileBase[:len(vmFileBase)-3]
+		cw.VmFileStem = vmFileBase[:len(vmFileBase)-3]
 		parser := NewParser(vmFile, "//")
 		for parser.advance() {
 			err := cw.WriteCommand(parser.currentCommand)
