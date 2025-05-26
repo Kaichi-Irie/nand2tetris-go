@@ -1,6 +1,6 @@
 ![img](img/nand2tetris-go.jpg)
 [![GoDev](https://img.shields.io/static/v1?label=godev&message=reference&color=00add8)](https://pkg.go.dev/github.com/Kaichi-Irie/nand2tetris-go@v0.2.0)
-![Coverage](https://img.shields.io/badge/Coverage-66.0%25-yellow)
+![Coverage](https://img.shields.io/badge/Coverage-65.7%25-yellow)
 [![Go Report Card](https://goreportcard.com/badge/github.com/Kaichi-Irie/nand2tetris-go)](https://goreportcard.com/report/github.com/Kaichi-Irie/nand2tetris-go)
 [![GitHub license](https://img.shields.io/github/license/Kaichi-Irie/nand2tetris-go)](https://github.com/Kaichi-Irie/nand2tetris-go/blob/main/LICENSE)
 
