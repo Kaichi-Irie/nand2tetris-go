@@ -83,6 +83,5 @@ func (t *Tokenizer) Advance() bool {
 	}
 	t.CurrentPos += len(token.Val)
 	t.CurrentToken = token
-	fmt.Printf("Current token: %s\n", t.CurrentToken.Val)
 	return true
 }

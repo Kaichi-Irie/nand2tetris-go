@@ -133,7 +133,6 @@ func (s *SymbolTable) Define(name string, T string, kind string) error {
 		T:     T,
 		Index: index,
 	}
-	fmt.Printf("Added identifier: %s, kind: %s, type: %s, index: %d\n", name, kind, T, index)
 	return nil
 }
 
@@ -153,7 +152,6 @@ func (s *SymbolTable) SetCurrentScope(name string, kind string, T string) error 
 		T:     T,
 		Index: -1,
 	}
-	fmt.Printf("Set current scope: %s, kind: %s, type: %s\n", name, kind, T)
 	return nil
 }
 

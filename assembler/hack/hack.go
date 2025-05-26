@@ -94,7 +94,6 @@ func secondPass(asmFile io.Reader, hackFile io.Writer, symbolTable SymbolTable) 
 				return err
 			}
 			code := "0" + string(symbolCode)
-			fmt.Println("A instruction:", code)
 			_, err = io.WriteString(hackFile, code+"\n")
 			if err != nil {
 				return err
@@ -125,7 +124,6 @@ func secondPass(asmFile io.Reader, hackFile io.Writer, symbolTable SymbolTable) 
 				return err
 			}
 			code := "111" + string(compCode) + string(destCode) + string(jumpCode)
-			fmt.Println("C instruction:", code)
 			_, err = io.WriteString(hackFile, code+"\n")
 			if err != nil {
 				return err
