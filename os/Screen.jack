@@ -1,0 +1,158 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/12/Screen.jack
+/**
+ * A library of functions for displaying graphics on the screen.
+ * The Hack physical screen consists of 512 rows (indexed 0..511, top to bottom)
+ * of 256 pixels each (indexed 0..255, left to right). The top left pixel on
+ * the screen is indexed (0,0).
+ */
+class Screen {
+    static int base, wordSize, rowMax, colMax;
+    static boolean currentColor, whiteColor, blackColor;
+
+    /** Initializes the Screen. */
+    function void init() {
+        let base = 16384;
+        let rowMax = 256;
+        let colMax = 512;
+        let blackColor = true;
+        let whiteColor = false;
+        let wordSize = 16;
+        do Screen.clearScreen();  // clear the screen
+        do Screen.setColor(blackColor);  // set the color to Black
+        return;
+    }
+
+    /** Erases the entire screen. */
+    function void clearScreen() {
+        var int col, row, address;
+        do Screen.setColor(whiteColor);  // set the color to White
+        let row=0;
+        let address = base;
+        while (row<rowMax) {
+            let col=0;
+            while (col<(colMax/wordSize)) {
+                do Memory.poke(address,currentColor);
+                let col = col+1;
+                let address = address+1;
+            }
+            let row = row+1;
+        }
+        return;
+    }
+
+    /** Sets the current color, to be used for all subsequent drawXXX commands.
+     *  Black is represented by true, white by false. */
+    function void setColor(boolean b) {
+        let currentColor = b;
+        return;
+    }
+
+    /** Draws the (x,y) pixel, using the current color. */
+    function void drawPixel(int x, int y) {
+        var int address, ymod16, oldPixels,i,pow, newPixels;
+        let address = base + (32*x) + (y/16) ;
+        let ymod16 = y & 15; // y mod16=y%16=y&(16-1)
+        let i = 0;
+        let pow = 1;
+        while (i<ymod16) {
+            let pow = pow + pow; // pow=2^i
+            let i = i + 1;
+        }
+
+        let oldPixels = Memory.peek(address);
+        // if the current color is white, then reverse the color
+        if (currentColor=blackColor) {
+            let newPixels = oldPixels | pow;
+        } else {
+            let newPixels = oldPixels & (~pow);
+        }
+
+        do Memory.poke(address,newPixels);
+        return;
+    }
+
+    /** Draws a line from pixel (x1,y1) to pixel (x2,y2), using the current color. */
+    function void drawLine(int x1, int y1, int x2, int y2) {
+        var int dx, dy, nx, ny, diff, xMax, yMax;
+        let dx=x2-x1;
+        let dy=y2-y1;
+        let nx = 0;
+        let ny = 0;
+        let diff = 0;
+
+        // draw horizontal line
+        if (dy=0) {
+            let xMax = Math.max(x1,x2);
+            let x1 = Math.min(x1,x2);
+            while ((x1<xMax)|(x1=xMax)) {
+                do Screen.drawPixel(x1,y1);
+                let x1 = x1+1;
+            }
+            return;
+        }
+        // draw vertical line
+        // TODO: optimize the case of vertical line
+        if (dx=0) {
+            let yMax = Math.max(y1,y2);
+            let y1 = Math.min(y1,y2);
+            while ((y1<yMax)|(y1=yMax)) {
+                do Screen.drawPixel(x1,y1);
+                let y1 = y1+1;
+            }
+            return;
+        }
+
+        // draw other lines
+        while ((Math.abs(nx)<Math.abs(dx))|(Math.abs(nx)=Math.abs(dx))|(Math.abs(ny)<Math.abs(dy))|(Math.abs(ny)=Math.abs(dy))) {
+                do Screen.drawPixel(x1+nx,y1+ny);
+                if (diff<0) {
+                    // extend to the direction of x axis
+                    if (dx>0) {
+                        let nx = nx +1;
+                    }
+                    else {
+                        let nx = nx -1;
+                    }
+                    let diff = diff + Math.abs(dy);
+                } else {
+                    // extend to the direction of x axis
+                    if (dy>0) {
+                        let ny = ny +1;
+                    }
+                    else {
+                        let ny = ny -1;
+                    }
+                    let diff = diff - Math.abs(dx);
+                }
+            }
+        return;
+    }
+
+    /** Draws a filled rectangle whose top left corner is (x1, y1)
+     *  and bottom right corner is (x2,y2), using the current color. */
+    function void drawRectangle(int x1, int y1, int x2, int y2) {
+        var int xMax;
+        let xMax = Math.max(x1,x2);
+        let x1 = Math.min(x1,x2);
+        while ((x1<xMax)|(x1=xMax)) {
+            do Screen.drawLine(x1,y1,x1,y2);
+            let x1 = x1+1;
+        }
+        return;
+    }
+
+    /** Draws a filled circle of radius r<=181 around (x,y), using the current color. */
+    function void drawCircle(int x, int y, int r) {
+        var int dx, dy;
+        let dy=-r;
+        while ((dy<r)|(dy=r)){
+            let dx = Math.sqrt((r*r)-(dy*dy));
+            do Screen.drawLine(x-dx,y+dy,x+dx,y+dy);
+            let dy=dy+1;
+        }
+        return;
+    }
+}
