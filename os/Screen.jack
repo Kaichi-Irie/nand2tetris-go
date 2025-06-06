@@ -9,14 +9,14 @@
  * the screen is indexed (0,0).
  */
 class Screen {
-    static int base, wordSize, rowMax, colMax;
+    static int baseAddress, wordSize, nRows, nCols;
     static boolean currentColor, whiteColor, blackColor;
 
     /** Initializes the Screen. */
     function void init() {
-        let base = 16384;
-        let rowMax = 256;
-        let colMax = 512;
+        let baseAddress = 16384;
+        let nRows = 256;
+        let nCols = 512;
         let blackColor = true;
         let whiteColor = false;
         let wordSize = 16;
@@ -30,10 +30,10 @@ class Screen {
         var int col, row, address;
         do Screen.setColor(whiteColor);  // set the color to White
         let row=0;
-        let address = base;
-        while (row<rowMax) {
+        let address = baseAddress;
+        while (row<nRows) {
             let col=0;
-            while (col<(colMax/wordSize)) {
+            while (col<(nCols/wordSize)) {
                 do Memory.poke(address,currentColor);
                 let col = col+1;
                 let address = address+1;
@@ -53,7 +53,7 @@ class Screen {
     /** Draws the (x,y) pixel, using the current color. */
     function void drawPixel(int x, int y) {
         var int address, ymod16, oldPixels,i,pow, newPixels;
-        let address = base + (32*x) + (y/16) ;
+        let address = baseAddress + (32*x) + (y/16) ;
         let ymod16 = y & 15; // y mod16=y%16=y&(16-1)
         let i = 0;
         let pow = 1;
