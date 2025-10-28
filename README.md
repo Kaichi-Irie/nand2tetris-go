@@ -12,7 +12,7 @@
 - [x] アセンブラ（Hackアセンブリ言語→Hackバイナリファイル）
 - [x] コンパイラ バックエンド（VM変換器；VM言語→Hackアセンブリ言語）
 - [x] コンパイラ フロントエンド（Jackコンパイラ；構文解析，コード生成；Jack言語→VM言語）
-- [ ] OS（Jack言語標準ライブラリ）
+- [x] OS（Jack言語標準ライブラリ）
 
 ## Jack Compiler Web
 ✨ Web上でJackコンパイラとHackアセンブラを実行できる[Web アプリケーション](https://myapp-frontend-505229804915.asia-northeast1.run.app/)も制作し，公開しています．
